@@ -1,5 +1,20 @@
 @extends('layouts.master')
 
+@section('title', 'Firma Ayarları')
+
+@section('breadcrumb-title')
+    <div>
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Firma Ayarları</h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Tüm aktiviteleriniz ve uyarılarınız</p>
+    </div>
+@endsection
+
+@section('breadcrumb-items')
+    <li class="flex items-center">
+        <i class="fas fa-chevron-right text-gray-400 mx-2 text-xs"></i>
+        <span class="text-gray-600 dark:text-gray-400">Firma Ayarları</span>
+    </li>
+@endsection
 @section('content')
 <div class="row">
     <div class="col-xl-12 col-lg-12">
