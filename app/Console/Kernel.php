@@ -22,6 +22,12 @@ class Kernel extends ConsoleKernel
             ->everyMinute()
             ->withoutOverlapping()
             ->runInBackground();
+
+        // Browser datalarını senkronize et (URL eşleştirme)
+        $schedule->command('performance:sync-browser-data')
+            ->everyMinute()
+            ->withoutOverlapping()
+            ->runInBackground();
     }
 
     /**
