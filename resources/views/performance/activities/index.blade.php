@@ -2,28 +2,6 @@
 
 @section('title', 'Aktivite Yönetimi')
 
-@section('css')
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/datatables.css') }}">
-@endsection
-
-@section('breadcrumb-title')
-    <div>
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Aktivite Yönetimi</h2>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Tüm kullanıcı aktivitelerini görüntüleyin ve yönetin</p>
-    </div>
-@endsection
-
-@section('breadcrumb-items')
-    <li class="flex items-center">
-        <i class="fas fa-chevron-right text-gray-400 mx-2 text-xs"></i>
-        <span class="text-gray-600 dark:text-gray-400">Performance</span>
-    </li>
-    <li class="flex items-center">
-        <i class="fas fa-chevron-right text-gray-400 mx-2 text-xs"></i>
-        <span class="text-gray-600 dark:text-gray-400">Aktiviteler</span>
-    </li>
-@endsection
-
 @section('content')
 <!-- Stats Cards -->
 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-6">
@@ -203,102 +181,111 @@
             </div>
         </div>
 
-        <!-- Table -->
-        <div class="overflow-x-auto">
-            <table class="table" id="activitiesTable">
-                <thead>
-                    <tr>
-                        <th>
-                            <div class="flex items-center gap-2">
-                                <i class="fas fa-user text-gray-400"></i>
+        <!-- Tailwind Table -->
+        <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+            <div class="max-h-[800px] overflow-y-auto"> <!-- Yükseklik sınırlandırması ve dikey kaydırma -->
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead class="bg-gray-50 dark:bg-gray-800 sticky top-0 z-10"> <!-- Sticky header -->
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 Kullanıcı
-                            </div>
-                        </th>
-                        <th>
-                            <div class="flex items-center gap-2">
-                                <i class="fas fa-cog text-gray-400"></i>
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 Process
-                            </div>
-                        </th>
-                        <th>
-                            <div class="flex items-center gap-2">
-                                <i class="fas fa-file-alt text-gray-400"></i>
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 Başlık
-                            </div>
-                        </th>
-                        <th>
-                            <div class="flex items-center gap-2">
-                                <i class="fas fa-tags text-gray-400"></i>
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 Kategoriler
-                            </div>
-                        </th>
-                        <th>
-                            <div class="flex items-center gap-2">
-                                <i class="fas fa-clock text-gray-400"></i>
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 Başlangıç
-                            </div>
-                        </th>
-                        <th>
-                            <div class="flex items-center gap-2">
-                                <i class="fas fa-hourglass-half text-gray-400"></i>
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 Süre
-                            </div>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($activities as $activity)
-                    <tr>
-                        <td>
-                            <div class="flex items-center gap-2">
-                                <div class="w-8 h-8 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-user text-primary-600 dark:text-primary-400 text-xs"></i>
+                            </th>
+                            <th scope="col" class="relative px-6 py-3">
+                                <span class="sr-only">Detay</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+                        @forelse($activities as $activity)
+                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-150 group">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center gap-3">
+                                    <div class="flex-shrink-0 h-8 w-8 rounded-full bg-primary-100 dark:bg-primary-900/50 flex items-center justify-center text-primary-600 dark:text-primary-400 font-bold text-xs">
+                                        {{ substr($activity->username, 0, 2) }}
+                                    </div>
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                        {{ $activity->username }}
+                                    </div>
                                 </div>
-                                <span class="font-medium text-gray-900 dark:text-white">{{ $activity->username }}</span>
-                            </div>
-                        </td>
-                        <td>
-                            <code class="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-sm font-mono rounded border border-gray-200 dark:border-gray-700">
-                                {{ Str::limit($activity->process_name, 30) }}
-                            </code>
-                        </td>
-                        <td>
-                            <span class="text-sm text-gray-700 dark:text-gray-300">{{ Str::limit($activity->title, 50) }}</span>
-                        </td>
-                        <td>
-                            <div class="flex flex-wrap gap-1">
-                                @forelse($activity->categories as $category)
-                                    <span class="badge badge-primary">{{ $category->name }}</span>
-                                @empty
-                                    <span class="badge badge-secondary">
-                                        <i class="fas fa-ban text-xs mr-1"></i> Taglenmemiş
-                                    </span>
-                                @endforelse
-                            </div>
-                        </td>
-                        <td>
-                            <div class="text-sm">
-                                <div class="font-medium text-gray-900 dark:text-white">{{ $activity->start_time_utc->format('d.m.Y') }}</div>
-                                <div class="text-gray-500 dark:text-gray-400">{{ $activity->start_time_utc->format('H:i:s') }}</div>
-                            </div>
-                        </td>
-                        <td>
-                            <span class="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded font-medium text-sm">
-                                <i class="fas fa-stopwatch text-xs"></i>
-                                {{ $activity->duration_formatted }}
-                            </span>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="6" class="text-center py-12">
-                            <i class="fas fa-inbox text-5xl text-gray-300 dark:text-gray-600 mb-3"></i>
-                            <p class="text-gray-500 dark:text-gray-400">Aktivite bulunamadı</p>
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 dark:text-white font-mono bg-gray-100 dark:bg-gray-800 rounded px-2 py-1 inline-block">
+                                    {{ Str::limit($activity->process_name, 25) }}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="text-sm text-gray-900 dark:text-gray-300" title="{{ $activity->title }}">
+                                    {{ Str::limit($activity->title, 50) }}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex flex-wrap gap-1">
+                                    @forelse($activity->categories as $category)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                            {{ $category->name }}
+                                        </span>
+                                    @empty
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200">
+                                            Taglenmemiş
+                                        </span>
+                                    @endforelse
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 dark:text-white">{{ $activity->start_time_utc->format('d.m.Y') }}</div>
+                                <div class="text-sm text-gray-500 dark:text-gray-400">{{ $activity->start_time_utc->format('H:i:s') }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                    <i class="fas fa-clock mr-1"></i>
+                                    {{ $activity->duration_formatted }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <button onclick='openModal(@json($activity))' class="text-primary-600 hover:text-primary-900 dark:text-primary-400 dark:hover:text-primary-300 bg-primary-50 dark:bg-primary-900/20 px-3 py-1 rounded transition-colors duration-200">
+                                    <i class="fas fa-eye mr-1"></i> Detay
+                                </button>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="7" class="px-6 py-12 text-center">
+                                <div class="flex flex-col items-center justify-center">
+                                    <i class="fas fa-inbox text-5xl text-gray-300 dark:text-gray-600 mb-4"></i>
+                                    <p class="text-lg font-medium text-gray-900 dark:text-white">Aktivite Bulunamadı</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Arama kriterlerinize uygun kayıt bulunamadı.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            
+            @if($activities instanceof \Illuminate\Pagination\LengthAwarePaginator)
+            <div class="bg-gray-50 dark:bg-gray-800 px-4 py-3 border-t border-gray-200 dark:border-gray-700 sm:px-6">
+                {{ $activities->links() }}
+            </div>
+            @endif
+        </div>
+        
+        <div class="mt-4 text-xs text-gray-500 text-right">
+            Toplam {{ number_format($activities instanceof \Illuminate\Pagination\LengthAwarePaginator ? $activities->total() : $activities->count()) }} kayıt listelendi.
         </div>
     </div>
 </div>
@@ -314,37 +301,12 @@
                 <h6 class="font-bold text-blue-900 dark:text-blue-300 mb-2">Aktivite Takibi Hakkında</h6>
                 <p class="text-sm text-blue-800 dark:text-blue-200 mb-2">
                     Bu sayfada tüm kullanıcı aktiviteleri listelenir. Aktiviteler otomatik olarak kaydedilir ve keyword'lere göre kategorize edilir.
+                    <br>Veriler çok fazla olduğunda dikey kaydırma (scroll) aktif olur. "Detay" butonuna tıklayarak aktivite hakkında daha fazla bilgi alabilirsiniz.
                 </p>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 text-sm text-blue-700 dark:text-blue-300">
-                    <div>
-                        <strong>Taglenmiş:</strong> En az bir kategoriye atanmış aktiviteler
-                    </div>
-                    <div>
-                        <strong>Taglenmemiş:</strong> Henüz kategorize edilmemiş aktiviteler
-                    </div>
-                    <div>
-                        <strong>Otomatik Tagleme:</strong> Keyword'lere göre toplu etiketleme
-                    </div>
-                </div>
             </div>
         </div>
     </div>
 </div>
-@endsection
 
-@section('script')
-<script src="{{ asset('assets/js/datatable/datatables/jquery.dataTables.min.js') }}"></script>
-<script>
-    $(document).ready(function() {
-        $('#activitiesTable').DataTable({
-            "pageLength": 50,
-            "order": [[4, 'desc']], // Başlangıç zamanına göre sırala
-            "language": {
-                "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json"
-            },
-            "dom": '<"flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4"lf>rtip',
-            "responsive": true
-        });
-    });
-</script>
+@include('performance.activities.partials.detail-modal')
 @endsection

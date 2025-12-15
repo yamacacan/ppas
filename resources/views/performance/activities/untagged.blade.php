@@ -76,68 +76,75 @@
             </div>
         @endif
 
-        <div class="overflow-x-auto">
-            <table class="table" id="untaggedActivitiesTable">
-                <thead class="bg-gray-50 dark:bg-gray-800">
-                    <tr>
-                        <th class="text-left font-semibold text-gray-600 dark:text-gray-400">Kullanıcı</th>
-                        <th class="text-left font-semibold text-gray-600 dark:text-gray-400">Process Name</th>
-                        <th class="text-left font-semibold text-gray-600 dark:text-gray-400">Başlık</th>
-                        <th class="text-left font-semibold text-gray-600 dark:text-gray-400">URL</th>
-                        <th class="text-left font-semibold text-gray-600 dark:text-gray-400">Süre</th>
-                        <th class="text-left font-semibold text-gray-600 dark:text-gray-400">Zaman</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                    @foreach($activities as $activity)
-                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
-                        <td class="px-4 py-3">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
-                                <i class="fas fa-user mr-1 text-xs"></i> {{ $activity->username }}
-                            </span>
-                        </td>
-                        <td class="px-4 py-3">
-                            <code class="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-pink-600 dark:text-pink-400 font-mono">
-                                {{ Str::limit($activity->process_name, 30) }}
-                            </code>
-                        </td>
-                        <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-                            {{ Str::limit($activity->title, 50) }}
-                        </td>
-                        <td class="px-4 py-3 text-xs text-gray-500">
-                            @if($activity->url)
-                                <a href="#" class="hover:text-primary-600 truncate block max-w-xs" title="{{ $activity->url }}">
-                                    {{ Str::limit($activity->url, 40) }}
-                                </a>
-                            @else
-                                <span class="text-gray-400">-</span>
-                            @endif
-                        </td>
-                        <td class="px-4 py-3 text-sm font-mono text-gray-600 dark:text-gray-400">
-                            {{ $activity->duration_formatted }}
-                        </td>
-                        <td class="px-4 py-3 text-sm text-gray-500" data-order="{{ $activity->start_time_utc->timestamp }}">
-                            {{ $activity->start_time_utc->format('d.m.Y H:i') }}
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+        <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+            <div class="max-h-[800px] overflow-y-auto">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead class="bg-gray-50 dark:bg-gray-800 sticky top-0 z-10">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Kullanıcı</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Process Name</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Başlık</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">URL</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Süre</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Zaman</th>
+                            <th scope="col" class="relative px-6 py-3">
+                                <span class="sr-only">Detay</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+                        @foreach($activities as $activity)
+                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-150 group">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center gap-3">
+                                    <div class="flex-shrink-0 h-8 w-8 rounded-full bg-primary-100 dark:bg-primary-900/50 flex items-center justify-center text-primary-600 dark:text-primary-400 font-bold text-xs">
+                                        {{ substr($activity->username, 0, 2) }}
+                                    </div>
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                        {{ $activity->username }}
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 dark:text-white font-mono bg-gray-100 dark:bg-gray-800 rounded px-2 py-1 inline-block">
+                                    {{ Str::limit($activity->process_name, 25) }}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="text-sm text-gray-900 dark:text-gray-300" title="{{ $activity->title }}">
+                                    {{ Str::limit($activity->title, 50) }}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                @if($activity->url)
+                                    <a href="#" class="text-xs text-blue-600 dark:text-blue-400 hover:underline truncate block max-w-xs" title="{{ $activity->url }}">
+                                        {{ Str::limit($activity->url, 40) }}
+                                    </a>
+                                @else
+                                    <span class="text-xs text-gray-400">-</span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded font-medium text-xs">
+                                    <i class="fas fa-clock text-xs"></i>
+                                    {{ $activity->duration_formatted }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                {{ $activity->start_time_utc->format('d.m.Y H:i') }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <button onclick='openModal(@json($activity))' class="text-primary-600 hover:text-primary-900 dark:text-primary-400 dark:hover:text-primary-300 bg-primary-50 dark:bg-primary-900/20 px-3 py-1 rounded transition-colors duration-200">
+                                    <i class="fas fa-eye mr-1"></i> Detay
+                                </button>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
-@endsection
-
-@section('script')
-<script src="{{ asset('assets/js/datatable/datatables/jquery.dataTables.min.js') }}"></script>
-<script>
-    $(document).ready(function() {
-        $('#untaggedActivitiesTable').DataTable({
-            "pageLength": 50,
-            "order": [[5, 'desc']],
-            "language": { "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json" },
-            "responsive": true
-        });
-    });
-</script>
+@include('performance.activities.partials.detail-modal')
 @endsection
