@@ -266,8 +266,8 @@
                     <i class="fas fa-chart-line text-white text-sm"></i>
                 </div>
                 <div class="flex-1 min-w-0">
-                    <p class="text-xs font-semibold text-gray-900 dark:text-white truncate">Perfas v2.0</p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">© 2024 4Dimension</p>
+                    <p class="text-xs font-semibold text-gray-900 dark:text-white truncate">Perfas v1.0</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">© 2025 4Dimension</p>
                 </div>
             </div>
         </div>
