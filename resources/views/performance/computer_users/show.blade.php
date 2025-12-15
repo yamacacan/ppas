@@ -121,7 +121,10 @@
             <!-- Working Hours Efficiency -->
             <div class="card h-full">
                 <div class="card-header border-b border-gray-200 dark:border-gray-700 relative">
-                    <h5 class="font-bold text-gray-900 dark:text-white">Mesai Saatleri Verimliliği (09:00 - 18:00)</h5>
+                    <h5 class="font-bold text-gray-900 dark:text-white">
+                        Mesai Saatleri Verimliliği 
+                        ({{ \App\Models\FirmSettings::instance()->work_start_time }} - {{ \App\Models\FirmSettings::instance()->work_end_time }})
+                    </h5>
                 </div>
                 <div class="card-body p-6">
                     <div class="grid grid-cols-2 gap-6 mb-6">
