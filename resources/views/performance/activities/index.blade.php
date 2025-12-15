@@ -32,7 +32,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Toplam</p>
-                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">{{ number_format($activities->total()) }}</h3>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">{{ number_format($activities instanceof \Illuminate\Pagination\LengthAwarePaginator ? $activities->total() : $activities->count()) }}</h3>
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">aktivite</p>
                 </div>
                 <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
