@@ -96,7 +96,7 @@ class DashboardController extends Controller
         
         for ($hour = 0; $hour < 24; $hour++) {
             // Son 30 gündeki o saatteki toplam aktivite süresi
-            $totalHourlyDuration = Activity::where('created_at', '>=', $thirtyDaysAgo)
+            $totalHourlyDuration = Activity::where('start_time_utc', '>=', $thirtyDaysAgo)
                 ->whereRaw('HOUR(start_time_utc) = ?', [$hour])
                 ->whereHas('categories', function($query) use ($workCategories) {
                     $query->whereIn('categories.id', $workCategories);
@@ -109,12 +109,12 @@ class DashboardController extends Controller
         }
 
         // 5. İş/Diğer Dağılımı (Son 30 Gün)
-        $workDuration30 = Activity::where('created_at', '>=', $thirtyDaysAgo)
+        $workDuration30 = Activity::where('start_time_utc', '>=', $thirtyDaysAgo)
             ->whereHas('categories', function($q) use ($workCategories) {
                 $q->whereIn('categories.id', $workCategories);
             })->sum('duration_ms');
             
-        $otherDuration30 = Activity::where('created_at', '>=', $thirtyDaysAgo)
+        $otherDuration30 = Activity::where('start_time_utc', '>=', $thirtyDaysAgo)
             ->whereHas('categories', function($q) use ($otherCategories) {
                 $q->whereIn('categories.id', $otherCategories);
             })->sum('duration_ms');
