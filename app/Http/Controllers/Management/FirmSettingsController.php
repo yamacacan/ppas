@@ -28,8 +28,8 @@ class FirmSettingsController extends Controller
             'address' => 'nullable|string',
             'email' => 'nullable|email|max:255',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'work_start_time' => 'required|date_format:H:i:s',
-            'work_end_time' => 'required|date_format:H:i:s',
+            'work_start_time' => 'required|date_format:H:i',
+            'work_end_time' => 'required|date_format:H:i',
         ]);
 
         $settings = FirmSettings::instance();
