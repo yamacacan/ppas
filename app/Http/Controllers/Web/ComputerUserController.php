@@ -107,7 +107,18 @@ class ComputerUserController extends Controller
         $workingHourStats = $this->statisticsService->getWorkingHourStats($filters);
         $weeklyRhythm = $this->statisticsService->getWeeklyRhythm($filters);
         $topKeywords = $this->statisticsService->getTopKeywords($filters, 10);
+        $topKeywords = $this->statisticsService->getTopKeywords($filters, 10);
         $topProcesses = $this->statisticsService->getTopProcesses($filters, 10);
+
+        // Hardware Info (Motherboard UUID ile eşleşen en son kayıt)
+        $hardwareInfo = \App\Models\SystemHardware::where('motherboard_uuid', $user->motherboard_uuid)
+            ->orderBy('collected_at', 'desc')
+            ->first();
+
+        // Installed Apps (Motherboard UUID ile eşleşenler)
+        $installedApps = \App\Models\InstalledApp::where('motherboard_uuid', $user->motherboard_uuid)
+            ->orderBy('app_name')
+            ->get();
 
         return view('performance.computer_users.show', compact(
             'user', 
@@ -118,7 +129,10 @@ class ComputerUserController extends Controller
             'workingHourStats',
             'weeklyRhythm',
             'topKeywords',
-            'topProcesses'
+            'topKeywords',
+            'topProcesses',
+            'hardwareInfo',
+            'installedApps'
         ));
     }
 }
