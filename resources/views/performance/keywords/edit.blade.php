@@ -336,6 +336,119 @@
                     @endif
                 </div>
             </div>
+
+             <!-- Alert Exceptions -->
+            <div class="card">
+                <div class="card-header border-b border-gray-200 dark:border-gray-700 bg-red-50 dark:bg-red-900/10">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h5 class="font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                                <i class="fas fa-bell-slash text-red-500"></i>
+                                Alert İstisnaları
+                            </h5>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Bu birim veya kullanıcılar için bildirim GÖNDERİLMEZ</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <!-- Add Exception Form -->
+                    <form action="{{ route('keywords.alert-exceptions.store', $keyword->id) }}" method="POST" class="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl border border-gray-200 dark:border-gray-700 mb-6" x-data="{ exceptionType: 'unit' }">
+                        @csrf
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tip</label>
+                                <select name="type" x-model="exceptionType" class="form-select w-full">
+                                    <option value="unit">Birim Bazlı</option>
+                                    <option value="user">Kullanıcı Bazlı</option>
+                                </select>
+                            </div>
+
+                            <div x-show="exceptionType === 'unit'">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Birim</label>
+                                <select name="unit_id" class="form-select w-full">
+                                    <option value="">Seçiniz...</option>
+                                    @foreach($units as $unit)
+                                        <option value="{{ $unit->id }}">{{ $unit->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div x-show="exceptionType === 'user'" style="display: none;">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Kullanıcı</label>
+                                <select name="computer_user_id" class="form-select w-full">
+                                    <option value="">Seçiniz...</option>
+                                    @foreach($computerUsers as $cUser)
+                                        <option value="{{ $cUser->id }}">{{ $cUser->username }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div>
+                                <button type="submit" class="btn btn-danger w-full">
+                                    <i class="fas fa-plus mr-1"></i> İstisna Ekle
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Exceptions List -->
+                    @if($keyword->alertExceptions->count() > 0)
+                        <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+                            <table class="table w-full">
+                                <thead class="bg-gray-50 dark:bg-gray-800">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tip</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Birim / Kullanıcı</th>
+                                        <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">İşlem</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+                                    @foreach($keyword->alertExceptions as $exception)
+                                        <tr>
+                                            <td class="px-4 py-3 whitespace-nowrap">
+                                                @if($exception->unit_id)
+                                                    <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                                                        <i class="fas fa-building mr-1"></i> Birim
+                                                    </span>
+                                                @else
+                                                    <span class="px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
+                                                        <i class="fas fa-user mr-1"></i> Kullanıcı
+                                                    </span>
+                                                @endif
+                                            </td>
+                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                @if($exception->unit_id)
+                                                    {{ $exception->unit->name ?? 'Silinmiş Birim' }}
+                                                @else
+                                                    <div class="flex flex-col">
+                                                        <span class="font-medium">{{ $exception->computerUser->username ?? 'Silinmiş' }}</span>
+                                                        <span class="text-xs text-gray-500">{{ $exception->computerUser->name ?? '' }}</span>
+                                                    </div>
+                                                @endif
+                                            </td>
+                                            <td class="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
+                                                <form action="{{ route('keywords.alert-exceptions.destroy', $exception->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Silmek istediğinize emin misiniz?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 transition-colors">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <div class="text-center py-8 bg-gray-50 dark:bg-gray-800/30 rounded-lg dashed border-2 border-gray-200 dark:border-gray-700">
+                            <i class="fas fa-check-circle text-green-400 text-3xl mb-3"></i>
+                            <p class="text-gray-500 dark:text-gray-400">Şu an bildirim engellenen istisna yok.</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
         </div>
 
         <!-- Sidebar Info -->

@@ -210,6 +210,36 @@ class AutoTaggingService
     {
         if ($keyword->is_alert && $keyword->alert_unit_id) {
             
+            // İstisna kontrolü
+            $computerUser = \App\Models\ComputerUser::where('username', $activity->username)
+                ->where('motherboard_uuid', $activity->motherboard_uuid)
+                ->first();
+
+            if ($computerUser) {
+                // 1. Kullanıcı Bazlı İstisna
+                $isUserException = $keyword->alertExceptions()
+                    ->where('computer_user_id', $computerUser->id)
+                    ->exists();
+
+                if ($isUserException) {
+                    Log::info("Keyword alert iptal edildi (Kullanıcı İstisnası): {$computerUser->username} -> {$keyword->keyword}");
+                    return;
+                }
+
+                // 2. Birim Bazlı İstisna
+                if ($computerUser->unit_id) {
+                    $isUnitException = $keyword->alertExceptions()
+                        ->where('unit_id', $computerUser->unit_id)
+                        ->whereNull('computer_user_id')
+                        ->exists();
+
+                    if ($isUnitException) {
+                        Log::info("Keyword alert iptal edildi (Birim İstisnası): {$computerUser->unit->name} -> {$keyword->keyword}");
+                        return;
+                    }
+                }
+            }
+
             // Notification gönderilecek kullanıcıları bul
             $alertUnit = \App\Models\Unit::find($keyword->alert_unit_id);
             

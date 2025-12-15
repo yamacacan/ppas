@@ -50,6 +50,11 @@ class CategoryKeyword extends Model
         return $this->hasMany(KeywordOverride::class, 'keyword_id');
     }
 
+    public function alertExceptions()
+    {
+        return $this->hasMany(KeywordAlertException::class, 'keyword_id');
+    }
+
     // Scope'lar
 
     /**

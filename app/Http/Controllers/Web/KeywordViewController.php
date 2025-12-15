@@ -63,7 +63,13 @@ class KeywordViewController extends Controller
 
     public function edit(string $id)
     {
-        $keyword = CategoryKeyword::with(['overrides.category', 'overrides.unit', 'overrides.computerUser'])
+        $keyword = CategoryKeyword::with([
+                'overrides.category', 
+                'overrides.unit', 
+                'overrides.computerUser',
+                'alertExceptions.unit',
+                'alertExceptions.computerUser'
+            ])
             ->findOrFail($id);
             
         $categories = Category::active()->get();
@@ -141,6 +147,41 @@ class KeywordViewController extends Controller
     {
         KeywordOverride::destroy($id);
         return back()->with('success', 'İstisna silindi.');
+    }
+
+    /**
+     * Alert Exception Add
+     */
+    public function storeAlertException(Request $request, $keywordId)
+    {
+        $request->validate([
+            'type' => 'required|in:unit,user',
+            'unit_id' => 'required_if:type,unit|nullable|exists:units,id',
+            'computer_user_id' => 'required_if:type,user|nullable|exists:computer_users,id',
+        ]);
+
+        if ($request->type === 'unit') {
+             \App\Models\KeywordAlertException::firstOrCreate(
+                ['keyword_id' => $keywordId, 'unit_id' => $request->unit_id],
+                ['computer_user_id' => null]
+             );
+        } else {
+            \App\Models\KeywordAlertException::firstOrCreate(
+                ['keyword_id' => $keywordId, 'computer_user_id' => $request->computer_user_id],
+                ['unit_id' => null]
+             );
+        }
+
+        return back()->with('success', 'Alert istisnası başarıyla kaydedildi.');
+    }
+
+    /**
+     * Alert Exception Delete
+     */
+    public function destroyAlertException($id)
+    {
+        \App\Models\KeywordAlertException::destroy($id);
+        return back()->with('success', 'Alert istisnası silindi.');
     }
 
     public function test()

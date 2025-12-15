@@ -106,6 +106,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('keywords.overrides.store')->middleware('permission:Keyword Yönetimi');
         Route::delete('keywords/overrides/{id}', [\App\Http\Controllers\Web\KeywordViewController::class, 'destroyOverride'])
             ->name('keywords.overrides.destroy')->middleware('permission:Keyword Yönetimi');
+
+        // Keyword Alert Exceptions
+        Route::post('keywords/{id}/alert-exceptions', [\App\Http\Controllers\Web\KeywordViewController::class, 'storeAlertException'])
+            ->name('keywords.alert-exceptions.store')->middleware('permission:Keyword Yönetimi');
+        Route::delete('keywords/alert-exceptions/{id}', [\App\Http\Controllers\Web\KeywordViewController::class, 'destroyAlertException'])
+            ->name('keywords.alert-exceptions.destroy')->middleware('permission:Keyword Yönetimi');
         
         // Activities
         Route::resource('activities', \App\Http\Controllers\Web\ActivityViewController::class)
