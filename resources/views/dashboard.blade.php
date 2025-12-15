@@ -144,7 +144,10 @@
                         <span class="w-3 h-0.5 bg-blue-500"></span> Toplam
                     </span>
                     <span class="text-xs flex items-center gap-1 text-gray-600 dark:text-gray-400">
-                        <span class="w-3 h-0.5 bg-green-500"></span> Taglenmiş
+                        <span class="w-3 h-0.5 bg-green-500"></span> İş (Work)
+                    </span>
+                    <span class="text-xs flex items-center gap-1 text-gray-600 dark:text-gray-400">
+                        <span class="w-3 h-0.5 bg-purple-500"></span> Diğer (Other)
                     </span>
                     <span class="text-xs flex items-center gap-1 text-gray-600 dark:text-gray-400">
                         <span class="w-3 h-0.5 bg-red-500"></span> Tanımsız
@@ -413,10 +416,21 @@
                     pointHoverRadius: 6
                 },
                 {
-                    label: 'Taglenmiş',
-                    data: {!! json_encode($last7DaysTagged) !!},
+                    label: 'İş (Work)',
+                    data: {!! json_encode($last7DaysWork) !!},
                     borderColor: 'rgb(34, 197, 94)',
                     backgroundColor: 'rgba(34, 197, 94, 0.05)',
+                    borderWidth: 2,
+                    tension: 0.1,
+                    fill: true,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                },
+                {
+                    label: 'Diğer (Other)',
+                    data: {!! json_encode($last7DaysOther) !!},
+                    borderColor: 'rgb(168, 85, 247)', // Purple
+                    backgroundColor: 'rgba(168, 85, 247, 0.05)',
                     borderWidth: 2,
                     tension: 0.1,
                     fill: true,

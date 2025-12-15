@@ -53,24 +53,37 @@ class DashboardController extends Controller
         
         $taggingRate = $totalDuration > 0 ? round((($workDuration + $otherDuration) / $totalDuration) * 100, 2) : 0;
 
-        // 2. Son 7 Günlük Çoklu Trend (Toplam, Taglenmiş, Tanımsız)
+        // 2. Son 7 Günlük Çoklu Trend (Toplam, İş, Diğer, Tanımsız)
         $last7Days = [];
-        $last7DaysTagged = [];
+        $last7DaysWork = [];
+        $last7DaysOther = [];
         $last7DaysUntagged = [];
         
         for ($i = 6; $i >= 0; $i--) {
             $date = now()->subDays($i)->format('Y-m-d');
             
             $totalDaily = Activity::whereDate('start_time_utc', $date)->sum('duration_ms');
+            
+            // Work (İş) aktiviteleri
+            $workDaily = Activity::whereDate('start_time_utc', $date)
+                ->whereHas('categories', function($q) use ($workCategories) {
+                    $q->whereIn('categories.id', $workCategories);
+                })->sum('duration_ms');
+            
+            // Other (Diğer) aktiviteleri
+            $otherDaily = Activity::whereDate('start_time_utc', $date)
+                ->whereHas('categories', function($q) use ($otherCategories) {
+                    $q->whereIn('categories.id', $otherCategories);
+                })->sum('duration_ms');
+
             $untaggedDaily = Activity::untagged()->whereDate('start_time_utc', $date)->sum('duration_ms');
-            // Tagged = Work + Other or Total - Untagged
-            $taggedDaily = $totalDaily - $untaggedDaily;
             
             $last7Days[] = [
                 'date' => $date,
                 'count' => round($totalDaily / (1000 * 60 * 60), 2),
             ];
-            $last7DaysTagged[] = round($taggedDaily / (1000 * 60 * 60), 2);
+            $last7DaysWork[] = round($workDaily / (1000 * 60 * 60), 2);
+            $last7DaysOther[] = round($otherDaily / (1000 * 60 * 60), 2);
             $last7DaysUntagged[] = round($untaggedDaily / (1000 * 60 * 60), 2);
         }
 
@@ -173,7 +186,8 @@ class DashboardController extends Controller
             'untaggedHours',
             'taggingRate',
             'last7Days',
-            'last7DaysTagged',
+            'last7DaysWork',
+            'last7DaysOther',
             'last7DaysUntagged',
             'last30Days',
             'hourlyDistribution',
