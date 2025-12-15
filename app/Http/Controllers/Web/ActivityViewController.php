@@ -25,13 +25,53 @@ class ActivityViewController extends Controller
         if ($request->has('category_id') && $request->category_id) {
             $query->byCategory($request->category_id);
         }
+
+        // Username filtresi
+        if ($request->has('username') && $request->username) {
+            $query->where('username', 'like', '%' . $request->username . '%');
+        }
+
+        // Process search
+        if ($request->has('process') && $request->process) {
+            $query->where('process_name', 'like', '%' . $request->process . '%');
+        }
+
+        // Title search
+        if ($request->has('title') && $request->title) {
+            $query->where('title', 'like', '%' . $request->title . '%');
+        }
+
+        // Tarih filtresi
+        if ($request->filled('start_date')) {
+            $query->whereDate('start_time_utc', '>=', $request->start_date);
+        }
+        if ($request->filled('end_date')) {
+            $query->whereDate('start_time_utc', '<=', $request->end_date);
+        }
+
+        // Durum filtresi (Tagged/Untagged)
+        if ($request->has('status') && $request->status !== 'all') {
+            if ($request->status === 'tagged') {
+                $query->has('categories');
+            } elseif ($request->status === 'untagged') {
+                $query->doesntHave('categories');
+            }
+        }
         
-        // İstatistikler için
-        $taggedCount = (clone $query)->has('categories')->count();
-        $untaggedCount = (clone $query)->doesntHave('categories')->count();
+        // İstatistikler için (filtrelere bağlı kalmadan genel istatistikler)
+        $statsQuery = Activity::query();
+        if ($request->filled('start_date')) {
+            $statsQuery->whereDate('start_time_utc', '>=', $request->start_date);
+        }
+        if ($request->filled('end_date')) {
+            $statsQuery->whereDate('start_time_utc', '<=', $request->end_date);
+        }
+
+        $taggedCount = (clone $statsQuery)->has('categories')->count();
+        $untaggedCount = (clone $statsQuery)->doesntHave('categories')->count();
         
         // Pagination kullan
-        $activities = $query->paginate(50)->withQueryString();
+        $activities = $query->get();
         $categories = Category::active()->get();
         
         return view('performance.activities.index', compact('activities', 'categories', 'taggedCount', 'untaggedCount'));

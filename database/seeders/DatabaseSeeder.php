@@ -36,7 +36,7 @@ class DatabaseSeeder extends Seeder
           
             PermissionSeeder::class,
             ServiceRequestFilterSeeder::class,
-            
+            SidebarMenuSeeder::class,
                    
             UserSeeder::class,
             ModelUserSeeder::class,

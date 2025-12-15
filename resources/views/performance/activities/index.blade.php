@@ -114,31 +114,94 @@
     </div>
 
     <div class="card-body">
-        <!-- Filters -->
-        <form method="GET" class="mb-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        <i class="fas fa-folder mr-1 text-primary-500"></i> Kategori Filtresi
-                    </label>
-                    <select name="category_id" class="form-select" onchange="this.form.submit()">
-                        <option value="">Tüm Kategoriler</option>
-                        @foreach($categories as $category)
-                            <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
-                                {{ $category->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="flex items-end">
-                    @if(request('category_id'))
-                        <a href="{{ route('activities.index') }}" class="btn btn-secondary w-full">
-                            <i class="fas fa-times mr-1"></i> Filtreyi Temizle
-                        </a>
-                    @endif
-                </div>
+        <!-- Advanced Filters -->
+        <div class="mb-6">
+            <div class="bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+                <form method="GET" action="{{ route('activities.index') }}">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                        <!-- Date Range -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Başlangıç Tarihi</label>
+                            <input type="date" name="start_date" value="{{ request('start_date') }}" 
+                                class="form-input w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:border-primary-500 focus:ring-primary-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Bitiş Tarihi</label>
+                            <input type="date" name="end_date" value="{{ request('end_date') }}" 
+                                class="form-input w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:border-primary-500 focus:ring-primary-500">
+                        </div>
+
+                        <!-- Status Filter -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Durum</label>
+                            <select name="status" class="form-select w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:border-primary-500 focus:ring-primary-500">
+                                <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>Hepsi</option>
+                                <option value="tagged" {{ request('status') == 'tagged' ? 'selected' : '' }}>Taglenmiş</option>
+                                <option value="untagged" {{ request('status') == 'untagged' ? 'selected' : '' }}>Taglenmemiş</option>
+                            </select>
+                        </div>
+
+                        <!-- Category Filter -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Kategori</label>
+                            <select name="category_id" class="form-select w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:border-primary-500 focus:ring-primary-500">
+                                <option value="">Tüm Kategoriler</option>
+                                @foreach($categories as $category)
+                                    <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                                        {{ $category->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <!-- Text Searches -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Kullanıcı Adı</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                                    <i class="fas fa-user text-xs"></i>
+                                </span>
+                                <input type="text" name="username" value="{{ request('username') }}" placeholder="Kullanıcı ara..."
+                                    class="form-input w-full pl-8 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:border-primary-500 focus:ring-primary-500">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Process</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                                    <i class="fas fa-cog text-xs"></i>
+                                </span>
+                                <input type="text" name="process" value="{{ request('process') }}" placeholder="Process ara..."
+                                    class="form-input w-full pl-8 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:border-primary-500 focus:ring-primary-500">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Başlık</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                                    <i class="fas fa-heading text-xs"></i>
+                                </span>
+                                <input type="text" name="title" value="{{ request('title') }}" placeholder="Başlık ara..."
+                                    class="form-input w-full pl-8 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:border-primary-500 focus:ring-primary-500">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end gap-2 pt-2 border-t border-gray-200 dark:border-gray-700">
+                        @if(request()->anyFilled(['category_id', 'username', 'process', 'title', 'status', 'start_date', 'end_date']))
+                            <a href="{{ route('activities.index') }}" class="btn bg-gray-500 hover:bg-gray-600 text-white">
+                                <i class="fas fa-times mr-1"></i> Temizle
+                            </a>
+                        @endif
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-filter mr-1"></i> Filtrele
+                        </button>
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
 
         <!-- Table -->
         <div class="overflow-x-auto">
