@@ -51,7 +51,9 @@
 </div>
 
 <!-- Tabs and Content -->
-<div x-data="{ activeTab: 'performance' }">
+<div x-data="{ 
+    activeTab: '{{ request()->has('apps_page') || request()->has('app_search') ? 'apps' : 'performance' }}' 
+}">
     
     <!-- Tab Navigation -->
     <div class="mb-6 border-b border-gray-200 dark:border-gray-700">
@@ -76,7 +78,7 @@
                 <i class="fas fa-layer-group mr-2" :class="activeTab === 'apps' ? 'text-primary-500' : 'text-gray-400 group-hover:text-gray-500'"></i>
                 Yüklü Uygulamalar
                 <span class="ml-2 py-0.5 px-2.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300">
-                    {{ isset($installedApps) ? $installedApps->count() : 0 }}
+                    {{ isset($installedApps) ? $installedApps->total() : 0 }}
                 </span>
             </button>
         </nav>
@@ -256,7 +258,7 @@
                     </h5>
                 </div>
                 <div class="card-body">
-                    <div class="overflow-x-auto">
+                     <div class="overflow-x-auto">
                         <table class="table w-full text-sm">
                             <thead class="bg-gray-50 dark:bg-gray-800">
                                 <tr>
@@ -274,7 +276,7 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                <td colspan="2" class="px-4 py-4 text-center text-gray-500">Veri yok</td> 
+                                   <td colspan="2" class="px-4 py-4 text-center text-gray-500">Veri yok</td> 
                                 </tr>
                                 @endforelse
                             </tbody>
@@ -441,14 +443,36 @@
     <!-- Apps Tab -->
     <div x-show="activeTab === 'apps'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform scale-95" x-transition:enter-end="opacity-100 transform scale-100">
          <div class="card">
-            <div class="card-header border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-                <h5 class="font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                    <i class="fas fa-layer-group text-primary-500"></i>
-                    Yüklü Uygulamalar Listesi
-                </h5>
-                <span class="text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-2 py-1 rounded">
-                    Toplam: {{ isset($installedApps) ? $installedApps->count() : 0 }}
-                </span>
+            <div class="card-header border-b border-gray-200 dark:border-gray-700 flex justify-between items-center flex-wrap gap-4 py-4">
+                <div class="flex items-center gap-2">
+                    <h5 class="font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                        <i class="fas fa-layer-group text-primary-500"></i>
+                         Yüklü Uygulamalar Listesi
+                    </h5>
+                    <span class="text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-2 py-1 rounded">
+                        Toplam: {{ isset($installedApps) ? $installedApps->total() : 0 }}
+                    </span>
+                </div>
+                
+                <!-- Search Form -->
+                <form method="GET" class="flex gap-2 w-full md:w-auto">
+                    <!-- Preserve existing date filters -->
+                    @foreach($filters as $key => $value)
+                        @if($key != 'app_search' && $key != 'apps_page')
+                            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                        @endif
+                    @endforeach
+                    
+                    <div class="relative w-full md:w-64">
+                         <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </div>
+                        <input type="text" name="app_search" 
+                               value="{{ request('app_search') }}"
+                               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" 
+                               placeholder="Uygulama ara...">
+                    </div>
+                </form>
             </div>
             <div class="card-body">
                 @if(isset($installedApps) && $installedApps->count() > 0)
@@ -478,11 +502,17 @@
                         </tbody>
                     </table>
                 </div>
+
+                <!-- Pagination -->
+                <div class="mt-4 px-4">
+                    {{ $installedApps->links('pagination.custom') }}
+                </div>
+                
                 @else
                 <div class="text-center py-12">
                     <i class="fas fa-box-open text-4xl text-gray-300 mb-4"></i>
                     <h3 class="text-lg font-medium text-gray-900 dark:text-white">Uygulama Bulunamadı</h3>
-                    <p class="text-gray-500 dark:text-gray-400 mt-2">Bu kullanıcı için yüklü uygulama bilgisi bulunmuyor.</p>
+                    <p class="text-gray-500 dark:text-gray-400 mt-2">Bu arama kriterlerine uygun uygulama bulunamadı.</p>
                 </div>
                 @endif
             </div>

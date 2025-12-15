@@ -115,10 +115,14 @@ class ComputerUserController extends Controller
             ->orderBy('collected_at', 'desc')
             ->first();
 
-        // Installed Apps (Motherboard UUID ile eşleşenler)
+        // Installed Apps (Motherboard UUID ile eşleşenler, pagination ve arama ile)
         $installedApps = \App\Models\InstalledApp::where('motherboard_uuid', $user->motherboard_uuid)
+            ->when($request->input('app_search'), function ($query, $search) {
+                return $query->where('app_name', 'like', "%{$search}%");
+            })
             ->orderBy('app_name')
-            ->get();
+            ->paginate(15, ['*'], 'apps_page')
+            ->withQueryString();
 
         return view('performance.computer_users.show', compact(
             'user', 
