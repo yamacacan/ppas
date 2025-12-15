@@ -46,6 +46,7 @@ class DatabaseSeeder extends Seeder
             // Performance Agent Seeders
             CategorySeeder::class,
             CategoryKeywordSeeder::class,
+            FirmSettingsSeeder::class,
 
         ]);
             

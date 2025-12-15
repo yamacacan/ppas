@@ -69,6 +69,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     route::resource('roller', RoleController::class)->middleware('role:Admin|Super Admin');
     Route::get('/roles/{id}/permissions', [RoleController::class, 'getPermissions'])->middleware('role:Admin|Super Admin');
     Route::post('/add-role', [RoleController::class, 'storeRole'])->name('roller.storeRole');
+    
+    // Firm Settings
+    Route::get('/firm-settings', [\App\Http\Controllers\Management\FirmSettingsController::class, 'edit'])
+         ->name('firm-settings.edit')
+         ->middleware('permission:Firma Ayarları');
+    Route::post('/firm-settings', [\App\Http\Controllers\Management\FirmSettingsController::class, 'update'])
+         ->name('firm-settings.update')
+         ->middleware('permission:Firma Ayarları');
 
   
 

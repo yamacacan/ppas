@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Services;
-
+use App\Models\FirmSettings;
 use App\Models\Activity;
 use App\Models\Category;
 use Illuminate\Support\Facades\DB;
@@ -391,23 +391,29 @@ class StatisticsService
         return $query;
     }
     /**
-     * Mesai saatleri analizi (09:00 - 18:00)
+     * Mesai saatleri analizi
      */
     public function getWorkingHourStats(array $filters): array
     {
         $query = $this->applyFilters(Activity::query(), $filters);
         
         // UTC+3 (TR) varsayımı ile saat dilimi ayarı
-        // Mesai: 09:00 - 18:00
+        // Mesai saatlerini veritabanından al
+        $settings = \App\Models\FirmSettings::instance();
+        $startTime = $settings->work_start_time; // '09:00:00'
+        $endTime = $settings->work_end_time; // '18:00:00'
+        
+        // TIME comparison allows for minutes precision (e.g. 08:30)
+        // TIME(ADDTIME(start_time_utc, '03:00:00')) gets the time part in TR timezone
         
         $stats = (clone $query)->selectRaw("
             SUM(CASE 
-                WHEN HOUR(ADDTIME(start_time_utc, '03:00:00')) >= 9 AND HOUR(ADDTIME(start_time_utc, '03:00:00')) < 18 
+                WHEN TIME(ADDTIME(start_time_utc, '03:00:00')) >= ? AND TIME(ADDTIME(start_time_utc, '03:00:00')) < ? 
                 THEN duration_ms ELSE 0 END) as total_working_hours_duration,
             SUM(CASE 
-                WHEN HOUR(ADDTIME(start_time_utc, '03:00:00')) < 9 OR HOUR(ADDTIME(start_time_utc, '03:00:00')) >= 18 
+                WHEN TIME(ADDTIME(start_time_utc, '03:00:00')) < ? OR TIME(ADDTIME(start_time_utc, '03:00:00')) >= ? 
                 THEN duration_ms ELSE 0 END) as total_outside_hours_duration
-        ")->first();
+        ", [$startTime, $endTime, $startTime, $endTime])->first();
 
         // Sadece 'Work' aktiviteleri için
         $workQuery = (clone $query)->whereHas('categories', function($q) {
@@ -416,12 +422,12 @@ class StatisticsService
 
         $workStats = $workQuery->selectRaw("
             SUM(CASE 
-                WHEN HOUR(ADDTIME(start_time_utc, '03:00:00')) >= 9 AND HOUR(ADDTIME(start_time_utc, '03:00:00')) < 18 
+                WHEN TIME(ADDTIME(start_time_utc, '03:00:00')) >= ? AND TIME(ADDTIME(start_time_utc, '03:00:00')) < ? 
                 THEN duration_ms ELSE 0 END) as work_working_hours_duration,
             SUM(CASE 
-                WHEN HOUR(ADDTIME(start_time_utc, '03:00:00')) < 9 OR HOUR(ADDTIME(start_time_utc, '03:00:00')) >= 18 
+                WHEN TIME(ADDTIME(start_time_utc, '03:00:00')) < ? OR TIME(ADDTIME(start_time_utc, '03:00:00')) >= ? 
                 THEN duration_ms ELSE 0 END) as work_outside_hours_duration
-        ")->first();
+        ", [$startTime, $endTime, $startTime, $endTime])->first();
 
         $divisor = 1000 * 60 * 60; // Saate çevir
 

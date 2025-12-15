@@ -66,6 +66,13 @@
                             Birim Ekle
                         </a>
                     @endcan
+
+                    @can('Firma Ayarları')
+                        <a href="{{ route('firm-settings.edit') }}" 
+                           class="block px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all">
+                            Firma Ayarları
+                        </a>
+                    @endcan
                     
                     @can('Ünvan Yönetimi')
                         <a href="{{ route('unvan.index') }}" 

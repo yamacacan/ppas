@@ -30,6 +30,7 @@ class PermissionSeeder extends Seeder
             'Ünvan Yönetimi',
             'Kullanıcı Yönetimi',
             'Rol Yönetimi',
+            'Firma Ayarları',
         ];
 
         // Create permissions
