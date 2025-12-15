@@ -19,7 +19,19 @@ class ActivityViewController extends Controller
 
     public function index(Request $request)
     {
-        $query = Activity::with('categories')->withCount('categories')->orderBy('start_time_utc', 'desc');
+        $query = Activity::with('categories')->withCount('categories');
+
+        // Sorting
+        $sortField = $request->get('sort_by', 'start_time_utc');
+        $sortOrder = $request->get('sort_order', 'desc');
+        
+        // Allowed sort fields for security
+        $allowedSorts = ['username', 'process_name', 'title', 'start_time_utc', 'duration_ms'];
+        if (in_array($sortField, $allowedSorts)) {
+            $query->orderBy($sortField, $sortOrder);
+        } else {
+            $query->orderBy('start_time_utc', 'desc');
+        }
         
         // Kategori filtresi
         if ($request->has('category_id') && $request->category_id) {
@@ -71,30 +83,50 @@ class ActivityViewController extends Controller
         $untaggedCount = (clone $statsQuery)->doesntHave('categories')->count();
         
         // Pagination kullan
-        $activities = $query->get();
+        $activities = $query->paginate(50)->withQueryString();
         $categories = Category::active()->get();
         
         return view('performance.activities.index', compact('activities', 'categories', 'taggedCount', 'untaggedCount'));
     }
 
-    public function tagged()
+    public function tagged(Request $request)
     {
-        $activities = Activity::tagged()
-            ->with('categories')
-            ->orderBy('start_time_utc', 'desc')
-            ->limit(1000)
-            ->get();
+        $query = Activity::tagged()
+            ->with('categories');
+
+        // Sorting
+        $sortField = $request->get('sort_by', 'start_time_utc');
+        $sortOrder = $request->get('sort_order', 'desc');
+        
+        $allowedSorts = ['username', 'process_name', 'title', 'start_time_utc', 'duration_ms'];
+        if (in_array($sortField, $allowedSorts)) {
+            $query->orderBy($sortField, $sortOrder);
+        } else {
+            $query->orderBy('start_time_utc', 'desc');
+        }
+
+        $activities = $query->paginate(50)->withQueryString();
         $categories = Category::active()->get();
         
         return view('performance.activities.tagged', compact('activities', 'categories'));
     }
 
-    public function untagged()
+    public function untagged(Request $request)
     {
-        $activities = Activity::untagged()
-            ->orderBy('start_time_utc', 'desc')
-            ->limit(1000)
-            ->get();
+        $query = Activity::untagged();
+
+        // Sorting
+        $sortField = $request->get('sort_by', 'start_time_utc');
+        $sortOrder = $request->get('sort_order', 'desc');
+        
+        $allowedSorts = ['username', 'process_name', 'title', 'start_time_utc', 'duration_ms'];
+        if (in_array($sortField, $allowedSorts)) {
+            $query->orderBy($sortField, $sortOrder);
+        } else {
+            $query->orderBy('start_time_utc', 'desc');
+        }
+
+        $activities = $query->paginate(50)->withQueryString();
         $categories = Category::active()->get();
         
         $totalCount = Activity::untagged()->count();

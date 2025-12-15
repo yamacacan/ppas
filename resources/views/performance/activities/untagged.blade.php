@@ -81,12 +81,57 @@
                 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead class="bg-gray-50 dark:bg-gray-800 sticky top-0 z-10">
                         <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Kullanıcı</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Process Name</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Başlık</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'username', 'sort_order' => request('sort_order', 'desc') == 'asc' ? 'desc' : 'asc']) }}" class="group inline-flex items-center">
+                                    Kullanıcı
+                                    @if(request('sort_by') == 'username')
+                                        <i class="fas fa-sort-{{ request('sort_order') == 'asc' ? 'up' : 'down' }} ml-1"></i>
+                                    @else
+                                        <i class="fas fa-sort text-gray-300 ml-1 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                                    @endif
+                                </a>
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'process_name', 'sort_order' => request('sort_order', 'desc') == 'asc' ? 'desc' : 'asc']) }}" class="group inline-flex items-center">
+                                    Process Name
+                                    @if(request('sort_by') == 'process_name')
+                                        <i class="fas fa-sort-{{ request('sort_order') == 'asc' ? 'up' : 'down' }} ml-1"></i>
+                                    @else
+                                        <i class="fas fa-sort text-gray-300 ml-1 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                                    @endif
+                                </a>
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'title', 'sort_order' => request('sort_order', 'desc') == 'asc' ? 'desc' : 'asc']) }}" class="group inline-flex items-center">
+                                    Başlık
+                                    @if(request('sort_by') == 'title')
+                                        <i class="fas fa-sort-{{ request('sort_order') == 'asc' ? 'up' : 'down' }} ml-1"></i>
+                                    @else
+                                        <i class="fas fa-sort text-gray-300 ml-1 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                                    @endif
+                                </a>
+                            </th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">URL</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Süre</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Zaman</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'duration_ms', 'sort_order' => request('sort_order', 'desc') == 'asc' ? 'desc' : 'asc']) }}" class="group inline-flex items-center">
+                                    Süre
+                                    @if(request('sort_by') == 'duration_ms')
+                                        <i class="fas fa-sort-{{ request('sort_order') == 'asc' ? 'up' : 'down' }} ml-1"></i>
+                                    @else
+                                        <i class="fas fa-sort text-gray-300 ml-1 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                                    @endif
+                                </a>
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'start_time_utc', 'sort_order' => request('sort_order', 'desc') == 'asc' ? 'desc' : 'asc']) }}" class="group inline-flex items-center">
+                                    Zaman
+                                    @if(request('sort_by') == 'start_time_utc' || !request('sort_by'))
+                                        <i class="fas fa-sort-{{ request('sort_order', 'desc') == 'asc' ? 'up' : 'down' }} ml-1"></i>
+                                    @else
+                                        <i class="fas fa-sort text-gray-300 ml-1 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                                    @endif
+                                </a>
+                            </th>
                             <th scope="col" class="relative px-6 py-3">
                                 <span class="sr-only">Detay</span>
                             </th>
@@ -142,6 +187,10 @@
                         @endforeach
                     </tbody>
                 </table>
+            </div>
+            
+            <div class="bg-gray-50 dark:bg-gray-800 px-4 py-3 border-t border-gray-200 dark:border-gray-700 sm:px-6 flex justify-center">
+                {{ $activities->links() }}
             </div>
         </div>
     </div>
