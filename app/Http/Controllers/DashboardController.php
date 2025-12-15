@@ -25,30 +25,46 @@ class DashboardController extends Controller
 
     public function index()
     {
-        // İstatistik kartları için veriler (Süre bazlı - Saat)
+        // 1. İstatistik Kartları (Tüm Zamanlar)
         $totalCategories = Category::count();
         $totalKeywords = CategoryKeyword::count();
         $totalActivities = Activity::count();
         
         $totalDuration = Activity::sum('duration_ms');
-        $taggedDuration = Activity::tagged()->sum('duration_ms');
+        
+        // İş ve Diğer Ayrımı
+        $workCategories = Category::where('type', 'work')->pluck('id');
+        $otherCategories = Category::where('type', 'other')->pluck('id');
+
+        $workDuration = Activity::whereHas('categories', function($q) use ($workCategories) {
+            $q->whereIn('categories.id', $workCategories);
+        })->sum('duration_ms');
+
+        $otherDuration = Activity::whereHas('categories', function($q) use ($otherCategories) {
+            $q->whereIn('categories.id', $otherCategories);
+        })->sum('duration_ms');
+        
         $untaggedDuration = Activity::untagged()->sum('duration_ms');
         
-        $taggedActivities = round($taggedDuration / (1000 * 60 * 60), 2); // Saat
-        $untaggedActivities = round($untaggedDuration / (1000 * 60 * 60), 2); // Saat
+        $workHours = round($workDuration / (1000 * 60 * 60), 2);
+        $otherHours = round($otherDuration / (1000 * 60 * 60), 2);
+        $untaggedHours = round($untaggedDuration / (1000 * 60 * 60), 2);
         $totalHours = round($totalDuration / (1000 * 60 * 60), 2);
         
-        $taggingRate = $totalDuration > 0 ? round(($taggedDuration / $totalDuration) * 100, 2) : 0;
+        $taggingRate = $totalDuration > 0 ? round((($workDuration + $otherDuration) / $totalDuration) * 100, 2) : 0;
 
-        // Son 7 günlük çoklu trend (Tagged vs Untagged vs Total)
+        // 2. Son 7 Günlük Çoklu Trend (Toplam, Taglenmiş, Tanımsız)
         $last7Days = [];
         $last7DaysTagged = [];
         $last7DaysUntagged = [];
+        
         for ($i = 6; $i >= 0; $i--) {
             $date = now()->subDays($i)->format('Y-m-d');
+            
             $totalDaily = Activity::whereDate('start_time_utc', $date)->sum('duration_ms');
-            $taggedDaily = Activity::tagged()->whereDate('start_time_utc', $date)->sum('duration_ms');
             $untaggedDaily = Activity::untagged()->whereDate('start_time_utc', $date)->sum('duration_ms');
+            // Tagged = Work + Other or Total - Untagged
+            $taggedDaily = $totalDaily - $untaggedDaily;
             
             $last7Days[] = [
                 'date' => $date,
@@ -58,59 +74,74 @@ class DashboardController extends Controller
             $last7DaysUntagged[] = round($untaggedDaily / (1000 * 60 * 60), 2);
         }
 
-        // Son 30 günlük trend (Sadece İş Kategorisi)
+        // 3. Son 30 Günlük İş Performans Trendi
         $last30Days = [];
-        $workCategories = Category::where('type', 'work')->pluck('id');
         for ($i = 29; $i >= 0; $i--) {
             $date = now()->subDays($i)->format('Y-m-d');
-            $dailyDuration = Activity::whereDate('start_time_utc', $date)
+            $dailyWorkDuration = Activity::whereDate('start_time_utc', $date)
                 ->whereHas('categories', function($query) use ($workCategories) {
                     $query->whereIn('categories.id', $workCategories);
                 })
                 ->sum('duration_ms');
+                
             $last30Days[] = [
                 'date' => $date,
-                'count' => round($dailyDuration / (1000 * 60 * 60), 2),
+                'count' => round($dailyWorkDuration / (1000 * 60 * 60), 2),
             ];
         }
 
-        // Saatlik dağılım (24 saat - Sadece İş Kategorisi)
+        // 4. Saatlik Dağılım (24 saat - 30 günlük ortalama - Sadece İş)
         $hourlyDistribution = [];
+        $thirtyDaysAgo = now()->subDays(30);
+        
         for ($hour = 0; $hour < 24; $hour++) {
-            $hourlyDuration = Activity::whereRaw('HOUR(start_time_utc) = ?', [$hour])
+            // Son 30 gündeki o saatteki toplam aktivite süresi
+            $totalHourlyDuration = Activity::where('created_at', '>=', $thirtyDaysAgo)
+                ->whereRaw('HOUR(start_time_utc) = ?', [$hour])
                 ->whereHas('categories', function($query) use ($workCategories) {
                     $query->whereIn('categories.id', $workCategories);
                 })
                 ->sum('duration_ms');
-            $hourlyDistribution[] = round($hourlyDuration / (1000 * 60 * 60), 2);
+                
+            // 30 güne bölerek ortalama alıyoruz
+            $hourlyAvg = $totalHourlyDuration / 30;
+            $hourlyDistribution[] = round($hourlyAvg / (1000 * 60 * 60), 2);
         }
 
-        // İş/Diğer oranı
-        $workOtherRatio = $this->statisticsService->getWorkOtherRatio();
+        // 5. İş/Diğer Dağılımı (Son 30 Gün)
+        $workDuration30 = Activity::where('created_at', '>=', $thirtyDaysAgo)
+            ->whereHas('categories', function($q) use ($workCategories) {
+                $q->whereIn('categories.id', $workCategories);
+            })->sum('duration_ms');
+            
+        $otherDuration30 = Activity::where('created_at', '>=', $thirtyDaysAgo)
+            ->whereHas('categories', function($q) use ($otherCategories) {
+                $q->whereIn('categories.id', $otherCategories);
+            })->sum('duration_ms');
 
-        // En çok kullanılan kategoriler (top 8)
+        $workOtherRatio30 = [
+            'work' => ['duration_hours' => round($workDuration30 / (1000 * 60 * 60), 2)],
+            'other' => ['duration_hours' => round($otherDuration30 / (1000 * 60 * 60), 2)],
+        ];
+
+        // 6. Top Charts (Categories, Keywords, Processes)
         $topCategories = $this->statisticsService->getCategoryStatistics([], 8);
         $topCategories = collect($topCategories['categories']);
 
-        // En çok kullanılan keywords (top 10)
-        // Keywords ile eşleşen aktivitelerin sayısına göre sıralama
         $topKeywords = CategoryKeyword::with('category')
             ->active()
             ->get()
             ->map(function($keyword) {
-                // Her keyword için eşleşen aktivite sayısını hesapla
                 $matchCount = Activity::where(function($query) use ($keyword) {
                     $query->where('process_name', 'LIKE', '%' . $keyword->keyword . '%')
                           ->orWhere('title', 'LIKE', '%' . $keyword->keyword . '%');
                 })->count();
-                
                 $keyword->match_count = $matchCount;
                 return $keyword;
             })
             ->sortByDesc('match_count')
             ->take(10);
 
-        // En çok kullanılan process'ler (top 10)
         $topProcesses = Activity::select('process_name')
             ->selectRaw('COUNT(*) as activity_count')
             ->selectRaw('SUM(duration_ms) as total_duration')
@@ -123,17 +154,12 @@ class DashboardController extends Controller
                 return $item;
             });
 
-        // Son taglenmiş aktiviteler
-        $recentTaggedActivities = Activity::tagged()
-            ->with('categories')
-            ->orderBy('start_time_utc', 'desc')
-            ->limit(10)
-            ->get();
-
-        // Bugünkü özet
+        // 7. Bugün Özeti
         $todayStats = [
             'total' => round(Activity::whereDate('start_time_utc', today())->sum('duration_ms') / (1000 * 60 * 60), 2),
-            'tagged' => round(Activity::tagged()->whereDate('start_time_utc', today())->sum('duration_ms') / (1000 * 60 * 60), 2),
+            'work' => round(Activity::whereDate('start_time_utc', today())
+                ->whereHas('categories', fn($q) => $q->whereIn('categories.id', $workCategories))
+                ->sum('duration_ms') / (1000 * 60 * 60), 2),
             'activities' => Activity::whereDate('start_time_utc', today())->count(),
         ];
 
@@ -142,19 +168,19 @@ class DashboardController extends Controller
             'totalKeywords',
             'totalActivities',
             'totalHours',
-            'taggedActivities',
-            'untaggedActivities',
+            'workHours',
+            'otherHours',
+            'untaggedHours',
             'taggingRate',
             'last7Days',
             'last7DaysTagged',
             'last7DaysUntagged',
             'last30Days',
             'hourlyDistribution',
-            'workOtherRatio',
+            'workOtherRatio30',
             'topCategories',
             'topKeywords',
             'topProcesses',
-            'recentTaggedActivities',
             'todayStats'
         ));
     }

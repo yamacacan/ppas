@@ -45,15 +45,15 @@
             <p class="text-3xl font-bold">{{ $todayStats['total'] }}<span class="text-lg ml-1">saat</span></p>
         </div>
         <div class="text-center border-r border-white/20 last:border-0">
-            <p class="text-sm opacity-90 mb-1">Taglenmiş</p>
-            <p class="text-3xl font-bold">{{ $todayStats['tagged'] }}<span class="text-lg ml-1">saat</span></p>
+            <p class="text-sm opacity-90 mb-1">İş (Verimli)</p>
+            <p class="text-3xl font-bold">{{ $todayStats['work'] }}<span class="text-lg ml-1">saat</span></p>
         </div>
         <div class="text-center border-r border-white/20 last:border-0">
             <p class="text-sm opacity-90 mb-1">Aktivite Sayısı</p>
             <p class="text-3xl font-bold">{{ number_format($todayStats['activities']) }}</p>
         </div>
         <div class="text-center">
-            <p class="text-sm opacity-90 mb-1">Başarı Oranı</p>
+            <p class="text-sm opacity-90 mb-1">Tagleme Oranı</p>
             <p class="text-3xl font-bold">%{{ $taggingRate }}</p>
         </div>
     </div>
@@ -68,7 +68,7 @@
                 <div>
                     <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Toplam Süre</p>
                     <h3 class="text-3xl font-bold text-gray-900 dark:text-white">{{ number_format($totalHours, 1) }}</h3>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">saat</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Tüm Zamanlar</p>
                 </div>
                 <div class="stat-icon bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
                     <i class="fas fa-clock text-2xl"></i>
@@ -77,49 +77,49 @@
         </div>
     </div>
 
-    <!-- Categories -->
+    <!-- Work Hours -->
     <div class="card stat-card">
         <div class="card-body">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Toplam Kategori</p>
-                    <h3 class="text-3xl font-bold text-gray-900 dark:text-white">{{ $totalCategories }}</h3>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ $totalKeywords }} keyword</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">İş Aktiviteleri</p>
+                    <h3 class="text-3xl font-bold text-gray-900 dark:text-white">{{ number_format($workHours, 1) }}</h3>
+                    <p class="text-xs text-green-600 dark:text-green-400 mt-1 font-semibold">saat</p>
                 </div>
                 <div class="stat-icon bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400">
-                    <i class="fas fa-folder-open text-2xl"></i>
+                    <i class="fas fa-briefcase text-2xl"></i>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Tagged Activities -->
+    <!-- Other Hours -->
     <div class="card stat-card">
         <div class="card-body">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Taglenmiş</p>
-                    <h3 class="text-3xl font-bold text-gray-900 dark:text-white">{{ number_format($taggedActivities, 1) }}</h3>
-                    <p class="text-xs text-green-600 dark:text-green-400 mt-1 font-semibold">%{{ $taggingRate }} başarı</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Diğer Aktiviteler</p>
+                    <h3 class="text-3xl font-bold text-gray-900 dark:text-white">{{ number_format($otherHours, 1) }}</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">saat</p>
                 </div>
                 <div class="stat-icon bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400">
-                    <i class="fas fa-check-circle text-2xl"></i>
+                    <i class="fas fa-coffee text-2xl"></i>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Total Activities -->
+    <!-- Untagged Hours -->
     <div class="card stat-card">
         <div class="card-body">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Toplam Aktivite</p>
-                    <h3 class="text-3xl font-bold text-gray-900 dark:text-white">{{ number_format($totalActivities) }}</h3>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ number_format($untaggedActivities, 1) }} saat tanımsız</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Tanımsız Süre</p>
+                    <h3 class="text-3xl font-bold text-gray-900 dark:text-white">{{ number_format($untaggedHours, 1) }}</h3>
+                    <p class="text-xs text-red-500 mt-1">saat</p>
                 </div>
-                <div class="stat-icon bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400">
-                    <i class="fas fa-chart-line text-2xl"></i>
+                <div class="stat-icon bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400">
+                    <i class="fas fa-question-circle text-2xl"></i>
                 </div>
             </div>
         </div>
@@ -164,8 +164,9 @@
         <div class="card-header border-b border-gray-200 dark:border-gray-700">
             <h5 class="font-bold text-gray-900 dark:text-white flex items-center gap-2">
                 <i class="fas fa-pie-chart text-primary-500"></i>
-                İş / Diğer Dağılımı
+                İş / Diğer Dağılımı (30 Gün)
             </h5>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Son 30 günlük ortalama</p>
         </div>
         <div class="card-body">
             <div class="h-56">
@@ -179,11 +180,11 @@
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-700 dark:text-gray-300">İş Aktiviteleri</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">İş kategorisindeki toplam süre</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Toplam süre</p>
                         </div>
                     </div>
                     <div class="text-right">
-                        <p class="text-xl font-bold text-blue-600 dark:text-blue-400">{{ $workOtherRatio['work']['duration_hours'] ?? 0 }}</p>
+                        <p class="text-xl font-bold text-blue-600 dark:text-blue-400">{{ $workOtherRatio30['work']['duration_hours'] ?? 0 }}</p>
                         <p class="text-xs text-gray-500">saat</p>
                     </div>
                 </div>
@@ -194,11 +195,11 @@
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Diğer Aktiviteler</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">Diğer kategorilerdeki toplam süre</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Toplam süre</p>
                         </div>
                     </div>
                     <div class="text-right">
-                        <p class="text-xl font-bold text-gray-600 dark:text-gray-400">{{ $workOtherRatio['other']['duration_hours'] ?? 0 }}</p>
+                        <p class="text-xl font-bold text-gray-600 dark:text-gray-400">{{ $workOtherRatio30['other']['duration_hours'] ?? 0 }}</p>
                         <p class="text-xs text-gray-500">saat</p>
                     </div>
                 </div>
@@ -214,9 +215,9 @@
         <div class="card-header border-b border-gray-200 dark:border-gray-700">
             <h5 class="font-bold text-gray-900 dark:text-white flex items-center gap-2">
                 <i class="fas fa-clock text-primary-500"></i>
-                Saatlik İş Dağılımı
+                Saatlik İş Dağılımı (30 Günlük)
             </h5>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">24 saatlik iş kategorisi aktivite dağılımı</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Tüm kullanıcıların 30 günlük ortalama günlük aktivite dağılımı</p>
         </div>
         <div class="card-body">
             <div class="h-72">
@@ -238,6 +239,61 @@
             <div class="h-72">
                 <canvas id="categoriesChart"></canvas>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Shortcuts -->
+<div class="card mb-6">
+    <div class="card-header border-b border-gray-200 dark:border-gray-700">
+        <h5 class="font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <i class="fas fa-bolt text-yellow-500"></i>
+            Hızlı İşlemler
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            <a href="{{ route('kullanicilar.create') }}" class="flex flex-col items-center justify-center p-4 bg-gray-50 dark:bg-gray-800 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition border border-gray-200 dark:border-gray-700 group">
+                <div class="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-user-plus text-xl"></i>
+                </div>
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Kullanıcı Ekle</span>
+            </a>
+
+            <a href="{{ route('keywords.create') }}" class="flex flex-col items-center justify-center p-4 bg-gray-50 dark:bg-gray-800 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition border border-gray-200 dark:border-gray-700 group">
+                <div class="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-key text-xl"></i>
+                </div>
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Keyword Ekle</span>
+            </a>
+
+            <a href="{{ route('activities.untagged') }}" class="flex flex-col items-center justify-center p-4 bg-gray-50 dark:bg-gray-800 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition border border-gray-200 dark:border-gray-700 group">
+                <div class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-tag text-xl"></i>
+                </div>
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Taglenmemiş</span>
+            </a>
+            
+             <a href="{{ route('statistics.index') }}" class="flex flex-col items-center justify-center p-4 bg-gray-50 dark:bg-gray-800 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition border border-gray-200 dark:border-gray-700 group">
+                <div class="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-chart-bar text-xl"></i>
+                </div>
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Raporlar</span>
+            </a>
+
+             <a href="{{ route('firm-settings.edit') }}" class="flex flex-col items-center justify-center p-4 bg-gray-50 dark:bg-gray-800 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition border border-gray-200 dark:border-gray-700 group">
+                <div class="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-cog text-xl"></i>
+                </div>
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Ayarlar</span>
+            </a>
+
+            <a href="{{ route('computer-users.index') }}" class="flex flex-col items-center justify-center p-4 bg-gray-50 dark:bg-gray-800 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition border border-gray-200 dark:border-gray-700 group">
+                <div class="w-12 h-12 rounded-full bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-desktop text-xl"></i>
+                </div>
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Bilgisayarlar</span>
+            </a>
         </div>
     </div>
 </div>
@@ -324,64 +380,6 @@
     <div class="card-body">
         <div class="h-64">
             <canvas id="monthlyTrendChart"></canvas>
-        </div>
-    </div>
-</div>
-
-<!-- Recent Tagged Activities -->
-<div class="card">
-    <div class="card-header border-b border-gray-200 dark:border-gray-700">
-        <h5 class="font-bold text-gray-900 dark:text-white flex items-center gap-2">
-            <i class="fas fa-history text-primary-500"></i>
-            Son Taglenmiş Aktiviteler
-        </h5>
-    </div>
-    <div class="card-body">
-        <div class="overflow-x-auto">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Process</th>
-                        <th>Başlık</th>
-                        <th>Kategoriler</th>
-                        <th>Süre</th>
-                        <th>Tarih</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($recentTaggedActivities as $activity)
-                    <tr>
-                        <td>
-                            <code class="bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-1 rounded text-xs font-mono border border-blue-200 dark:border-blue-800">
-                                {{ Str::limit($activity->process_name, 20) }}
-                            </code>
-                        </td>
-                        <td class="text-sm font-medium">{{ Str::limit($activity->title, 40) }}</td>
-                        <td>
-                            <div class="flex flex-wrap gap-1">
-                                @foreach($activity->categories->take(2) as $category)
-                                    <span class="badge badge-primary">{{ $category->name }}</span>
-                                @endforeach
-                                @if($activity->categories->count() > 2)
-                                    <span class="badge badge-secondary">+{{ $activity->categories->count() - 2 }}</span>
-                                @endif
-                            </div>
-                        </td>
-                        <td class="text-sm font-semibold text-primary-600 dark:text-primary-400">
-                            {{ round($activity->duration_ms / (1000 * 60), 1) }} dk
-                        </td>
-                        <td class="text-xs text-gray-500">{{ $activity->start_time_utc->format('d.m.Y H:i') }}</td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="5" class="text-center py-12">
-                            <i class="fas fa-inbox text-5xl text-gray-300 dark:text-gray-600 mb-3"></i>
-                            <p class="text-gray-500 dark:text-gray-400">Henüz taglenmiş aktivite yok</p>
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
         </div>
     </div>
 </div>
@@ -486,8 +484,8 @@
             labels: ['İş', 'Diğer'],
             datasets: [{
                 data: [
-                    {{ $workOtherRatio['work']['duration_hours'] ?? 0 }},
-                    {{ $workOtherRatio['other']['duration_hours'] ?? 0 }}
+                    {{ $workOtherRatio30['work']['duration_hours'] ?? 0 }},
+                    {{ $workOtherRatio30['other']['duration_hours'] ?? 0 }}
                 ],
                 backgroundColor: [
                     'rgb(59, 130, 246)',
