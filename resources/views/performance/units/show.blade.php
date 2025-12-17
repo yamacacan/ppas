@@ -131,11 +131,10 @@
     </div>
 </div>
 
-<!-- Ana Grafikler - 3 Sütun -->
-<div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-6">
-    <!-- Haftalık Ritim - 2 Sütun -->
-    <div class="xl:col-span-2 card hover:shadow-xl transition-shadow">
-        <div class="card-header border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-primary-50 to-transparent dark:from-primary-900/20">
+<!-- Haftalık Ritim - TAM GENİŞLİK -->
+<div class="card hover:shadow-xl transition-shadow mb-6">
+    <div class="card-header border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-primary-50 to-transparent dark:from-primary-900/20">
+        <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 bg-primary-100 dark:bg-primary-900/50 rounded-lg flex items-center justify-center">
                     <i class="fas fa-chart-bar text-primary-600 dark:text-primary-400"></i>
@@ -146,11 +145,14 @@
                 </div>
             </div>
         </div>
-        <div class="card-body">
-            <div id="weeklyRhythmChart"></div>
-        </div>
     </div>
+    <div class="card-body">
+        <div id="weeklyRhythmChart"></div>
+    </div>
+</div>
 
+<!-- Kategori ve İş/Diğer Karşılaştırma -->
+<div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
     <!-- Kategori Dağılımı -->
     <div class="card hover:shadow-xl transition-shadow">
         <div class="card-header border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-purple-50 to-transparent dark:from-purple-900/20">
@@ -168,11 +170,8 @@
             <div id="categoryChart"></div>
         </div>
     </div>
-</div>
 
-<!-- İş vs Diğer Karşılaştırması - YENİ -->
-<div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
-    <!-- İş/Diğer Oranı Grafik -->
+    <!-- İş vs Diğer Oranı Grafik -->
     <div class="card hover:shadow-xl transition-shadow">
         <div class="card-header border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-green-50 to-transparent dark:from-green-900/20">
             <div class="flex items-center gap-3">
@@ -189,23 +188,23 @@
             <div id="workOtherChart"></div>
         </div>
     </div>
+</div>
 
-    <!-- Mesai İçi/Dışı Grafik - YENİ -->
-    <div class="card hover:shadow-xl transition-shadow">
-        <div class="card-header border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-50 to-transparent dark:from-blue-900/20">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/50 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-clock text-blue-600 dark:text-blue-400"></i>
-                </div>
-                <div>
-                    <h5 class="font-bold text-gray-900 dark:text-white">Mesai Saatleri Dağılımı</h5>
-                    <p class="text-xs text-gray-500">İçi/dışı karşılaştırma</p>
-                </div>
+<!-- Mesai Saatleri - TAM GENİŞLİK -->
+<div class="card hover:shadow-xl transition-shadow mb-6">
+    <div class="card-header border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-50 to-transparent dark:from-blue-900/20">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/50 rounded-lg flex items-center justify-center">
+                <i class="fas fa-clock text-blue-600 dark:text-blue-400"></i>
+            </div>
+            <div>
+                <h5 class="font-bold text-gray-900 dark:text-white">Mesai Saatleri Dağılımı</h5>
+                <p class="text-xs text-gray-500">İçi/dışı karşılaştırma</p>
             </div>
         </div>
-        <div class="card-body">
-            <div id="workingHoursChart"></div>
-        </div>
+    </div>
+    <div class="card-body">
+        <div id="workingHoursChart"></div>
     </div>
 </div>
 
@@ -325,12 +324,69 @@
 @section('script')
 <script src="{{ asset('assets/js/chart/apex-chart/apex-chart.js') }}"></script>
 <script>
-    // Haftalık Ritim Grafiği - GELİŞTİRİLMİŞ
+    // Dark mode detection
+    const isDarkMode = document.documentElement.classList.contains('dark');
+    
+    // Dark mode theme configuration
+    const darkModeConfig = {
+        theme: {
+            mode: isDarkMode ? 'dark' : 'light'
+        },
+        chart: {
+            background: 'transparent',
+            foreColor: isDarkMode ? '#e5e7eb' : '#374151'
+        },
+        grid: {
+            borderColor: isDarkMode ? '#374151' : '#e7e7e7'
+        },
+        xaxis: {
+            labels: {
+                style: {
+                    colors: isDarkMode ? '#9ca3af' : '#6b7280'
+                }
+            }
+        },
+        yaxis: {
+            labels: {
+                style: {
+                    colors: isDarkMode ? '#9ca3af' : '#6b7280'
+                }
+            }
+        },
+        tooltip: {
+            theme: isDarkMode ? 'dark' : 'light'
+        }
+    };
+    
+    // Haftalık Ritim Grafiği - GELİŞTİRİLMİŞ ve DÜZELTİLMİŞ
+    var weeklyData = @json($weeklyRhythm);
+    var weeklyDays = [];
+    var weeklyHours = [];
+    
+    // Veriyi düzgün çıkar
+    if (Array.isArray(weeklyData)) {
+        weeklyData.forEach(function(item) {
+            weeklyDays.push(item.day || '');
+            weeklyHours.push(parseFloat(item.avg_hours) || 0);
+        });
+    }
+    
     var weeklyOptions = {
         chart: {
-            height: 350,
+            height: 400,
             type: 'bar',
-            toolbar: { show: true },
+            toolbar: { 
+                show: true,
+                tools: {
+                    download: true,
+                    selection: false,
+                    zoom: false,
+                    zoomin: false,
+                    zoomout: false,
+                    pan: false,
+                    reset: false
+                }
+            },
             animations: {
                 enabled: true,
                 easing: 'easeinout',
@@ -339,8 +395,8 @@
         },
         plotOptions: {
             bar: {
-                borderRadius: 8,
-                columnWidth: '60%',
+                borderRadius: 10,
+                columnWidth: '70%',
                 dataLabels: {
                     position: 'top'
                 }
@@ -349,54 +405,75 @@
         dataLabels: {
             enabled: true,
             formatter: function (val) {
-                return val.toFixed(1) + "h";
+                return val > 0 ? val.toFixed(1) + "h" : '';
             },
-            offsetY: -20,
+            offsetY: -25,
             style: {
-                fontSize: '11px',
+                fontSize: '12px',
+                fontWeight: 'bold',
                 colors: ["#304758"]
             }
         },
-        stroke: { show: true, width: 2, colors: ['transparent'] },
+        stroke: { 
+            show: true, 
+            width: 2, 
+            colors: ['transparent'] 
+        },
         series: [{
             name: 'Ortalama Çalışma (Saat)',
-            data: @json(array_column($weeklyRhythm, 'avg_hours'))
+            data: weeklyHours
         }],
         xaxis: {
-            categories: @json(array_column($weeklyRhythm, 'day')),
+            categories: weeklyDays,
             labels: {
                 style: {
-                    fontSize: '12px'
+                    fontSize: '13px',
+                    fontWeight: 600
                 }
             }
         },
         yaxis: {
-            title: { text: 'Saat' },
+            title: { 
+                text: 'Saat',
+                style: {
+                    fontSize: '14px',
+                    fontWeight: 600
+                }
+            },
             labels: {
                 formatter: function (val) {
-                    return val.toFixed(0);
+                    return val.toFixed(1);
                 }
-            }
+            },
+            min: 0
         },
         fill: {
             type: 'gradient',
             gradient: {
                 shade: 'light',
                 type: "vertical",
-                shadeIntensity: 0.25,
-                inverseColors: true,
-                opacityFrom: 0.85,
-                opacityTo: 0.55,
-                stops: [50, 0, 100]
+                shadeIntensity: 0.4,
+                inverseColors: false,
+                opacityFrom: 0.95,
+                opacityTo: 0.65,
+                stops: [0, 90, 100]
             },
         },
         colors: ['#7366ff'],
         grid: {
             borderColor: '#e7e7e7',
+            strokeDashArray: 3,
             row: {
-                colors: ['#f3f3f3', 'transparent'],
+                colors: ['#f8f9fa', 'transparent'],
                 opacity: 0.5
             },
+        },
+        tooltip: {
+            y: {
+                formatter: function (val) {
+                    return val.toFixed(2) + " saat";
+                }
+            }
         }
     };
     new ApexCharts(document.querySelector("#weeklyRhythmChart"), weeklyOptions).render();
