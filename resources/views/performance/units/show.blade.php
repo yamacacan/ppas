@@ -294,7 +294,7 @@
                 </div>
                 <div class="flex-1 min-w-0">
                     <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $keyword->keyword }}</p>
-                    <p class="text-xs text-gray-500">{{ $keyword->match_count }} eşleşme</p>
+                    <p class="text-xs text-gray-500">{{ $keyword->count }} eşleşme</p>
                 </div>
                 <div class="w-1.5 h-1.5 rounded-full bg-blue-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
             </div>
@@ -315,7 +315,7 @@
                 </div>
                 <div class="flex-1 min-w-0">
                     <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $process->process_name }}</p>
-                    <p class="text-xs text-gray-500">{{ $process->total_hours }} saat</p>
+                    <p class="text-xs text-gray-500">{{ $process->duration_hours }} saat</p>
                 </div>
                 <div class="w-1.5 h-1.5 rounded-full bg-green-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
             </div>
