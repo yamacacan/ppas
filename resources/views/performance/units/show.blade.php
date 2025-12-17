@@ -540,10 +540,11 @@
     new ApexCharts(document.querySelector("#workingHoursChart"), workingHoursOptions).render();
 
     // Top Keywords - Bar Chart
+    var topKeywordsData = @json($topKeywords);
     var topKeywordsOptions = {
         series: [{
             name: 'Kullanım Sayısı',
-            data: @json(array_slice(array_column($topKeywords, 'count'), 0, 10))
+            data: topKeywordsData.slice(0, 10).map(item => item.count)
         }],
         chart: {
             type: 'bar',
@@ -564,7 +565,7 @@
             }
         },
         xaxis: {
-            categories: @json(array_slice(array_column($topKeywords, 'keyword'), 0, 10))
+            categories: topKeywordsData.slice(0, 10).map(item => item.keyword)
         },
         colors: ['#7366ff', '#51bb25', '#f73164', '#f8d62b', '#a927f9', '#00d0ff', '#ff6384', '#36a2eb', '#cc65fe', '#ffce56'],
         legend: {
@@ -574,10 +575,11 @@
     new ApexCharts(document.querySelector("#topKeywordsChart"), topKeywordsOptions).render();
 
     // Top Processes - Bar Chart
+    var topProcessesData = @json($topProcesses);
     var topProcessesOptions = {
         series: [{
             name: 'Süre (Saat)',
-            data: @json(array_slice(array_map(function($item) { return (float)$item; }, array_column($topProcesses, 'duration_hours')), 0, 10))
+            data: topProcessesData.slice(0, 10).map(item => parseFloat(item.duration_hours))
         }],
         chart: {
             type: 'bar',
@@ -598,7 +600,7 @@
             }
         },
         xaxis: {
-            categories: @json(array_slice(array_map(function($item) { return strlen($item) > 20 ? substr($item, 0, 20) . '...' : $item; }, array_column($topProcesses, 'process_name')), 0, 10))
+            categories: topProcessesData.slice(0, 10).map(item => item.process_name.length > 20 ? item.process_name.substring(0, 20) + '...' : item.process_name)
         },
         colors: ['#f73164', '#51bb25', '#7366ff', '#f8d62b', '#a927f9', '#00d0ff', '#ff6384', '#36a2eb', '#cc65fe', '#ffce56'],
         legend: {
