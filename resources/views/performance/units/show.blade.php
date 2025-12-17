@@ -151,7 +151,7 @@
     </div>
 </div>
 
-<!-- Kategori ve İş/Diğer Karşılaştırma -->
+<!-- Kategori ve Performans Metrikleri -->
 <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
     <!-- Kategori Dağılımı -->
     <div class="card hover:shadow-xl transition-shadow">
@@ -171,20 +171,94 @@
         </div>
     </div>
 
-    <!-- İş vs Diğer Oranı Grafik -->
+    <!-- Performans Metrikleri - YENİ RADIAL CHART -->
     <div class="card hover:shadow-xl transition-shadow">
-        <div class="card-header border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-green-50 to-transparent dark:from-green-900/20">
+        <div class="card-header border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-indigo-50 to-transparent dark:from-indigo-900/20">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-green-100 dark:bg-green-900/50 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-balance-scale text-green-600 dark:text-green-400"></i>
+                <div class="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/50 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-tachometer-alt text-indigo-600 dark:text-indigo-400"></i>
                 </div>
                 <div>
-                    <h5 class="font-bold text-gray-900 dark:text-white">İş vs Diğer Aktivite</h5>
-                    <p class="text-xs text-gray-500">Süre bazlı karşılaştırma</p>
+                    <h5 class="font-bold text-gray-900 dark:text-white">Performans Metrikleri</h5>
+                    <p class="text-xs text-gray-500">Birim başarı göstergeleri</p>
                 </div>
             </div>
         </div>
         <div class="card-body">
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-3 gap-3 mb-4">
+                <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg flex flex-col items-center justify-center p-3">
+                    <div class="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400 text-sm font-bold flex items-center justify-center mb-2">
+                        {{ number_format($workOtherRatio['work']['percentage'], 0) }}%
+                    </div>
+                    <p class="text-xs font-medium text-green-700 dark:text-green-300 text-center">İş Oranı</p>
+                </div>
+                <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg flex flex-col items-center justify-center p-3">
+                    <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 text-sm font-bold flex items-center justify-center mb-2">
+                        {{ number_format(($workingHourStats['working_hours']['work'] / max(1, $workOtherRatio['total']['duration_hours'])) * 100, 0) }}%
+                    </div>
+                    <p class="text-xs font-medium text-blue-700 dark:text-blue-300 text-center">Mesai İçi</p>
+                </div>
+                <div class="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg flex flex-col items-center justify-center p-3">
+                    <div class="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 text-sm font-bold flex items-center justify-center mb-2">
+                        {{ $unit->computer_users_count }}
+                    </div>
+                    <p class="text-xs font-medium text-purple-700 dark:text-purple-300 text-center">Personel</p>
+                </div>
+            </div>
+
+            <!-- Radial Chart -->
+            <div id="performanceRadialChart"></div>
+
+            <!-- Additional Details -->
+            <div class="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4 space-y-2">
+                <div class="flex items-center justify-between text-sm">
+                    <span class="text-gray-600 dark:text-gray-400">Ortalama Verimlilik:</span>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                        <i class="fas fa-arrow-up text-xs mr-1"></i>
+                        {{ number_format($workOtherRatio['work']['percentage'], 1) }}%
+                    </span>
+                </div>
+                <div class="flex items-center justify-between text-sm">
+                    <span class="text-gray-600 dark:text-gray-400">Aktif Çalışan:</span>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
+                        {{ $unit->computer_users_count }} kişi
+                    </span>
+                </div>
+                <div class="flex items-center justify-between text-sm">
+                    <span class="text-gray-600 dark:text-gray-400">Toplam Çalışma:</span>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
+                        {{ $workOtherRatio['total']['duration_hours'] }} saat
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- İş vs Diğer Oranı Grafik -->
+    <div class="card hover:shadow-xl transition-shadow">
+        <div class="card-header border-b border-gray-200 dark:border-gray-700 bg-transparent p-6">
+            <h5 class="font-bold text-gray-900 dark:text-white flex items-center gap-2 text-lg">
+                İş vs Diğer Aktivite
+            </h5>
+            <p class="text-sm text-gray-500 mt-1">Süre bazlı karşılaştırma</p>
+        </div>
+        <div class="card-body p-6">
+            <!-- Custom Legend -->
+            <div class="flex justify-center sm:justify-end items-center gap-x-4 mb-3 sm:mb-6">
+                <div class="inline-flex items-center">
+                    <span class="size-2.5 inline-block bg-blue-600 rounded-sm me-2"></span>
+                    <span class="text-[13px] text-gray-600 dark:text-gray-400">
+                        İş Aktiviteleri
+                    </span>
+                </div>
+                <div class="inline-flex items-center">
+                    <span class="size-2.5 inline-block bg-gray-300 rounded-sm me-2 dark:bg-gray-600"></span>
+                    <span class="text-[13px] text-gray-600 dark:text-gray-400">
+                        Diğer Aktiviteler
+                    </span>
+                </div>
+            </div>
             <div id="workOtherChart"></div>
         </div>
     </div>
@@ -192,18 +266,30 @@
 
 <!-- Mesai Saatleri - TAM GENİŞLİK -->
 <div class="card hover:shadow-xl transition-shadow mb-6">
-    <div class="card-header border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-50 to-transparent dark:from-blue-900/20">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/50 rounded-lg flex items-center justify-center">
-                <i class="fas fa-clock text-blue-600 dark:text-blue-400"></i>
-            </div>
+    <div class="card-header border-b border-gray-200 dark:border-gray-700 bg-transparent p-6">
+        <div class="flex items-center justify-between">
             <div>
-                <h5 class="font-bold text-gray-900 dark:text-white">Mesai Saatleri Dağılımı</h5>
-                <p class="text-xs text-gray-500">İçi/dışı karşılaştırma</p>
+                <h5 class="font-bold text-gray-900 dark:text-white text-lg">Mesai Saatleri Dağılımı</h5>
+                <p class="text-sm text-gray-500 mt-1">Mesai içi ve dışı çalışma analizi</p>
             </div>
         </div>
     </div>
-    <div class="card-body">
+    <div class="card-body p-6">
+        <!-- Custom Legend -->
+        <div class="flex justify-center sm:justify-end items-center gap-x-4 mb-3 sm:mb-6">
+            <div class="inline-flex items-center">
+                <span class="size-2.5 inline-block bg-blue-600 rounded-sm me-2"></span>
+                <span class="text-[13px] text-gray-600 dark:text-gray-400">
+                    İş (Work)
+                </span>
+            </div>
+            <div class="inline-flex items-center">
+                <span class="size-2.5 inline-block bg-gray-300 rounded-sm me-2 dark:bg-gray-600"></span>
+                <span class="text-[13px] text-gray-600 dark:text-gray-400">
+                    Diğer (Other)
+                </span>
+            </div>
+        </div>
         <div id="workingHoursChart"></div>
     </div>
 </div>
@@ -418,20 +504,14 @@
             formatter: function (val) {
                 return val > 0 ? val.toFixed(1) + "h" : '';
             },
-            offsetY: -30,
+            offsetY: -25,
             style: {
-                fontSize: '14px',
+                fontSize: '12px',
                 fontWeight: 'bold',
                 colors: [isDarkMode ? "#ffffff" : "#1f2937"]
             },
             background: {
-                enabled: true,
-                foreColor: isDarkMode ? '#1f2937' : '#ffffff',
-                borderRadius: 6,
-                padding: 6,
-                opacity: 0.9,
-                borderWidth: 2,
-                borderColor: '#7366ff'
+                enabled: false
             }
         },
         stroke: { 
@@ -487,19 +567,10 @@
             min: 0
         },
         fill: {
-            type: 'gradient',
-            gradient: {
-                shade: isDarkMode ? 'dark' : 'light',
-                type: "vertical",
-                shadeIntensity: 0.5,
-                gradientToColors: ['#9333ea'], // Purple
-                inverseColors: false,
-                opacityFrom: 1,
-                opacityTo: 0.85,
-                stops: [0, 100]
-            },
+            type: 'solid',
+            opacity: 1
         },
-        colors: ['#7366ff'],
+        colors: ['#2563eb'], // Blue-600
         grid: {
             ...darkModeConfig.grid,
             strokeDashArray: 4,
@@ -538,11 +609,11 @@
                 const value = series[seriesIndex][dataPointIndex];
                 const day = w.globals.labels[dataPointIndex];
                 return `
-                    <div class="px-4 py-3 rounded-lg" style="background: ${isDarkMode ? '#1f2937' : '#ffffff'}; border: 2px solid #7366ff;">
+                    <div class="px-4 py-3 rounded-lg" style="background: ${isDarkMode ? '#1f2937' : '#ffffff'}; border: 1px solid #e5e7eb;">
                         <div class="font-bold text-sm mb-1" style="color: ${isDarkMode ? '#e5e7eb' : '#1f2937'};">${day}</div>
                         <div class="flex items-center gap-2">
-                            <span class="w-3 h-3 rounded-full" style="background: linear-gradient(135deg, #7366ff 0%, #9333ea 100%);"></span>
-                            <span style="color: ${isDarkMode ? '#9ca3af' : '#6b7280'};">${value.toFixed(2)} saat</span>
+                            <span class="w-2.5 h-2.5 rounded-sm bg-blue-600"></span>
+                            <span style="color: ${isDarkMode ? '#9ca3af' : '#6b7280'}; font-size: 13px;">${value.toFixed(2)} saat</span>
                         </div>
                     </div>
                 `;
@@ -626,61 +697,86 @@
     };
     new ApexCharts(document.querySelector("#categoryChart"), categoryOptions).render();
 
-    // İş vs Diğer Grafik - YENİ
+    // İş vs Diğer Grafik - YENİ MODERN
     var workOtherOptions = {
         ...darkModeConfig,
         series: [{
-            name: 'Süre (Saat)',
-            data: [
-                {{ $workOtherRatio['work']['duration_hours'] }},
-                {{ $workOtherRatio['other']['duration_hours'] }}
-            ]
+            name: 'İş Aktiviteleri',
+            data: [{{ $workOtherRatio['work']['duration_hours'] }}]
+        }, {
+            name: 'Diğer Aktiviteler',
+            data: [{{ $workOtherRatio['other']['duration_hours'] }}]
         }],
         chart: {
             ...darkModeConfig.chart,
             type: 'bar',
             height: 350,
+            stacked: false,
             toolbar: { show: false }
         },
         plotOptions: {
             bar: {
-                horizontal: true,
-                borderRadius: 8,
-                dataLabels: {
-                    position: 'top'
-                }
+                horizontal: false, 
+                borderRadius: 4,
+                columnWidth: '50%',
+                endingShape: 'rounded'
             }
         },
         dataLabels: {
-            enabled: true,
-            formatter: function (val) {
-                return val.toFixed(1) + " saat";
-            },
-            offsetX: -6,
-            style: {
-                fontSize: '12px',
-                colors: ['#fff']
-            }
+            enabled: false
+        },
+        stroke: {
+            show: true,
+            width: 2,
+            colors: ['transparent']
         },
         xaxis: {
             ...darkModeConfig.xaxis,
-            categories: ['İş Aktiviteleri', 'Diğer Aktiviteler']
+            categories: ['Birim Geneli'],
+            axisBorder: { show: false },
+            axisTicks: { show: false }
         },
-        colors: ['#51bb25', '#f73164']
+        yaxis: {
+            ...darkModeConfig.yaxis,
+            title: { text: 'Saat' }
+        },
+        fill: {
+            opacity: 1
+        },
+        states: {
+            hover: {
+                filter: {
+                    type: 'darken',
+                    value: 0.9
+                }
+            }
+        },
+        tooltip: {
+            ...darkModeConfig.tooltip,
+            y: {
+                formatter: function (val) {
+                    return val + " saat";
+                }
+            }
+        },
+        colors: ['#2563eb', isDarkMode ? '#4b5563' : '#d1d5db'], // Blue-600, Gray-600/300
+        legend: {
+            show: false // Custom legend used
+        }
     };
     new ApexCharts(document.querySelector("#workOtherChart"), workOtherOptions).render();
 
-    // Mesai Saatleri Grafik - YENİ
+    // Mesai Saatleri Grafik - YENİ MODERN
     var workingHoursOptions = {
         ...darkModeConfig,
         series: [{
-            name: 'İş',
+            name: 'İş (Work)',
             data: [
                 {{ $workingHourStats['working_hours']['work'] ?? 0 }},
                 {{ $workingHourStats['outside_hours']['work'] ?? 0 }}
             ]
         }, {
-            name: 'Diğer',
+            name: 'Diğer (Other)',
             data: [
                 {{ $workingHourStats['working_hours']['other'] ?? 0 }},
                 {{ $workingHourStats['outside_hours']['other'] ?? 0 }}
@@ -690,39 +786,37 @@
             ...darkModeConfig.chart,
             type: 'bar',
             height: 350,
-            stacked: true,
+            stacked: false, // Grouped bars instead of stacked
             toolbar: { show: false }
         },
         plotOptions: {
             bar: {
                 horizontal: false,
-                borderRadius: 8,
-                columnWidth: '55%'
+                borderRadius: 4,
+                columnWidth: '45%',
+                endingShape: 'rounded'
             }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            show: true,
+            width: 2,
+            colors: ['transparent']
         },
         xaxis: {
             ...darkModeConfig.xaxis,
-            categories: ['Mesai İçi', 'Mesai Dışı']
-        },
-        colors: ['#51bb25', '#f8d62b'],
-        legend: {
-            position: 'top',
-            horizontalAlign: 'left',
-            labels: {
-                colors: isDarkMode ? '#9ca3af' : '#6b7280'
-            }
+            categories: ['Mesai İçi', 'Mesai Dışı'],
+            axisBorder: { show: false },
+            axisTicks: { show: false }
         },
         fill: {
             opacity: 1
         },
-        dataLabels: {
-            enabled: true,
-            formatter: function (val) {
-                return val.toFixed(0) + "h";
-            },
-            style: {
-                colors: ['#fff']
-            }
+        colors: ['#2563eb', isDarkMode ? '#4b5563' : '#d1d5db'], // Blue-600, Gray-600/300
+        legend: {
+            show: false // Custom legend used
         }
     };
     new ApexCharts(document.querySelector("#workingHoursChart"), workingHoursOptions).render();
@@ -808,5 +902,124 @@
         }
     };
     new ApexCharts(document.querySelector("#topProcessesChart"), topProcessesOptions).render();
+
+    // Performans Radial Chart - FLOWBITE STİLİ YENİ
+    // Calculate performance metrics
+    const workEfficiency = {{ $workOtherRatio['work']['percentage'] ?? 0 }};
+    const workHoursCompliance = {{ number_format(($workingHourStats['working_hours']['work'] / max(1, $workOtherRatio['total']['duration_hours'])) * 100, 2) }};
+    const overallProductivity = (workEfficiency + workHoursCompliance) / 2;
+
+    // Get CSS variable colors for consistency (Flowbite style)
+    const getBackgroundColor = () => {
+        return isDarkMode ? 'rgba(55, 65, 81, 0.3)' : 'rgba(243, 244, 246, 0.8)';
+    };
+
+    const performanceRadialOptions = {
+        ...darkModeConfig,
+        series: [workEfficiency, workHoursCompliance, overallProductivity],
+        colors: ['#10b981', '#3b82f6', '#8b5cf6'], // Green, Blue, Purple
+        chart: {
+            ...darkModeConfig.chart,
+            height: 280,
+            type: 'radialBar',
+            sparkline: {
+                enabled: false
+            }
+        },
+        plotOptions: {
+            radialBar: {
+                track: {
+                    background: getBackgroundColor(),
+                    strokeWidth: '100%',
+                    margin: 5
+                },
+                dataLabels: {
+                    name: {
+                        fontSize: '14px',
+                        fontWeight: 600,
+                        color: isDarkMode ? '#9ca3af' : '#6b7280',
+                        offsetY: -10
+                    },
+                    value: {
+                        fontSize: '24px',
+                        fontWeight: 700,
+                        color: isDarkMode ? '#e5e7eb' : '#1f2937',
+                        offsetY: 5,
+                        formatter: function (val) {
+                            return Math.round(val) + '%';
+                        }
+                    },
+                    total: {
+                        show: true,
+                        label: 'Toplam Skor',
+                        fontSize: '12px',
+                        fontWeight: 600,
+                        color: isDarkMode ? '#9ca3af' : '#6b7280',
+                        formatter: function (w) {
+                            const avg = w.globals.seriesTotals.reduce((a, b) => a + b, 0) / w.globals.seriesTotals.length;
+                            return Math.round(avg) + '%';
+                        }
+                    }
+                },
+                hollow: {
+                    margin: 15,
+                    size: '45%',
+                    background: isDarkMode ? '#1f2937' : '#ffffff',
+                    dropShadow: {
+                        enabled: true,
+                        top: 2,
+                        left: 0,
+                        blur: 4,
+                        opacity: 0.15
+                    }
+                }
+            }
+        },
+        stroke: {
+            lineCap: 'round'
+        },
+        labels: ['İş Verimi', 'Mesai Uyumu', 'Genel Başarı'],
+        legend: {
+            show: true,
+            position: 'bottom',
+            fontSize: '13px',
+            fontWeight: 500,
+            labels: {
+                colors: isDarkMode ? '#9ca3af' : '#6b7280'
+            },
+            markers: {
+                width: 10,
+                height: 10,
+                radius: 10
+            },
+            itemMargin: {
+                horizontal: 8,
+                vertical: 5
+            }
+        },
+        tooltip: {
+            ...darkModeConfig.tooltip,
+            enabled: true,
+            y: {
+                formatter: function (val) {
+                    return Math.round(val) + '% başarı oranı';
+                }
+            },
+            custom: function({series, seriesIndex, dataPointIndex, w}) {
+                const labels = ['İş Verimi', 'Mesai Uyumu', 'Genel Başarı'];
+                const colors = ['#10b981', '#3b82f6', '#8b5cf6'];
+                return `
+                    <div class="px-4 py-3 rounded-lg" style="background: ${isDarkMode ? '#1f2937' : '#ffffff'}; border: 2px solid ${colors[seriesIndex]};">
+                        <div class="font-bold text-sm mb-1" style="color: ${isDarkMode ? '#e5e7eb' : '#1f2937'};">${labels[seriesIndex]}</div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full" style="background: ${colors[seriesIndex]};"></span>
+                            <span style="color: ${isDarkMode ? '#9ca3af' : '#6b7280'};">${Math.round(series[seriesIndex])}% Başarı</span>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+    };
+    new ApexCharts(document.querySelector("#performanceRadialChart"), performanceRadialOptions).render();
 </script>
 @endsection
