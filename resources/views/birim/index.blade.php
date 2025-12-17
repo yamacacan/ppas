@@ -117,14 +117,18 @@
                                 <td class="px-6 py-4">
                                     @if ($unit->id != 1)
                                         <div class="flex items-center gap-2">
-                                            <a href="{{ route('birim.edit', $unit->id) }}" class="p-2 bg-yellow-50 text-yellow-600 hover:bg-yellow-100 rounded-lg transition-colors" title="Düzenle">
-                                                <i class="fas fa-pencil-alt text-sm"></i>
+                                            <a href="{{ route('birim.edit', $unit->id) }}" 
+                                               class="p-2 text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded-lg transition-all" 
+                                               title="Düzenle">
+                                                <i class="fas fa-pencil-alt"></i>
                                             </a>
-                                            <form action="{{ route('birim.destroy', $unit->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Emin misiniz?')">
+                                            <form action="{{ route('birim.destroy', $unit->id) }}" method="POST" class="inline" onsubmit="return confirm('Emin misiniz?')">
                                                 @csrf
                                                 @method('delete')
-                                                <button type="submit" class="p-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition-colors" title="Sil">
-                                                    <i class="fas fa-trash text-sm"></i>
+                                                <button type="submit" 
+                                                        class="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all" 
+                                                        title="Sil">
+                                                    <i class="fas fa-trash"></i>
                                                 </button>
                                             </form>
                                         </div>
@@ -144,112 +148,4 @@
     <script src="{{ asset('assets/js/datatable/datatables/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('assets/js/datatable/datatables/datatable.custom.js') }}"></script>
 @endsection
-@section('css')
-@endsection
 
-@section('style')
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/datatables.css') }}">
-
-@endsection
-
-@section('breadcrumb-title')
-    <h3>Birimler</h3>
-@endsection
-
-@section('breadcrumb-items')
-    <li class="breadcrumb-item">Birim İşlemleri</li>
-    <li class="breadcrumb-item active">Birimler</li>
-@endsection
-
-@section('content')
-
-
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Zero Configuration  Starts-->
-            <div class="col-sm-12">
-                <div class="card">
-
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h3 class="mb-0">Tüm Birimler</h3>
-                        <a href="{{ route('birim.create') }}" class="btn btn-primary" data-bs-original-title=""
-                            title=""><i class="icon-plus"></i> Birim Ekle</a>
-                    </div>
-
-
-
-                    <div class="card-body">
-                        @if ($message = session('message'))
-                            <div class="alert alert-success">{{ $message }}</div>
-                        @elseif($message = session('error'))
-                            <div class="alert alert-danger">{{ $message }}</div>
-                        @endif
-
-
-                        <div class="table-responsive">
-                            <table class="display" id="basic-1">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Bağlı olduğu birim</th>
-                                        <th>Birim</th>
-                                        <th></th>
-
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @if ($units->count())
-
-                                        @foreach ($units as $key => $unit)
-                                            <tr>
-                                                <td>{{ $key + 1 }}</td>
-                                                <td>{{ $unit->parentUnit ? $unit->parentUnit->name : 'Merkez' }}</td>
-                                                <td>{{ $unit->name }}</td>
-                                                <td>
-                                                    @if ($unit->id != 1)
-                                                        <ul class="action">
-                                                            <li class="edit">
-                                                                <a href="{{ route('birim.edit', $unit->id) }}"
-                                                                    class="btn btn-sm"><i class="icon-pencil-alt"></i></a>
-                                                                {{-- <button class="btn btn-sm"><i class="icon-icon-pencil-alt"></i></button> --}}
-                                                            </li>
-                                                            <li class="delete">
-                                                                <form id="form-delete"
-                                                                    action="{{ route('birim.destroy', $unit->id) }}"
-                                                                    method="POST" style="display: inline"
-                                                                    onsubmit="return confirm('Emin misiniz?')">
-                                                                    @csrf
-                                                                    @method('delete')
-                                                                    <button class="btn btn-sm"><i
-                                                                            class="icon-trash"></i></button>
-                                                                </form>
-                                                            </li>
-
-                                                        </ul>
-                                                    @endif
-                                                </td>
-                                            </tr>
-                                        @endforeach
-
-
-
-                                    @endif
-
-
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Zero Configuration  Ends-->
-
-        </div>
-    </div>
-@endsection
-
-@section('script')
-    <script src="{{ asset('assets/js/datatable/datatables/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('assets/js/datatable/datatables/datatable.custom.js') }}"></script>
-
-@endsection

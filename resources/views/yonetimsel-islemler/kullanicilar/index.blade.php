@@ -124,14 +124,18 @@
                                     <td class="px-6 py-4 text-gray-600 dark:text-gray-400">{{ isset($user->details) ? $user->details->phone : '-' }}</td>
                                     <td class="px-6 py-4">
                                         <div class="flex items-center gap-2">
-                                            <a href="{{ route('kullanicilar.edit', $user->id) }}" class="p-2 bg-yellow-50 text-yellow-600 hover:bg-yellow-100 rounded-lg transition-colors" title="Düzenle">
-                                                <i class="fas fa-pencil-alt text-sm"></i>
+                                            <a href="{{ route('kullanicilar.edit', $user->id) }}" 
+                                               class="p-2 text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded-lg transition-all" 
+                                               title="Düzenle">
+                                                <i class="fas fa-pencil-alt"></i>
                                             </a>
-                                            <form action="{{ route('kullanicilar.destroy', $user->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Emin misiniz?')">
+                                            <form action="{{ route('kullanicilar.destroy', $user->id) }}" method="POST" class="inline" onsubmit="return confirm('Emin misiniz?')">
                                                 @csrf
                                                 @method('delete')
-                                                <button type="submit" class="p-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition-colors" title="Sil">
-                                                    <i class="fas fa-trash text-sm"></i>
+                                                <button type="submit" 
+                                                        class="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all" 
+                                                        title="Sil">
+                                                    <i class="fas fa-trash"></i>
                                                 </button>
                                             </form>
                                         </div>

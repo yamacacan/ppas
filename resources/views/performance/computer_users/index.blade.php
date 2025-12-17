@@ -100,11 +100,13 @@
                         <td class="px-6 py-4 text-right">
                             <div class="flex items-center justify-end gap-2">
                                 <a href="{{ route('computer-users.show', $user->id) }}" 
-                                   class="btn btn-sm btn-info text-white" title="İstatistikler">
+                                   class="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all"
+                                   title="İstatistikler">
                                     <i class="fas fa-chart-pie"></i>
                                 </a>
                                 <a href="{{ route('computer-users.edit', $user->id) }}" 
-                                   class="btn btn-sm btn-primary" title="Düzenle">
+                                   class="p-2 text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded-lg transition-all"
+                                   title="Düzenle">
                                     <i class="fas fa-edit"></i>
                                 </a>
                             </div>

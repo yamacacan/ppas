@@ -72,7 +72,7 @@
                                 </td>
                                 <td class="px-4 py-3 text-right">
                                     <a href="{{ route('computers.show', $computer->motherboard_uuid) }}" 
-                                       class="inline-flex items-center justify-center w-8 h-8 text-primary-600 bg-primary-100 hover:bg-primary-200 dark:text-primary-400 dark:bg-primary-900/30 dark:hover:bg-primary-900/50 rounded-lg transition-colors"
+                                       class="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all inline-flex items-center justify-center"
                                        title="Detay Görüntüle">
                                         <i class="fas fa-eye"></i>
                                     </a>

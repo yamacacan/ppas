@@ -118,15 +118,19 @@
                         <td class="px-6 py-4 text-right">
                             <div class="flex items-center justify-end gap-2">
                                 <a href="{{ route('categories.edit', $category->id) }}" 
-                                   class="btn btn-sm btn-warning" title="Düzenle">
+                                   class="p-2 text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded-lg transition-all"
+                                   title="Düzenle">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <form action="{{ route('categories.destroy', $category->id) }}" 
-                                      method="POST" class="inline-block"
+                                      method="POST" 
+                                      class="inline"
                                       onsubmit="return confirm('Bu kategoriyi silmek istediğinizden emin misiniz?');">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger" title="Sil">
+                                    <button type="submit" 
+                                            class="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all"
+                                            title="Sil">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
@@ -179,16 +183,20 @@
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex items-center justify-end gap-2">
                                         <a href="{{ route('categories.edit', $child->id) }}" 
-                                           class="btn btn-xs btn-warning" title="Düzenle">
-                                            <i class="fas fa-edit"></i>
+                                           class="p-2 text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded-lg transition-all"
+                                           title="Düzenle">
+                                            <i class="fas fa-edit text-sm"></i>
                                         </a>
                                         <form action="{{ route('categories.destroy', $child->id) }}" 
-                                              method="POST" class="inline-block"
+                                              method="POST" 
+                                              class="inline"
                                               onsubmit="return confirm('Bu kategoriyi silmek istediğinizden emin misiniz?');">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-xs btn-danger" title="Sil">
-                                                <i class="fas fa-trash"></i>
+                                            <button type="submit" 
+                                                    class="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all"
+                                                    title="Sil">
+                                                <i class="fas fa-trash text-sm"></i>
                                             </button>
                                         </form>
                                     </div>

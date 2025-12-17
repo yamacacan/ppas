@@ -67,8 +67,9 @@
                             <span class="text-gray-700 dark:text-gray-300 font-medium">{{ $unit->total_duration_hours }}s</span>
                         </td>
                         <td class="text-right">
-                            <a href="{{ route('unit-statistics.show', $unit->id) }}" class="btn btn-primary btn-sm group-hover:bg-primary-700 transition-colors">
-                                <i class="fas fa-chart-pie mr-1"></i> Detaylar
+                            <a href="{{ route('unit-statistics.show', $unit->id) }}" 
+                               class="inline-flex items-center gap-1 px-3 py-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all">
+                                <i class="fas fa-chart-pie"></i> <span>Detaylar</span>
                             </a>
                         </td>
                     </tr>
@@ -86,7 +87,7 @@
     $(document).ready(function() {
         $('#unitsTable').DataTable({
             "language": {
-                "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json"
+                "url": "/assets/json/turkish.json"
             },
             "dom": '<"flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4"lf>rtip',
             "responsive": true
