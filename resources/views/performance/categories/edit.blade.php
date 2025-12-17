@@ -2,21 +2,25 @@
 
 @section('title', 'Kategori Düzenle')
 
-@section('page-title', 'Kategori Düzenle')
-@section('page-description', 'Kategori bilgilerini güncelleyin')
+@section('breadcrumb-title')
+    <div>
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Kategori Düzenle</h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Kategori bilgilerini güncelleyin</p>
+    </div>
+@endsection
 
-@section('breadcrumb')
-    <li>
-        <div class="flex items-center">
-            <i class="fas fa-chevron-right text-gray-400 mx-2 text-xs"></i>
-            <a href="{{ route('categories.index') }}" class="text-sm font-medium text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 transition-colors">Kategoriler</a>
-        </div>
+@section('breadcrumb-items')
+    <li class="flex items-center">
+        <i class="fas fa-chevron-right text-gray-400 mx-2 text-xs"></i>
+        <span class="text-gray-600 dark:text-gray-400">Performance</span>
     </li>
-    <li>
-        <div class="flex items-center">
-            <i class="fas fa-chevron-right text-gray-400 mx-2 text-xs"></i>
-            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Düzenle</span>
-        </div>
+    <li class="flex items-center">
+        <i class="fas fa-chevron-right text-gray-400 mx-2 text-xs"></i>
+        <a href="{{ route('categories.index') }}" class="text-gray-600 dark:text-gray-400 hover:text-primary-600">Kategoriler</a>
+    </li>
+    <li class="flex items-center">
+        <i class="fas fa-chevron-right text-gray-400 mx-2 text-xs"></i>
+        <span class="text-gray-600 dark:text-gray-400">Düzenle</span>
     </li>
 @endsection
 

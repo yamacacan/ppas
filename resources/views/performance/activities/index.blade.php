@@ -2,6 +2,24 @@
 
 @section('title', 'Aktivite Yönetimi')
 
+@section('breadcrumb-title')
+    <div>
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Aktivite Yönetimi</h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Tüm kullanıcı aktivitelerini izleyin ve yönetin</p>
+    </div>
+@endsection
+
+@section('breadcrumb-items')
+    <li class="flex items-center">
+        <i class="fas fa-chevron-right text-gray-400 mx-2 text-xs"></i>
+        <span class="text-gray-600 dark:text-gray-400">Performance</span>
+    </li>
+    <li class="flex items-center">
+        <i class="fas fa-chevron-right text-gray-400 mx-2 text-xs"></i>
+        <span class="text-gray-600 dark:text-gray-400">Aktiviteler</span>
+    </li>
+@endsection
+
 @section('content')
 <!-- Stats Cards -->
 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-6">
