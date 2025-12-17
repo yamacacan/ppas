@@ -22,7 +22,7 @@ class ComputerController extends Controller
             })
             ->orderBy('collected_at', 'desc')
             ->orderBy('collected_at', 'desc')
-            ->paginate(10);
+            ->get();
 
         return view('performance.computers.index', compact('computers'));
     }
@@ -49,12 +49,12 @@ class ComputerController extends Controller
                     return $query->where('app_name', 'like', "%{$search}%");
                 })
                 ->orderBy('app_name')
-                ->paginate(10)
+                ->get()
                 ->withQueryString();
         } else {
              $apps = InstalledApp::where('motherboard_uuid', $uuid) // Fallback empty paginator
                 ->whereRaw('1 = 0')
-                ->paginate(10);
+                ->get();
         }
 
         return view('performance.computers.show', compact('computer', 'apps'));
