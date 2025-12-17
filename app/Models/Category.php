@@ -140,6 +140,23 @@ class Category extends Model
     }
 
     /**
+     * Bu kategorinin verilen kategorinin alt kategorisi (descendant) olup olmadığını kontrol eder
+     * Circular reference'ları önlemek için kullanılır
+     */
+    public function isDescendantOf(Category $category): bool
+    {
+        if ($this->parent_id === $category->id) {
+            return true;
+        }
+
+        if ($this->parent) {
+            return $this->parent->isDescendantOf($category);
+        }
+
+        return false;
+    }
+
+    /**
      * Boot method - slug otomatik oluşturma
      */
     protected static function boot()
