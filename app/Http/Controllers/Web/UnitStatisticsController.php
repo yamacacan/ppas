@@ -61,8 +61,8 @@ class UnitStatisticsController extends Controller
         
         $workingHourStats = $this->statisticsService->getWorkingHourStats($filters);
         $weeklyRhythm = $this->statisticsService->getWeeklyRhythm($filters);
-        $topKeywords = collect($this->statisticsService->getTopKeywords($filters, 10));
-        $topProcesses = collect($this->statisticsService->getTopProcesses($filters, 10));
+        $topKeywords = collect($this->statisticsService->getTopKeywords($filters, 10))->map(fn($item) => (object) $item);
+        $topProcesses = collect($this->statisticsService->getTopProcesses($filters, 10))->map(fn($item) => (object) $item);
 
         $computerUsers = \App\Models\ComputerUser::where('unit_id', $unit->id)
             ->withCount('activities')
