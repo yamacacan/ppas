@@ -276,7 +276,7 @@
             "pageLength": 25,
             "order": [[3, 'desc']], // Priority'ye göre sırala
             "language": {
-                "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Turkish.json"
+                "url": "/assets/json/turkish.json"
             },
             "dom": '<"flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4"lf>rtip',
             "responsive": true

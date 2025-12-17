@@ -211,7 +211,7 @@
         $('#categoriesTable').DataTable({
             "pageLength": 25,
             "ordering": false,
-            "language": { "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json" },
+            "language": { "url": "/assets/json/turkish.json" },
             "responsive": true
         });
     });
