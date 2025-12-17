@@ -392,16 +392,25 @@
             animations: {
                 enabled: true,
                 easing: 'easeinout',
-                speed: 800
+                speed: 800,
+                animateGradually: {
+                    enabled: true,
+                    delay: 150
+                },
+                dynamicAnimation: {
+                    enabled: true,
+                    speed: 350
+                }
             }
         },
         plotOptions: {
             bar: {
-                borderRadius: 10,
-                columnWidth: '70%',
+                borderRadius: 12,
+                columnWidth: '75%',
                 dataLabels: {
                     position: 'top'
-                }
+                },
+                distributed: false
             }
         },
         dataLabels: {
@@ -409,16 +418,25 @@
             formatter: function (val) {
                 return val > 0 ? val.toFixed(1) + "h" : '';
             },
-            offsetY: -25,
+            offsetY: -30,
             style: {
-                fontSize: '12px',
+                fontSize: '14px',
                 fontWeight: 'bold',
-                colors: [isDarkMode ? "#e5e7eb" : "#304758"]
+                colors: [isDarkMode ? "#ffffff" : "#1f2937"]
+            },
+            background: {
+                enabled: true,
+                foreColor: isDarkMode ? '#1f2937' : '#ffffff',
+                borderRadius: 6,
+                padding: 6,
+                opacity: 0.9,
+                borderWidth: 2,
+                borderColor: '#7366ff'
             }
         },
         stroke: { 
             show: true, 
-            width: 2, 
+            width: 3, 
             colors: ['transparent'] 
         },
         series: [{
@@ -430,27 +448,39 @@
             categories: weeklyDays,
             labels: {
                 style: {
-                    fontSize: '13px',
-                    fontWeight: 600,
-                    colors: isDarkMode ? '#9ca3af' : '#6b7280'
-                }
+                    fontSize: '14px',
+                    fontWeight: 700,
+                    colors: isDarkMode ? '#e5e7eb' : '#374151'
+                },
+                offsetY: 5
+            },
+            axisBorder: {
+                show: true,
+                color: isDarkMode ? '#4b5563' : '#d1d5db'
+            },
+            axisTicks: {
+                show: true,
+                color: isDarkMode ? '#4b5563' : '#d1d5db'
             }
         },
         yaxis: {
             ...darkModeConfig.yaxis,
             title: { 
-                text: 'Saat',
+                text: 'Çalışma Süresi (Saat)',
                 style: {
                     fontSize: '14px',
-                    fontWeight: 600,
+                    fontWeight: 700,
                     color: isDarkMode ? '#9ca3af' : '#6b7280'
-                }
+                },
+                offsetX: -10
             },
             labels: {
                 formatter: function (val) {
-                    return val.toFixed(1);
+                    return val.toFixed(1) + 'h';
                 },
                 style: {
+                    fontSize: '13px',
+                    fontWeight: 600,
                     colors: isDarkMode ? '#9ca3af' : '#6b7280'
                 }
             },
@@ -461,27 +491,74 @@
             gradient: {
                 shade: isDarkMode ? 'dark' : 'light',
                 type: "vertical",
-                shadeIntensity: 0.4,
+                shadeIntensity: 0.5,
+                gradientToColors: ['#9333ea'], // Purple
                 inverseColors: false,
-                opacityFrom: 0.95,
-                opacityTo: 0.65,
-                stops: [0, 90, 100]
+                opacityFrom: 1,
+                opacityTo: 0.85,
+                stops: [0, 100]
             },
         },
         colors: ['#7366ff'],
         grid: {
             ...darkModeConfig.grid,
-            strokeDashArray: 3,
+            strokeDashArray: 4,
+            borderColor: isDarkMode ? '#374151' : '#e5e7eb',
             row: {
-                colors: [isDarkMode ? 'rgba(255,255,255,0.05)' : '#f8f9fa', 'transparent'],
+                colors: [isDarkMode ? 'rgba(115, 102, 255, 0.03)' : 'rgba(115, 102, 255, 0.02)', 'transparent'],
                 opacity: 0.5
             },
+            column: {
+                colors: [isDarkMode ? 'rgba(255,255,255,0.02)' : '#fafafa', 'transparent'],
+                opacity: 0.5
+            },
+            xaxis: {
+                lines: {
+                    show: false
+                }
+            },
+            yaxis: {
+                lines: {
+                    show: true
+                }
+            },
+            padding: {
+                top: 20,
+                right: 20,
+                bottom: 10,
+                left: 10
+            }
         },
         tooltip: {
             ...darkModeConfig.tooltip,
-            y: {
-                formatter: function (val) {
-                    return val.toFixed(2) + " saat";
+            enabled: true,
+            shared: false,
+            followCursor: true,
+            custom: function({series, seriesIndex, dataPointIndex, w}) {
+                const value = series[seriesIndex][dataPointIndex];
+                const day = w.globals.labels[dataPointIndex];
+                return `
+                    <div class="px-4 py-3 rounded-lg" style="background: ${isDarkMode ? '#1f2937' : '#ffffff'}; border: 2px solid #7366ff;">
+                        <div class="font-bold text-sm mb-1" style="color: ${isDarkMode ? '#e5e7eb' : '#1f2937'};">${day}</div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full" style="background: linear-gradient(135deg, #7366ff 0%, #9333ea 100%);"></span>
+                            <span style="color: ${isDarkMode ? '#9ca3af' : '#6b7280'};">${value.toFixed(2)} saat</span>
+                        </div>
+                    </div>
+                `;
+            }
+        },
+        states: {
+            hover: {
+                filter: {
+                    type: 'darken',
+                    value: 0.15
+                }
+            },
+            active: {
+                filter: {
+                    type: 'darken',
+                    value: 0.25
                 }
             }
         }
