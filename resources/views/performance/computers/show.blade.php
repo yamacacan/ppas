@@ -18,8 +18,7 @@
 @endsection
 
 @section('style')
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/datatables.css') }}">
 @endsection
 
 @section('content')
@@ -139,25 +138,21 @@
 @endsection
 
 @section('script')
-    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+    <script src="{{ asset('assets/js/datatable/datatables/jquery.dataTables.min.js') }}"></script>
     <script>
         $(document).ready(function() {
+            // Initialize DataTable
+             if ($.fn.DataTable.isDataTable('#apps-table')) {
+                $('#apps-table').DataTable().destroy();
+            }
+
             $('#apps-table').DataTable({
-                destroy: true,
                 responsive: true,
                 language: {
                     url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/tr.json'
                 },
                 pageLength: 10,
-                dom: '<"flex flex-col md:flex-row justify-between items-center mb-4 gap-4"lf>rt<"flex flex-col md:flex-row justify-between items-center mt-4 gap-4"ip>',
-                initComplete: function() {
-                     // Update search input styling
-                     $('.dataTables_filter input').addClass('bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500');
-                    
-                    // Update length select styling
-                    $('.dataTables_length select').addClass('bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500');
-                }
+                dom: 'lfrtip'
             });
         });
     </script>

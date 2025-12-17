@@ -14,8 +14,7 @@
 @endsection
 
 @section('style')
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/datatables.css') }}">
     <style>
         .dataTables_wrapper .dataTables_length select {
             padding-right: 30px !important;
@@ -88,8 +87,7 @@
 @endsection
 
 @section('script')
-    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+    <script src="{{ asset('assets/js/datatable/datatables/jquery.dataTables.min.js') }}"></script>
     <script>
         $(document).ready(function() {
             // Initialize DataTable
@@ -106,8 +104,11 @@
                 columnDefs: [
                     { orderable: false, targets: [8] }
                 ],
-                // Simplified DOM to check if duplication persists
-                dom: 'lfrtip' 
+                // Use a simple but standard DOM for this project
+                dom: 'lfrtip',
+                initComplete: function() {
+                    // Slight adjustments to match project style if needed
+                }
             });
         });
     </script>
