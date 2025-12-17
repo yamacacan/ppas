@@ -49,10 +49,9 @@ class ComputerController extends Controller
                     return $query->where('app_name', 'like', "%{$search}%");
                 })
                 ->orderBy('app_name')
-                ->get()
-                ->withQueryString();
+                ->get();
         } else {
-             $apps = InstalledApp::where('motherboard_uuid', $uuid) // Fallback empty paginator
+             $apps = InstalledApp::where('motherboard_uuid', $uuid) // Fallback empty
                 ->whereRaw('1 = 0')
                 ->get();
         }
