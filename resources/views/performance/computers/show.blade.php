@@ -144,6 +144,7 @@
     <script>
         $(document).ready(function() {
             $('#apps-table').DataTable({
+                destroy: true,
                 responsive: true,
                 language: {
                     url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/tr.json'
