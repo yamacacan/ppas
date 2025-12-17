@@ -543,7 +543,7 @@
     var topKeywordsOptions = {
         series: [{
             name: 'Kullanım Sayısı',
-            data: @json($topKeywords->pluck('count')->take(10)->toArray())
+            data: @json(array_slice(array_column($topKeywords, 'count'), 0, 10))
         }],
         chart: {
             type: 'bar',
@@ -564,7 +564,7 @@
             }
         },
         xaxis: {
-            categories: @json($topKeywords->pluck('keyword')->take(10)->toArray())
+            categories: @json(array_slice(array_column($topKeywords, 'keyword'), 0, 10))
         },
         colors: ['#7366ff', '#51bb25', '#f73164', '#f8d62b', '#a927f9', '#00d0ff', '#ff6384', '#36a2eb', '#cc65fe', '#ffce56'],
         legend: {
@@ -577,7 +577,7 @@
     var topProcessesOptions = {
         series: [{
             name: 'Süre (Saat)',
-            data: @json($topProcesses->pluck('duration_hours')->take(10)->map(function($item) { return (float)$item; })->toArray())
+            data: @json(array_slice(array_map(function($item) { return (float)$item; }, array_column($topProcesses, 'duration_hours')), 0, 10))
         }],
         chart: {
             type: 'bar',
@@ -598,7 +598,7 @@
             }
         },
         xaxis: {
-            categories: @json($topProcesses->pluck('process_name')->take(10)->map(function($item) { return strlen($item) > 20 ? substr($item, 0, 20) . '...' : $item; })->toArray())
+            categories: @json(array_slice(array_map(function($item) { return strlen($item) > 20 ? substr($item, 0, 20) . '...' : $item; }, array_column($topProcesses, 'process_name')), 0, 10))
         },
         colors: ['#f73164', '#51bb25', '#7366ff', '#f8d62b', '#a927f9', '#00d0ff', '#ff6384', '#36a2eb', '#cc65fe', '#ffce56'],
         legend: {
