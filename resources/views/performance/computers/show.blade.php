@@ -139,21 +139,4 @@
 
 @section('script')
     <script src="{{ asset('assets/js/datatable/datatables/jquery.dataTables.min.js') }}"></script>
-    <script>
-        $(document).ready(function() {
-            // Initialize DataTable
-             if ($.fn.DataTable.isDataTable('#apps-table')) {
-                $('#apps-table').DataTable().destroy();
-            }
-
-            $('#apps-table').DataTable({
-                responsive: true,
-                language: {
-                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/tr.json'
-                },
-                pageLength: 10,
-                dom: 'lfrtip'
-            });
-        });
-    </script>
 @endsection

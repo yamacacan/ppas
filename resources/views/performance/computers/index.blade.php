@@ -88,28 +88,4 @@
 
 @section('script')
     <script src="{{ asset('assets/js/datatable/datatables/jquery.dataTables.min.js') }}"></script>
-    <script>
-        $(document).ready(function() {
-            // Initialize DataTable
-            if ($.fn.DataTable.isDataTable('#computers-table')) {
-                $('#computers-table').DataTable().destroy();
-            }
-
-            $('#computers-table').DataTable({
-                responsive: true,
-                language: {
-                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/tr.json'
-                },
-                order: [[7, 'desc']],
-                columnDefs: [
-                    { orderable: false, targets: [8] }
-                ],
-                // Use a simple but standard DOM for this project
-                dom: 'lfrtip',
-                initComplete: function() {
-                    // Slight adjustments to match project style if needed
-                }
-            });
-        });
-    </script>
 @endsection

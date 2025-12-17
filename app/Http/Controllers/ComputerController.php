@@ -21,7 +21,8 @@ class ComputerController extends Controller
                      ->on('system_hardware.collected_at', '=', 'latest.max_date');
             })
             ->orderBy('collected_at', 'desc')
-            ->get();
+            ->orderBy('collected_at', 'desc')
+            ->paginate(10);
 
         return view('performance.computers.index', compact('computers'));
     }
@@ -29,18 +30,14 @@ class ComputerController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($uuid)
+    public function show(Request $request, $uuid)
     {
         // Get the latest hardware info for this UUID
         $computer = SystemHardware::where('motherboard_uuid', $uuid)
             ->orderBy('collected_at', 'desc')
             ->firstOrFail();
 
-        // Get installed apps for this UUID (from the latest scan generally, but we'll fetch all unique apps for now or latest set)
-        // Since installed apps might change, we want the apps associated with the latest hardware scan or just everything for this UUID.
-        // Let's assume we want to see the *latest* list of apps.
-        // Installed apps are logged per scan. So we should probably find the latest scan for apps for this UUID.
-        
+        // Get installed apps for this UUID
         $latestAppScan = InstalledApp::where('motherboard_uuid', $uuid)
             ->max('collected_at');
 
@@ -48,8 +45,16 @@ class ComputerController extends Controller
         if ($latestAppScan) {
             $apps = InstalledApp::where('motherboard_uuid', $uuid)
                 ->where('collected_at', $latestAppScan)
+                ->when($request->input('search'), function ($query, $search) {
+                    return $query->where('app_name', 'like', "%{$search}%");
+                })
                 ->orderBy('app_name')
-                ->get();
+                ->paginate(10)
+                ->withQueryString();
+        } else {
+             $apps = InstalledApp::where('motherboard_uuid', $uuid) // Fallback empty paginator
+                ->whereRaw('1 = 0')
+                ->paginate(10);
         }
 
         return view('performance.computers.show', compact('computer', 'apps'));
