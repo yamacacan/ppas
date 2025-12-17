@@ -148,7 +148,7 @@
 
             $('#apps-table').DataTable({
                 responsive: true,
-              
+                language: { url: '/assets/json/turkish.json' },
                 pageLength: 10,
                 dom: 'lfrtip'
             });

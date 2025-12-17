@@ -97,7 +97,7 @@
 
             $('#computers-table').DataTable({
                 responsive: true,
-              
+                language: { url: '/assets/json/turkish.json' },
                 order: [[7, 'desc']],
                 columnDefs: [
                     { orderable: false, targets: [8] }
