@@ -19,19 +19,19 @@ return new class extends Migration
                 $table->text('url');
                 $table->text('title')->nullable();
                 $table->string('browser');
-                $table->dateTime('visit_time_utc');
-                $table->string('base_url')->nullable();
-                $table->string('username');
-                $table->string('domain');
-                $table->string('user_sid')->nullable();
-                $table->string('motherboard_uuid')->nullable();
+                $table->dateTime('visit_time_utc'>nullable();
                 $table->dateTime('created_at_utc');
                 $table->dateTime('received_at')->nullable()->useCurrent();
 
                 $table->index('base_url');
                 $table->index('browser');
                 $table->index('motherboard_uuid');
-                $table->index('user_sid');
+                $table->index('user_sid'););
+                $table->string('base_url')->nullable();
+                $table->string('username');
+                $table->string('domain');
+                $table->string('user_sid')->nullable();
+                $table->string('motherboard_uuid')-
                 $table->index('username');
                 $table->index('visit_time_utc');
             });

@@ -41,7 +41,7 @@
         </div>
     </div>
 
-    <div class="flex h-full" x-data="{ sidebarOpen: true, mobileMenuOpen: false }">
+    <div class="flex h-full" x-data="{ sidebarOpen: window.innerWidth >= 1024, mobileMenuOpen: false }" @resize.window="if(window.innerWidth >= 1024) sidebarOpen = true; else sidebarOpen = false">
         
         <!-- Sidebar -->
         @include('layouts.sidebar')

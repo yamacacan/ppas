@@ -139,6 +139,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('computer-users', \App\Http\Controllers\Web\ComputerUserController::class)
             ->middleware('permission:Bilgisayar Kullanıcıları');
 
+        // Computers (Hardware & Apps)
+        Route::resource('computers', \App\Http\Controllers\ComputerController::class)
+            ->only(['index', 'show'])
+            ->middleware('permission:Bilgisayar Kullanıcıları');
+
         // Unit Statistics
         Route::resource('unit-statistics', \App\Http\Controllers\Web\UnitStatisticsController::class)
             ->only(['index', 'show'])
