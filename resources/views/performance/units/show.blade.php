@@ -372,7 +372,9 @@
     }
     
     var weeklyOptions = {
+        ...darkModeConfig,
         chart: {
+            ...darkModeConfig.chart,
             height: 400,
             type: 'bar',
             toolbar: { 
@@ -411,7 +413,7 @@
             style: {
                 fontSize: '12px',
                 fontWeight: 'bold',
-                colors: ["#304758"]
+                colors: [isDarkMode ? "#e5e7eb" : "#304758"]
             }
         },
         stroke: { 
@@ -424,25 +426,32 @@
             data: weeklyHours
         }],
         xaxis: {
+            ...darkModeConfig.xaxis,
             categories: weeklyDays,
             labels: {
                 style: {
                     fontSize: '13px',
-                    fontWeight: 600
+                    fontWeight: 600,
+                    colors: isDarkMode ? '#9ca3af' : '#6b7280'
                 }
             }
         },
         yaxis: {
+            ...darkModeConfig.yaxis,
             title: { 
                 text: 'Saat',
                 style: {
                     fontSize: '14px',
-                    fontWeight: 600
+                    fontWeight: 600,
+                    color: isDarkMode ? '#9ca3af' : '#6b7280'
                 }
             },
             labels: {
                 formatter: function (val) {
                     return val.toFixed(1);
+                },
+                style: {
+                    colors: isDarkMode ? '#9ca3af' : '#6b7280'
                 }
             },
             min: 0
@@ -450,7 +459,7 @@
         fill: {
             type: 'gradient',
             gradient: {
-                shade: 'light',
+                shade: isDarkMode ? 'dark' : 'light',
                 type: "vertical",
                 shadeIntensity: 0.4,
                 inverseColors: false,
@@ -461,14 +470,15 @@
         },
         colors: ['#7366ff'],
         grid: {
-            borderColor: '#e7e7e7',
+            ...darkModeConfig.grid,
             strokeDashArray: 3,
             row: {
-                colors: ['#f8f9fa', 'transparent'],
+                colors: [isDarkMode ? 'rgba(255,255,255,0.05)' : '#f8f9fa', 'transparent'],
                 opacity: 0.5
             },
         },
         tooltip: {
+            ...darkModeConfig.tooltip,
             y: {
                 formatter: function (val) {
                     return val.toFixed(2) + " saat";
@@ -480,8 +490,10 @@
 
     // Kategori Dağılımı - GELİŞTİRİLMİŞ
     var categoryOptions = {
+        ...darkModeConfig,
         series: @json($topCategories->pluck('percentage')),
         chart: {
+            ...darkModeConfig.chart,
             type: 'donut',
             height: 350
         },
@@ -496,7 +508,10 @@
         colors: ['#7366ff', '#51bb25', '#f73164', '#f8d62b', '#a927f9', '#00d0ff', '#ff6384'],
         legend: {
             position: 'bottom',
-            fontSize: '13px'
+            fontSize: '13px',
+            labels: {
+                colors: isDarkMode ? '#9ca3af' : '#6b7280'
+            }
         },
         plotOptions: {
             pie: {
@@ -504,12 +519,19 @@
                     size: '70%',
                     labels: {
                         show: true,
+                        name: {
+                            color: isDarkMode ? '#e5e7eb' : '#374151'
+                        },
+                        value: {
+                            color: isDarkMode ? '#e5e7eb' : '#374151'
+                        },
                         total: {
                             showAlways: true,
                             show: true,
                             label: 'Toplam',
                             fontSize: '16px',
-                            fontWeight: 600
+                            fontWeight: 600,
+                            color: isDarkMode ? '#e5e7eb' : '#374151'
                         }
                     }
                 }
@@ -519,6 +541,9 @@
             enabled: true,
             formatter: function (val) {
                 return val.toFixed(1) + "%"
+            },
+            style: {
+                colors: [isDarkMode ? '#1f2937' : '#fff']
             }
         }
     };
@@ -526,6 +551,7 @@
 
     // İş vs Diğer Grafik - YENİ
     var workOtherOptions = {
+        ...darkModeConfig,
         series: [{
             name: 'Süre (Saat)',
             data: [
@@ -534,6 +560,7 @@
             ]
         }],
         chart: {
+            ...darkModeConfig.chart,
             type: 'bar',
             height: 350,
             toolbar: { show: false }
@@ -559,17 +586,16 @@
             }
         },
         xaxis: {
+            ...darkModeConfig.xaxis,
             categories: ['İş Aktiviteleri', 'Diğer Aktiviteler']
         },
-        colors: ['#51bb25', '#f73164'],
-        grid: {
-            borderColor: '#e7e7e7'
-        }
+        colors: ['#51bb25', '#f73164']
     };
     new ApexCharts(document.querySelector("#workOtherChart"), workOtherOptions).render();
 
     // Mesai Saatleri Grafik - YENİ
     var workingHoursOptions = {
+        ...darkModeConfig,
         series: [{
             name: 'İş',
             data: [
@@ -584,6 +610,7 @@
             ]
         }],
         chart: {
+            ...darkModeConfig.chart,
             type: 'bar',
             height: 350,
             stacked: true,
@@ -597,12 +624,16 @@
             }
         },
         xaxis: {
+            ...darkModeConfig.xaxis,
             categories: ['Mesai İçi', 'Mesai Dışı']
         },
         colors: ['#51bb25', '#f8d62b'],
         legend: {
             position: 'top',
-            horizontalAlign: 'left'
+            horizontalAlign: 'left',
+            labels: {
+                colors: isDarkMode ? '#9ca3af' : '#6b7280'
+            }
         },
         fill: {
             opacity: 1
@@ -611,6 +642,9 @@
             enabled: true,
             formatter: function (val) {
                 return val.toFixed(0) + "h";
+            },
+            style: {
+                colors: ['#fff']
             }
         }
     };
@@ -619,11 +653,13 @@
     // Top Keywords - Bar Chart
     var topKeywordsData = @json($topKeywords);
     var topKeywordsOptions = {
+        ...darkModeConfig,
         series: [{
             name: 'Kullanım Sayısı',
             data: topKeywordsData.slice(0, 10).map(item => item.count)
         }],
         chart: {
+            ...darkModeConfig.chart,
             type: 'bar',
             height: 350,
             toolbar: { show: false }
@@ -639,9 +675,13 @@
             enabled: true,
             formatter: function (val) {
                 return val.toFixed(0);
+            },
+            style: {
+                colors: ['#fff']
             }
         },
         xaxis: {
+            ...darkModeConfig.xaxis,
             categories: topKeywordsData.slice(0, 10).map(item => item.keyword)
         },
         colors: ['#7366ff', '#51bb25', '#f73164', '#f8d62b', '#a927f9', '#00d0ff', '#ff6384', '#36a2eb', '#cc65fe', '#ffce56'],
@@ -654,11 +694,13 @@
     // Top Processes - Bar Chart
     var topProcessesData = @json($topProcesses);
     var topProcessesOptions = {
+        ...darkModeConfig,
         series: [{
             name: 'Süre (Saat)',
             data: topProcessesData.slice(0, 10).map(item => parseFloat(item.duration_hours))
         }],
         chart: {
+            ...darkModeConfig.chart,
             type: 'bar',
             height: 350,
             toolbar: { show: false }
@@ -674,9 +716,13 @@
             enabled: true,
             formatter: function (val) {
                 return val.toFixed(1) + "h";
+            },
+            style: {
+                colors: ['#fff']
             }
         },
         xaxis: {
+            ...darkModeConfig.xaxis,
             categories: topProcessesData.slice(0, 10).map(item => item.process_name.length > 20 ? item.process_name.substring(0, 20) + '...' : item.process_name)
         },
         colors: ['#f73164', '#51bb25', '#7366ff', '#f8d62b', '#a927f9', '#00d0ff', '#ff6384', '#36a2eb', '#cc65fe', '#ffce56'],
