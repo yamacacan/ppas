@@ -113,6 +113,11 @@ class AutoTaggingService
                             ->where('motherboard_uuid', $activity->motherboard_uuid)
                             ->first();
 
+        // Birim atanmamışsa tagleme yapma
+        if (!$computerUser || !$computerUser->unit_id) {
+            return [];
+        }
+
         // Tüm aktif keyword'leri priority'ye göre getir
         // Override'ları da eager load edelim
         $keywords = CategoryKeyword::with(['category', 'overrides.category'])

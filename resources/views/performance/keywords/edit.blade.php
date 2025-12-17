@@ -208,7 +208,7 @@
                     </div>
                 </div>
             </form>
-
+             @role('Super Admin|Admin')
             <!-- Contextual Overrides -->
             <div class="card">
                 <div class="card-header border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
@@ -450,7 +450,7 @@
                 </div>
             </div>
         </div>
-
+        @endrole
         <!-- Sidebar Info -->
         <div class="xl:col-span-1 space-y-6">
             <!-- Stats -->
