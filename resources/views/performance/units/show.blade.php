@@ -500,7 +500,7 @@
         dateFormat: "Y-m-d",
         // Do not force theme here, handled by CSS
         allowInput: true,
-        static: true // Ensures it scrolls with content
+        // static: true removed to fix overflow clipping issues
     });
 
     // --- CountUp.js Initialization ---
