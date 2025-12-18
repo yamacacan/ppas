@@ -21,8 +21,14 @@
 @endsection
 
 @section('content')
+<div x-data="{ loaded: false }" x-init="setTimeout(() => loaded = true, 100)">
+
 <!-- Filter Card -->
-<div class="card mb-6">
+<div class="card mb-6" 
+     x-show="loaded" 
+     x-transition:enter="transition ease-out duration-300"
+     x-transition:enter-start="opacity-0 translate-y-4"
+     x-transition:enter-end="opacity-100 translate-y-0">
     <div class="card-header border-b border-gray-200 dark:border-gray-700 py-3 flex justify-between items-center">
         <h5 class="font-bold text-gray-900 dark:text-white flex items-center gap-2 text-sm uppercase tracking-wide">
             <i class="fas fa-filter text-primary-500"></i>
@@ -56,7 +62,11 @@
 </div>
 
 <!-- Premium Summary Cards -->
-<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8"
+     x-show="loaded" 
+     x-transition:enter="transition ease-out duration-500 delay-100"
+     x-transition:enter-start="opacity-0 translate-y-4"
+     x-transition:enter-end="opacity-100 translate-y-0">
     <!-- Toplam Çalışma (Purple) -->
     <div class="bg-gray-900 dark:bg-gray-800 rounded-2xl p-6 relative overflow-hidden group hover:shadow-lg transition-all border border-gray-800">
         <div class="relative z-10">
@@ -122,7 +132,11 @@
 </div>
 
 <!-- Working Hours Efficiency (Tailwind Styled Chart) -->
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6"
+     x-show="loaded" 
+     x-transition:enter="transition ease-out duration-500 delay-200"
+     x-transition:enter-start="opacity-0 translate-y-4"
+     x-transition:enter-end="opacity-100 translate-y-0">
     <!-- Custom Tailwind Chart Card -->
     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 h-full flex flex-col">
         <div class="p-6 border-b border-gray-200 dark:border-gray-700">
@@ -234,7 +248,11 @@
 </div>
 
 <!-- Pie Chart & Categories -->
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6"
+     x-show="loaded" 
+     x-transition:enter="transition ease-out duration-500 delay-300"
+     x-transition:enter-start="opacity-0 translate-y-4"
+     x-transition:enter-end="opacity-100 translate-y-0">
     <div class="card h-full">
         <div class="card-header border-b border-gray-200 dark:border-gray-700">
             <h5 class="font-bold text-gray-900 dark:text-white">Genel İş / Diğer Dağılımı</h5>
@@ -269,7 +287,11 @@
 </div>
 
 <!-- Keywords & Apps -->
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6"
+     x-show="loaded" 
+     x-transition:enter="transition ease-out duration-500 delay-400"
+     x-transition:enter-start="opacity-0 translate-y-4"
+     x-transition:enter-end="opacity-100 translate-y-0">
     <!-- Keywords -->
     <div class="card h-full">
          <div class="card-header border-b border-gray-200 dark:border-gray-700">
@@ -340,7 +362,11 @@
 </div>
 
 <!-- Users Table -->
-<div class="card">
+<div class="card"
+     x-show="loaded" 
+     x-transition:enter="transition ease-out duration-500 delay-500"
+     x-transition:enter-start="opacity-0 translate-y-4"
+     x-transition:enter-end="opacity-100 translate-y-0">
     <div class="card-header border-b border-gray-200 dark:border-gray-700">
         <h5 class="font-bold text-gray-900 dark:text-white flex items-center gap-2">
             <i class="fas fa-users text-primary-500"></i>
@@ -390,6 +416,7 @@
     </div>
 </div>
 
+</div>
 @endsection
 
 @section('script')
