@@ -42,19 +42,27 @@
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div class="text-center border-r border-white/20 last:border-0">
             <p class="text-sm opacity-90 mb-1">Bugün Toplam</p>
-            <p class="text-3xl font-bold">{{ $todayStats['total'] }}<span class="text-lg ml-1">saat</span></p>
+            <p class="text-3xl font-bold">
+                <span id="counter-today-total">{{ $todayStats['total'] }}</span><span class="text-lg ml-1">saat</span>
+            </p>
         </div>
         <div class="text-center border-r border-white/20 last:border-0">
             <p class="text-sm opacity-90 mb-1">İş (Verimli)</p>
-            <p class="text-3xl font-bold">{{ $todayStats['work'] }}<span class="text-lg ml-1">saat</span></p>
+            <p class="text-3xl font-bold">
+                <span id="counter-today-work">{{ $todayStats['work'] }}</span><span class="text-lg ml-1">saat</span>
+            </p>
         </div>
         <div class="text-center border-r border-white/20 last:border-0">
             <p class="text-sm opacity-90 mb-1">Aktivite Sayısı</p>
-            <p class="text-3xl font-bold">{{ number_format($todayStats['activities']) }}</p>
+            <p class="text-3xl font-bold">
+                <span id="counter-today-activities">{{ number_format($todayStats['activities']) }}</span>
+            </p>
         </div>
         <div class="text-center">
             <p class="text-sm opacity-90 mb-1">Tagleme Oranı</p>
-            <p class="text-3xl font-bold">%{{ $taggingRate }}</p>
+            <p class="text-3xl font-bold">
+                %<span id="counter-tagging-rate">{{ $taggingRate }}</span>
+            </p>
         </div>
     </div>
 </div>
@@ -67,7 +75,9 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Toplam Süre</p>
-                    <h3 class="text-3xl font-bold text-gray-900 dark:text-white">{{ number_format($totalHours, 1) }}</h3>
+                    <h3 class="text-3xl font-bold text-gray-900 dark:text-white">
+                        <span id="counter-total-hours">{{ number_format($totalHours, 1) }}</span>
+                    </h3>
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Tüm Zamanlar</p>
                 </div>
                 <div class="stat-icon bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
@@ -83,7 +93,9 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">İş Aktiviteleri</p>
-                    <h3 class="text-3xl font-bold text-gray-900 dark:text-white">{{ number_format($workHours, 1) }}</h3>
+                    <h3 class="text-3xl font-bold text-gray-900 dark:text-white">
+                        <span id="counter-work-hours">{{ number_format($workHours, 1) }}</span>
+                    </h3>
                     <p class="text-xs text-green-600 dark:text-green-400 mt-1 font-semibold">saat</p>
                 </div>
                 <div class="stat-icon bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400">
@@ -99,7 +111,9 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Diğer Aktiviteler</p>
-                    <h3 class="text-3xl font-bold text-gray-900 dark:text-white">{{ number_format($otherHours, 1) }}</h3>
+                    <h3 class="text-3xl font-bold text-gray-900 dark:text-white">
+                        <span id="counter-other-hours">{{ number_format($otherHours, 1) }}</span>
+                    </h3>
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">saat</p>
                 </div>
                 <div class="stat-icon bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400">
@@ -115,7 +129,9 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Tanımsız Süre</p>
-                    <h3 class="text-3xl font-bold text-gray-900 dark:text-white">{{ number_format($untaggedHours, 1) }}</h3>
+                    <h3 class="text-3xl font-bold text-gray-900 dark:text-white">
+                        <span id="counter-untagged-hours">{{ number_format($untaggedHours, 1) }}</span>
+                    </h3>
                     <p class="text-xs text-red-500 mt-1">saat</p>
                 </div>
                 <div class="stat-icon bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400">
@@ -390,7 +406,36 @@
 
 @section('script')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/countup.js/2.0.7/countUp.umd.min.js"></script>
 <script>
+    // --- CountUp.js Initialization ---
+    document.addEventListener('DOMContentLoaded', function() {
+        const options = { duration: 2.5, useEasing: true, useGrouping: true };
+        
+        // Helper to init countUp safely
+        const initCounter = (id, decimalPlaces = 0) => {
+            const el = document.getElementById(id);
+            if(el) {
+                const val = parseFloat(el.innerText.replace(',', '.').replace(/[^0-9.-]/g, '')); // Clean val
+                const anim = new countUp.CountUp(id, val, { ...options, decimalPlaces });
+                if (!anim.error) anim.start();
+            }
+        };
+
+        // Delay slightly for visual effect
+        setTimeout(() => {
+            initCounter('counter-today-total', 1);
+            initCounter('counter-today-work', 1);
+            initCounter('counter-today-activities', 0);
+            initCounter('counter-tagging-rate', 1);
+            
+            initCounter('counter-total-hours', 1);
+            initCounter('counter-work-hours', 1);
+            initCounter('counter-other-hours', 1);
+            initCounter('counter-untagged-hours', 1);
+        }, 300);
+    });
+
     const isDark = document.documentElement.classList.contains('dark');
     const gridColor = isDark ? 'rgba(75, 85, 99, 0.2)' : 'rgba(229, 231, 235, 0.5)';
     const textColor = isDark ? '#9ca3af' : '#6b7280';
