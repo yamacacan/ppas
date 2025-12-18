@@ -55,82 +55,168 @@
     </div>
 </div>
 
-<!-- Summmary Cards -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-    <div class="card bg-blue-50 dark:bg-blue-900/10 border-l-4 border-blue-500 text-center">
-        <div class="card-body py-6">
-            <h2 class="text-4xl font-bold text-blue-700 dark:text-blue-300 mb-1">
-                {{ number_format($workOtherRatio['work']['duration_hours'], 1) }}
-            </h2>
-            <p class="text-sm font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wider">İş Saatleri</p>
+<!-- Premium Summary Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+    <!-- Toplam Çalışma (Purple) -->
+    <div class="bg-gray-900 dark:bg-gray-800 rounded-2xl p-6 relative overflow-hidden group hover:shadow-lg transition-all border border-gray-800">
+        <div class="relative z-10">
+            <p class="text-gray-400 text-sm font-medium mb-1">Toplam Çalışma</p>
+            <h3 class="text-3xl font-bold text-white mb-2">{{ number_format($workOtherRatio['total']['duration_hours'], 1) }}</h3>
+            <p class="text-xs text-gray-500">saat aktivite</p>
+        </div>
+        <div class="absolute right-5 top-6 w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/30 group-hover:scale-110 transition-transform">
+            <i class="fas fa-clock text-white text-xl"></i>
+        </div>
+        <div class="absolute bottom-4 right-5 text-purple-400 text-xs flex items-center gap-1">
+            <span>{{ $unit->computer_users_count }} personel</span>
+            <i class="fas fa-chart-line"></i>
         </div>
     </div>
 
-    <div class="card bg-gray-50 dark:bg-gray-800 border-l-4 border-gray-500 text-center">
-        <div class="card-body py-6">
-            <h2 class="text-4xl font-bold text-gray-700 dark:text-gray-300 mb-1">
-                {{ number_format($workOtherRatio['other']['duration_hours'], 1) }}
-            </h2>
-            <p class="text-sm font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">Diğer Saatler</p>
+    <!-- Verim Oranı (Green) -->
+    <div class="bg-gray-900 dark:bg-gray-800 rounded-2xl p-6 relative overflow-hidden group hover:shadow-lg transition-all border border-gray-800">
+        <div class="relative z-10">
+            <p class="text-gray-400 text-sm font-medium mb-1">Verim Oranı</p>
+            <h3 class="text-3xl font-bold text-green-500 mb-2">%{{ number_format($workOtherRatio['work']['percentage'], 2) }}</h3>
+            <p class="text-xs text-gray-500">{{ number_format($workOtherRatio['work']['duration_hours'], 1) }} saat iş</p>
+            
+            <!-- Tailwind Progress Bar -->
+            <div class="w-full bg-gray-700 rounded-full h-1.5 mt-4 overflow-hidden">
+                <div class="bg-green-500 h-1.5 rounded-full" style="width: {{ $workOtherRatio['work']['percentage'] }}%"></div>
+            </div>
+        </div>
+        <div class="absolute right-5 top-6 w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center shadow-lg shadow-green-500/30 group-hover:scale-110 transition-transform">
+            <i class="fas fa-chart-bar text-white text-xl"></i>
         </div>
     </div>
 
-    <div class="card bg-green-50 dark:bg-green-900/10 border-l-4 border-green-500 text-center">
-        <div class="card-body py-6">
-            <h2 class="text-4xl font-bold text-green-700 dark:text-green-300 mb-1">
-                {{ number_format($workOtherRatio['total']['duration_hours'], 1) }}
-            </h2>
-            <p class="text-sm font-medium text-green-600 dark:text-green-400 uppercase tracking-wider">Toplam Saat</p>
+    <!-- Personel (Blue) -->
+    <div class="bg-gray-900 dark:bg-gray-800 rounded-2xl p-6 relative overflow-hidden group hover:shadow-lg transition-all border border-gray-800">
+        <div class="relative z-10">
+            <p class="text-gray-400 text-sm font-medium mb-1">Personel</p>
+            <h3 class="text-3xl font-bold text-blue-500 mb-2">{{ $unit->computer_users_count }}</h3>
+            <p class="text-xs text-gray-500">toplam kullanıcı</p>
+            <p class="text-xs text-blue-400 mt-4 flex items-center gap-1">
+                <i class="fas fa-check-circle"></i> Aktif çalışan
+            </p>
+        </div>
+        <div class="absolute right-5 top-6 w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:scale-110 transition-transform">
+            <i class="fas fa-users text-white text-xl"></i>
+        </div>
+    </div>
+
+    <!-- Mesai Dışı (Orange) -->
+    <div class="bg-gray-900 dark:bg-gray-800 rounded-2xl p-6 relative overflow-hidden group hover:shadow-lg transition-all border border-gray-800">
+        <div class="relative z-10">
+            <p class="text-gray-400 text-sm font-medium mb-1">Mesai Dışı</p>
+            <h3 class="text-3xl font-bold text-orange-500 mb-2">{{ number_format($workingHourStats['outside_hours']['work'], 2) }}</h3>
+            <p class="text-xs text-gray-500">saat iş aktivitesi</p>
+            <p class="text-xs text-orange-400 mt-4 flex items-center gap-1">
+                <i class="fas fa-exclamation-triangle"></i> Fazla mesai
+            </p>
+        </div>
+        <div class="absolute right-5 top-6 w-12 h-12 bg-orange-600 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/30 group-hover:scale-110 transition-transform">
+            <i class="fas fa-moon text-white text-xl"></i>
         </div>
     </div>
 </div>
 
-<!-- Working Hours & Weekly Rhythm -->
+<!-- Working Hours Efficiency (Tailwind Styled Chart) -->
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-    <!-- Working Hours -->
-    <div class="card h-full">
-        <div class="card-header border-b border-gray-200 dark:border-gray-700">
-             <h5 class="font-bold text-gray-900 dark:text-white">
-                Mesai Saatleri Verimliliği 
-                ({{ \App\Models\FirmSettings::instance()->work_start_time }} - {{ \App\Models\FirmSettings::instance()->work_end_time }})
+    <!-- Custom Tailwind Chart Card -->
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 h-full flex flex-col">
+        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+            <h5 class="font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                <span class="w-2 h-6 bg-gradient-to-b from-blue-500 to-indigo-600 rounded-full"></span>
+                Mesai Verimlilik Analizi
             </h5>
+            <p class="text-sm text-gray-500 mt-1">Mesai içi vs dışı çalışma dağılımı</p>
         </div>
-        <div class="card-body p-6">
-             <div class="grid grid-cols-2 gap-6 mb-6">
-                <div class="bg-blue-50 dark:bg-blue-900/10 rounded-lg p-4 text-center">
-                    <p class="text-xs text-blue-600 dark:text-blue-400 uppercase">Mesai İçinde</p>
-                    <h3 class="text-2xl font-bold text-blue-900 dark:text-blue-100 mt-1">
-                        {{ number_format($workingHourStats['working_hours']['work'], 2) }} Saat
-                    </h3>
-                    <p class="text-xs text-blue-500 mt-1">İş Aktivitesi</p>
-                </div>
-                <div class="bg-orange-50 dark:bg-orange-900/10 rounded-lg p-4 text-center">
-                    <p class="text-xs text-orange-600 dark:text-orange-400 uppercase">Mesai Dışında</p>
-                    <h3 class="text-2xl font-bold text-orange-900 dark:text-orange-100 mt-1">
-                        {{ number_format($workingHourStats['outside_hours']['work'], 2) }} Saat
-                    </h3>
-                    <p class="text-xs text-orange-500 mt-1">İş Aktivitesi</p>
-                </div>
-            </div>
+        <div class="p-8 flex-1 flex flex-col justify-center">
             
-            <div class="space-y-4">
+            <!-- Visualization Container -->
+            <div class="space-y-8">
+                
+                <!-- Mesai İçi Row -->
                 <div>
-                    <div class="flex justify-between text-sm mb-1">
-                        <span class="text-gray-600 dark:text-gray-400">Toplam Mesai İçi Aktivite</span>
-                        <span class="font-bold text-gray-900 dark:text-white">{{ number_format($workingHourStats['working_hours']['total'], 2) }} Saat</span>
-                    </div>
-                    @php
-                        $whTotal = $workingHourStats['working_hours']['total'] > 0 ? $workingHourStats['working_hours']['total'] : 1;
-                        $whWorkPct = ($workingHourStats['working_hours']['work'] / $whTotal) * 100;
-                    @endphp
-                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 overflow-hidden">
-                        <div class="bg-blue-600 h-2.5 rounded-full relative" style="width: {{ $whWorkPct }}%">
-                            <span class="sr-only">Work</span>
+                    <div class="flex justify-between items-end mb-2">
+                        <div>
+                            <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Mesai İçi</span>
+                            <span class="text-xs text-gray-500 block">09:00 - 18:00</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xl font-bold text-blue-600 dark:text-blue-400">{{ number_format($workingHourStats['working_hours']['work'], 1) }}h</span>
                         </div>
                     </div>
-                    <p class="text-xs text-right mt-1 text-blue-600 dark:text-blue-400 font-medium">%{{ number_format($whWorkPct, 1) }} Verimlilik (İş/Toplam)</p>
+                    <!-- Custom Stacked Bar -->
+                    <div class="h-4 w-full bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden flex">
+                        @php
+                            $totalWorking = $workingHourStats['working_hours']['total'] > 0 ? $workingHourStats['working_hours']['total'] : 1;
+                            $workPct = ($workingHourStats['working_hours']['work'] / $totalWorking) * 100;
+                            $otherPct = 100 - $workPct;
+                        @endphp
+                        <div class="h-full bg-blue-500 hover:bg-blue-400 transition-all cursor-help relative group" style="width: {{ $workPct }}%">
+                            <div class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                                İş: %{{ number_format($workPct, 1) }}
+                            </div>
+                        </div>
+                        <div class="h-full bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 transition-all cursor-help relative group" style="width: {{ $otherPct }}%">
+                            <div class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                                Diğer: %{{ number_format($otherPct, 1) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mesai Dışı Row -->
+                <div>
+                    <div class="flex justify-between items-end mb-2">
+                         <div>
+                            <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Mesai Dışı</span>
+                            <span class="text-xs text-gray-500 block">18:00 - 09:00</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xl font-bold text-orange-500">{{ number_format($workingHourStats['outside_hours']['work'], 1) }}h</span>
+                        </div>
+                    </div>
+                    <!-- Custom Stacked Bar -->
+                    <div class="h-4 w-full bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden flex">
+                        @php
+                            $totalOutside = $workingHourStats['outside_hours']['total'] > 0 ? $workingHourStats['outside_hours']['total'] : 1;
+                            $outWorkPct = ($workingHourStats['outside_hours']['work'] / $totalOutside) * 100;
+                            $outOtherPct = 100 - $outWorkPct;
+                        @endphp
+                        <div class="h-full bg-orange-500 hover:bg-orange-400 transition-all cursor-help relative group" style="width: {{ $outWorkPct }}%">
+                             <div class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                                İş: %{{ number_format($outWorkPct, 1) }}
+                            </div>
+                        </div>
+                        <div class="h-full bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 transition-all cursor-help relative group" style="width: {{ $outOtherPct }}%">
+                             <div class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                                Diğer: %{{ number_format($outOtherPct, 1) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            
+            <!-- Legend -->
+            <div class="flex items-center justify-center gap-6 mt-8">
+                 <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-blue-500"></span>
+                    <span class="text-xs font-medium text-gray-600 dark:text-gray-400">Verimli Zaman</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-orange-500"></span>
+                    <span class="text-xs font-medium text-gray-600 dark:text-gray-400">Ekstra Efor</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-gray-300 dark:bg-gray-600"></span>
+                    <span class="text-xs font-medium text-gray-600 dark:text-gray-400">Diğer</span>
                 </div>
             </div>
+
         </div>
     </div>
 
@@ -278,9 +364,9 @@
                         <td class="px-6 py-4">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs">
-                                    {{ substr($user->user_name, 0, 1) }}
+                                    {{ substr($user->name ?? $user->username, 0, 1) }}
                                 </div>
-                                <span class="font-medium text-gray-900 dark:text-white">{{ $user->user_name }}</span>
+                                <span class="font-medium text-gray-900 dark:text-white">{{ $user->name ?? $user->username }}</span>
                             </div>
                         </td>
                          <td class="px-6 py-4 text-sm text-gray-500">
