@@ -44,13 +44,19 @@
         <form method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Başlangıç</label>
-                <input type="date" name="start_date" class="form-input w-full" 
-                       value="{{ $filters['start_date'] ?? '' }}">
+                <div class="relative">
+                    <input type="date" name="start_date" class="datepicker form-input w-full pl-10" 
+                           value="{{ $filters['start_date'] ?? '' }}" placeholder="Tarih seçin...">
+                    <i class="fas fa-calendar absolute left-3 top-3 text-gray-400 pointer-events-none"></i>
+                </div>
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Bitiş</label>
-                <input type="date" name="end_date" class="form-input w-full" 
-                       value="{{ $filters['end_date'] ?? '' }}">
+                <div class="relative">
+                    <input type="date" name="end_date" class="datepicker form-input w-full pl-10" 
+                           value="{{ $filters['end_date'] ?? '' }}" placeholder="Tarih seçin...">
+                    <i class="fas fa-calendar absolute left-3 top-3 text-gray-400 pointer-events-none"></i>
+                </div>
             </div>
             <div>
                 <button type="submit" class="btn btn-primary w-full">
@@ -71,7 +77,9 @@
     <div class="bg-gray-900 dark:bg-gray-800 rounded-2xl p-6 relative overflow-hidden group hover:shadow-lg transition-all border border-gray-800">
         <div class="relative z-10">
             <p class="text-gray-400 text-sm font-medium mb-1">Toplam Çalışma</p>
-            <h3 class="text-3xl font-bold text-white mb-2">{{ number_format($workOtherRatio['total']['duration_hours'], 1) }}</h3>
+            <h3 class="text-3xl font-bold text-white mb-2">
+                <span id="counter-total-work">{{ number_format($workOtherRatio['total']['duration_hours'], 1) }}</span>
+            </h3>
             <p class="text-xs text-gray-500">saat aktivite</p>
         </div>
         <div class="absolute right-5 top-6 w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/30 group-hover:scale-110 transition-transform">
@@ -87,7 +95,9 @@
     <div class="bg-gray-900 dark:bg-gray-800 rounded-2xl p-6 relative overflow-hidden group hover:shadow-lg transition-all border border-gray-800">
         <div class="relative z-10">
             <p class="text-gray-400 text-sm font-medium mb-1">Verim Oranı</p>
-            <h3 class="text-3xl font-bold text-green-500 mb-2">%{{ number_format($workOtherRatio['work']['percentage'], 2) }}</h3>
+            <h3 class="text-3xl font-bold text-green-500 mb-2">
+                %<span id="counter-efficiency">{{ number_format($workOtherRatio['work']['percentage'], 2) }}</span>
+            </h3>
             <p class="text-xs text-gray-500">{{ number_format($workOtherRatio['work']['duration_hours'], 1) }} saat iş</p>
             
             <!-- Tailwind Progress Bar -->
@@ -104,7 +114,9 @@
     <div class="bg-gray-900 dark:bg-gray-800 rounded-2xl p-6 relative overflow-hidden group hover:shadow-lg transition-all border border-gray-800">
         <div class="relative z-10">
             <p class="text-gray-400 text-sm font-medium mb-1">Personel</p>
-            <h3 class="text-3xl font-bold text-blue-500 mb-2">{{ $unit->computer_users_count }}</h3>
+            <h3 class="text-3xl font-bold text-blue-500 mb-2">
+                <span id="counter-personnel">{{ $unit->computer_users_count }}</span>
+            </h3>
             <p class="text-xs text-gray-500">toplam kullanıcı</p>
             <p class="text-xs text-blue-400 mt-4 flex items-center gap-1">
                 <i class="fas fa-check-circle"></i> Aktif çalışan
@@ -119,7 +131,9 @@
     <div class="bg-gray-900 dark:bg-gray-800 rounded-2xl p-6 relative overflow-hidden group hover:shadow-lg transition-all border border-gray-800">
         <div class="relative z-10">
             <p class="text-gray-400 text-sm font-medium mb-1">Mesai Dışı</p>
-            <h3 class="text-3xl font-bold text-orange-500 mb-2">{{ number_format($workingHourStats['outside_hours']['work'], 2) }}</h3>
+            <h3 class="text-3xl font-bold text-orange-500 mb-2">
+                <span id="counter-overtime">{{ number_format($workingHourStats['outside_hours']['work'], 2) }}</span>
+            </h3>
             <p class="text-xs text-gray-500">saat iş aktivitesi</p>
             <p class="text-xs text-orange-400 mt-4 flex items-center gap-1">
                 <i class="fas fa-exclamation-triangle"></i> Fazla mesai
@@ -419,9 +433,58 @@
 </div>
 @endsection
 
+@section('style')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+<style>
+    .flatpickr-calendar { background: #1f2937 !important; border: 1px solid #374151 !important; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important; }
+    .flatpickr-day.selected { background: #2563eb !important; border-color: #2563eb !important; }
+    .flatpickr-day:hover { background: #374151 !important; }
+    .flatpickr-months .flatpickr-month { background: #1f2937 !important; color: #fff !important; fill: #fff !important; }
+    .flatpickr-weekdays { background: #1f2937 !important; }
+    .flatpickr-weekday { color: #9ca3af !important; }
+    .flatpickr-current-month .flatpickr-monthDropdown-months .flatpickr-monthDropdown-month { background-color: #1f2937 !important; }
+</style>
+@endsection
+
 @section('script')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://npmcdn.com/flatpickr/dist/l10n/tr.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/countup.js/2.0.7/countUp.umd.min.js"></script>
 <script>
+    // --- Flatpickr Initialization ---
+    flatpickr(".datepicker", {
+        locale: "tr",
+        dateFormat: "Y-m-d",
+        theme: "dark",
+        allowInput: true
+    });
+
+    // --- CountUp.js Initialization ---
+    document.addEventListener('DOMContentLoaded', function() {
+        const options = { duration: 2.5, useEasing: true, useGrouping: true };
+        
+        // Helper to init countUp safely
+        const initCounter = (id, decimalPlaces = 0) => {
+            const el = document.getElementById(id);
+            if(el) {
+                const val = parseFloat(el.innerText.replace(',', '.')); // Handle locale
+                // Re-format clean for animation start if needed, but CountUp takes endVal
+                const anim = new countUp.CountUp(id, val, { ...options, decimalPlaces });
+                if (!anim.error) anim.start();
+            }
+        };
+
+        // Delay slightly for visual effect after Alpine transition
+        setTimeout(() => {
+            initCounter('counter-total-work', 1);
+            initCounter('counter-efficiency', 2);
+            initCounter('counter-personnel', 0);
+            initCounter('counter-overtime', 2);
+        }, 500);
+    });
+
     Chart.defaults.font.family = "'Inter', sans-serif";
     Chart.defaults.color = '#9ca3af';
     Chart.defaults.borderColor = 'rgba(107, 114, 128, 0.1)';
