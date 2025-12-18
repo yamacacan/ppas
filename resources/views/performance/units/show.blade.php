@@ -74,10 +74,10 @@
      x-transition:enter-start="opacity-0 translate-y-4"
      x-transition:enter-end="opacity-100 translate-y-0">
     <!-- Toplam Çalışma (Purple) -->
-    <div class="bg-gray-900 dark:bg-gray-800 rounded-2xl p-6 relative overflow-hidden group hover:shadow-lg transition-all border border-gray-800">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 relative overflow-hidden group hover:shadow-lg transition-all border border-gray-200 dark:border-gray-800">
         <div class="relative z-10">
-            <p class="text-gray-400 text-sm font-medium mb-1">Toplam Çalışma</p>
-            <h3 class="text-3xl font-bold text-white mb-2">
+            <p class="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1">Toplam Çalışma</p>
+            <h3 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
                 <span id="counter-total-work">{{ number_format($workOtherRatio['total']['duration_hours'], 1) }}</span>
             </h3>
             <p class="text-xs text-gray-500">saat aktivite</p>
@@ -92,9 +92,9 @@
     </div>
 
     <!-- Verim Oranı (Green) -->
-    <div class="bg-gray-900 dark:bg-gray-800 rounded-2xl p-6 relative overflow-hidden group hover:shadow-lg transition-all border border-gray-800">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 relative overflow-hidden group hover:shadow-lg transition-all border border-gray-200 dark:border-gray-800">
         <div class="relative z-10">
-            <p class="text-gray-400 text-sm font-medium mb-1">Verim Oranı</p>
+            <p class="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1">Verim Oranı</p>
             <h3 class="text-3xl font-bold text-green-500 mb-2">
                 %<span id="counter-efficiency">{{ number_format($workOtherRatio['work']['percentage'], 2) }}</span>
             </h3>
@@ -111,9 +111,9 @@
     </div>
 
     <!-- Personel (Blue) -->
-    <div class="bg-gray-900 dark:bg-gray-800 rounded-2xl p-6 relative overflow-hidden group hover:shadow-lg transition-all border border-gray-800">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 relative overflow-hidden group hover:shadow-lg transition-all border border-gray-200 dark:border-gray-800">
         <div class="relative z-10">
-            <p class="text-gray-400 text-sm font-medium mb-1">Personel</p>
+            <p class="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1">Personel</p>
             <h3 class="text-3xl font-bold text-blue-500 mb-2">
                 <span id="counter-personnel">{{ $unit->computer_users_count }}</span>
             </h3>
@@ -128,9 +128,9 @@
     </div>
 
     <!-- Mesai Dışı (Orange) -->
-    <div class="bg-gray-900 dark:bg-gray-800 rounded-2xl p-6 relative overflow-hidden group hover:shadow-lg transition-all border border-gray-800">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 relative overflow-hidden group hover:shadow-lg transition-all border border-gray-200 dark:border-gray-800">
         <div class="relative z-10">
-            <p class="text-gray-400 text-sm font-medium mb-1">Mesai Dışı</p>
+            <p class="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1">Mesai Dışı</p>
             <h3 class="text-3xl font-bold text-orange-500 mb-2">
                 <span id="counter-overtime">{{ number_format($workingHourStats['outside_hours']['work'], 2) }}</span>
             </h3>
@@ -435,15 +435,52 @@
 
 @section('style')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+<!-- Flatpickr Custom Theming -->
 <style>
-    .flatpickr-calendar { background: #1f2937 !important; border: 1px solid #374151 !important; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important; }
-    .flatpickr-day.selected { background: #2563eb !important; border-color: #2563eb !important; }
-    .flatpickr-day:hover { background: #374151 !important; }
-    .flatpickr-months .flatpickr-month { background: #1f2937 !important; color: #fff !important; fill: #fff !important; }
-    .flatpickr-weekdays { background: #1f2937 !important; }
-    .flatpickr-weekday { color: #9ca3af !important; }
-    .flatpickr-current-month .flatpickr-monthDropdown-months .flatpickr-monthDropdown-month { background-color: #1f2937 !important; }
+    /* Dark Mode Overrides for Flatpickr */
+    .dark .flatpickr-calendar { 
+        background: #1f2937 !important; 
+        border: 1px solid #374151 !important; 
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important; 
+    }
+    .dark .flatpickr-months .flatpickr-month { 
+        background: #1f2937 !important; 
+        color: #fff !important; 
+        fill: #fff !important; 
+    }
+    .dark .flatpickr-weekdays { 
+        background: #1f2937 !important; 
+    }
+    .dark .flatpickr-weekday { 
+        color: #9ca3af !important; 
+    }
+    .dark .flatpickr-day { 
+        color: #e5e7eb !important; 
+    }
+    .dark .flatpickr-day:hover, 
+    .dark .flatpickr-day.prevMonthDay:hover, 
+    .dark .flatpickr-day.nextMonthDay:hover { 
+        background: #374151 !important; 
+        border-color: #374151 !important; 
+    }
+    .dark .flatpickr-day.selected { 
+        background: #2563eb !important; 
+        border-color: #2563eb !important; 
+        color: #fff !important; 
+    }
+    .dark .flatpickr-current-month .flatpickr-monthDropdown-months .flatpickr-monthDropdown-month { 
+        background-color: #1f2937 !important; 
+    }
+    .dark .flatpickr-time {
+        background: #1f2937 !important;
+        border-color: #374151 !important;
+    }
+    .dark .flatpickr-time input {
+        color: #fff !important;
+    }
+    .dark .flatpickr-time .flatpickr-am-pm {
+        color: #fff !important;
+    }
 </style>
 @endsection
 
@@ -454,11 +491,16 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/countup.js/2.0.7/countUp.umd.min.js"></script>
 <script>
     // --- Flatpickr Initialization ---
+    // --- Flatpickr Initialization ---
+    // Detect dark mode from HTML class
+    const isDark = document.documentElement.classList.contains('dark');
+    
     flatpickr(".datepicker", {
         locale: "tr",
         dateFormat: "Y-m-d",
-        theme: "dark",
-        allowInput: true
+        // Do not force theme here, handled by CSS
+        allowInput: true,
+        static: true // Ensures it scrolls with content
     });
 
     // --- CountUp.js Initialization ---
