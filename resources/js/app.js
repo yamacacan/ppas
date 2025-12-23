@@ -9,6 +9,9 @@ Alpine.plugin(collapse);
 window.Alpine = Alpine;
 Alpine.start();
 
+import Swal from 'sweetalert2';
+window.Swal = Swal;
+
 // Dark Mode Toggle
 window.toggleDarkMode = function () {
     if (document.documentElement.classList.contains('dark')) {
