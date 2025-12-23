@@ -20,8 +20,7 @@ use App\Http\Controllers\StatisticsController;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
-});
-
+    
 // ============================================
 // Kategori API'leri
 // ============================================
@@ -70,4 +69,6 @@ Route::prefix('statistics')->group(function () {
     Route::get('/tagging-rate', [StatisticsController::class, 'taggingRate']); // Tagleme başarı oranı
     Route::get('/time-distribution', [StatisticsController::class, 'timeDistribution']); // Zaman dağılımı
     Route::get('/work-other-ratio', [StatisticsController::class, 'workOtherRatio']); // İş/Diğer oranı
+});
+
 });
