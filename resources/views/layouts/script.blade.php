@@ -62,6 +62,9 @@
             showConfirmButton: false,
             timer: 3000,
             timerProgressBar: true,
+            customClass: {
+                popup: 'colored-toast dark:bg-gray-800 dark:text-white'
+            },
             didOpen: (toast) => {
                 toast.addEventListener('mouseenter', Swal.stopTimer)
                 toast.addEventListener('mouseleave', Swal.resumeTimer)
@@ -95,11 +98,18 @@
                     title: 'Emin misiniz?',
                     text: "Bu işlem geri alınamaz!",
                     icon: 'warning',
+                    background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                    color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#545454',
                     showCancelButton: true,
                     confirmButtonColor: '#ef4444',
                     cancelButtonColor: '#3b82f6',
                     confirmButtonText: 'Evet, Sil!',
-                    cancelButtonText: 'İptal'
+                    cancelButtonText: 'İptal',
+                    customClass: {
+                        popup: 'dark:bg-gray-800 dark:text-white',
+                        title: 'dark:text-white',
+                        htmlContainer: 'dark:text-gray-300'
+                    }
                 }).then((result) => {
                     if (result.isConfirmed) {
                         form.submit();
