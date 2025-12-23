@@ -41,12 +41,7 @@
     </div>
     
     <div class="card-body">
-        @if(session('success'))
-            <div class="p-4 mb-6 bg-green-50 border border-green-200 text-green-700 rounded-lg flex items-center">
-                <i class="fas fa-check-circle mr-2 text-xl"></i>
-                {{ session('success') }}
-            </div>
-        @endif
+
 
         <div class="overflow-x-auto">
             <table class="table" id="categoriesTable">
@@ -124,8 +119,7 @@
                                 </a>
                                 <form action="{{ route('categories.destroy', $category->id) }}" 
                                       method="POST" 
-                                      class="inline"
-                                      onsubmit="return confirm('Bu kategoriyi silmek istediğinizden emin misiniz?');">
+                                      class="inline delete-form">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" 
@@ -189,8 +183,7 @@
                                         </a>
                                         <form action="{{ route('categories.destroy', $child->id) }}" 
                                               method="POST" 
-                                              class="inline"
-                                              onsubmit="return confirm('Bu kategoriyi silmek istediğinizden emin misiniz?');">
+                                              class="inline delete-form">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" 

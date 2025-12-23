@@ -52,3 +52,60 @@
 	new WOW().init();
 </script>
 @endif
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Toast Configuration
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        });
+
+        // Handle Session Messages
+        @if(session('success'))
+            Toast.fire({ icon: 'success', title: "{{ session('success') }}" });
+        @endif
+
+        @if(session('error'))
+            Toast.fire({ icon: 'error', title: "{{ session('error') }}" });
+        @endif
+
+        @if(session('warning'))
+            Toast.fire({ icon: 'warning', title: "{{ session('warning') }}" });
+        @endif
+
+        @if(session('info'))
+            Toast.fire({ icon: 'info', title: "{{ session('info') }}" });
+        @endif
+
+        // Global Delete Confirmation
+        document.body.addEventListener('submit', function(e) {
+            if (e.target.classList.contains('delete-form')) {
+                e.preventDefault();
+                const form = e.target;
+                
+                Swal.fire({
+                    title: 'Emin misiniz?',
+                    text: "Bu işlem geri alınamaz!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#ef4444',
+                    cancelButtonColor: '#3b82f6',
+                    confirmButtonText: 'Evet, Sil!',
+                    cancelButtonText: 'İptal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            }
+        });
+    });
+</script>
