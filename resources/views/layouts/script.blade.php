@@ -62,8 +62,11 @@
             showConfirmButton: false,
             timer: 3000,
             timerProgressBar: true,
+            background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+            color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#545454',
             customClass: {
-                popup: 'colored-toast dark:bg-gray-800 dark:text-white'
+                popup: 'colored-toast dark:!bg-gray-800 dark:!text-white',
+                title: 'dark:!text-white'
             },
             didOpen: (toast) => {
                 toast.addEventListener('mouseenter', Swal.stopTimer)
