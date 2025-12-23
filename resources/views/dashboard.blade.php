@@ -39,55 +39,55 @@
 @section('content')
 <!-- Today's Summary Bar -->
 <!-- Today's Summary Bar -->
-<div class="mb-8 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 p-1 shadow-lg dark:shadow-gray-900/50">
-    <div class="flex flex-col md:flex-row bg-white/10 backdrop-blur-sm rounded-xl py-6 divide-y md:divide-y-0 md:divide-x divide-white/10 text-white">
+<div class="mb-8 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+    <div class="grid grid-cols-1 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-gray-100 dark:divide-gray-700">
         <!-- Total -->
-        <div class="flex-1 px-6 flex items-center justify-center gap-4">
-             <div class="p-3 bg-white/20 rounded-xl shadow-inner">
-                <i class="fas fa-clock text-2xl"></i>
+        <div class="p-6 flex items-center justify-center gap-5">
+             <div class="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 flex items-center justify-center transition-transform hover:scale-110 duration-200">
+                <i class="fas fa-clock text-xl"></i>
              </div>
              <div>
-                <p class="text-xs font-medium opacity-80 uppercase tracking-wider mb-1">Bugün Toplam</p>
-                <p class="text-3xl font-bold tracking-tight">
-                    <span id="counter-today-total">{{ $todayStats['total'] }}</span><span class="text-base font-normal opacity-70 ml-1">saat</span>
+                <p class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1">Bugün Toplam</p>
+                <p class="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">
+                    <span id="counter-today-total">{{ $todayStats['total'] }}</span><span class="text-sm font-medium text-gray-400 ml-1">saat</span>
                 </p>
              </div>
         </div>
         
         <!-- Work -->
-        <div class="flex-1 px-6 flex items-center justify-center gap-4">
-             <div class="p-3 bg-green-400/20 rounded-xl shadow-inner text-green-100">
-                <i class="fas fa-check-circle text-2xl"></i>
+        <div class="p-6 flex items-center justify-center gap-5">
+             <div class="w-14 h-14 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center transition-transform hover:scale-110 duration-200">
+                <i class="fas fa-check-circle text-xl"></i>
              </div>
              <div>
-                <p class="text-xs font-medium opacity-80 uppercase tracking-wider mb-1">İş (Verimli)</p>
-                <p class="text-3xl font-bold tracking-tight">
-                    <span id="counter-today-work">{{ $todayStats['work'] }}</span><span class="text-base font-normal opacity-70 ml-1">saat</span>
+                <p class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1">İş (Verimli)</p>
+                <p class="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">
+                    <span id="counter-today-work">{{ $todayStats['work'] }}</span><span class="text-sm font-medium text-gray-400 ml-1">saat</span>
                 </p>
              </div>
         </div>
         
         <!-- Activity Count -->
-        <div class="flex-1 px-6 flex items-center justify-center gap-4">
-             <div class="p-3 bg-purple-400/20 rounded-xl shadow-inner text-purple-100">
-                <i class="fas fa-chart-line text-2xl"></i>
+        <div class="p-6 flex items-center justify-center gap-5">
+             <div class="w-14 h-14 rounded-2xl bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 flex items-center justify-center transition-transform hover:scale-110 duration-200">
+                <i class="fas fa-wave-square text-xl"></i>
              </div>
              <div>
-                <p class="text-xs font-medium opacity-80 uppercase tracking-wider mb-1">Aktivite</p>
-                <p class="text-3xl font-bold tracking-tight">
+                <p class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1">Aktivite</p>
+                <p class="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">
                     <span id="counter-today-activities">{{ number_format($todayStats['activities']) }}</span>
                 </p>
              </div>
         </div>
         
         <!-- Tagging Rate -->
-        <div class="flex-1 px-6 flex items-center justify-center gap-4">
-             <div class="p-3 bg-orange-400/20 rounded-xl shadow-inner text-orange-100">
-                <i class="fas fa-tags text-2xl"></i>
+        <div class="p-6 flex items-center justify-center gap-5">
+             <div class="w-14 h-14 rounded-2xl bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 flex items-center justify-center transition-transform hover:scale-110 duration-200">
+                <i class="fas fa-percentage text-xl"></i>
              </div>
              <div>
-                <p class="text-xs font-medium opacity-80 uppercase tracking-wider mb-1">Tagleme</p>
-                <p class="text-3xl font-bold tracking-tight">
+                <p class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1">Tagleme</p>
+                <p class="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">
                     %<span id="counter-tagging-rate">{{ $taggingRate }}</span>
                 </p>
              </div>
