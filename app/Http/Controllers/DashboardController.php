@@ -25,26 +25,32 @@ class DashboardController extends Controller
 
     public function index()
     {
-        // 1. İstatistik Kartları (Tüm Zamanlar)
+        // 1. İstatistik Kartları (Son 30 Gün)
+        $thirtyDaysAgo = now()->subDays(30);
+
         $totalCategories = Category::count();
         $totalKeywords = CategoryKeyword::count();
         $totalActivities = Activity::count();
         
-        $totalDuration = Activity::sum('duration_ms');
+        $totalDuration = Activity::where('start_time_utc', '>=', $thirtyDaysAgo)->sum('duration_ms');
         
         // İş ve Diğer Ayrımı
         $workCategories = Category::where('type', 'work')->pluck('id');
         $otherCategories = Category::where('type', 'other')->pluck('id');
 
-        $workDuration = Activity::whereHas('categories', function($q) use ($workCategories) {
-            $q->whereIn('categories.id', $workCategories);
-        })->sum('duration_ms');
+        $workDuration = Activity::where('start_time_utc', '>=', $thirtyDaysAgo)
+            ->whereHas('categories', function($q) use ($workCategories) {
+                $q->whereIn('categories.id', $workCategories);
+            })->sum('duration_ms');
 
-        $otherDuration = Activity::whereHas('categories', function($q) use ($otherCategories) {
-            $q->whereIn('categories.id', $otherCategories);
-        })->sum('duration_ms');
+        $otherDuration = Activity::where('start_time_utc', '>=', $thirtyDaysAgo)
+            ->whereHas('categories', function($q) use ($otherCategories) {
+                $q->whereIn('categories.id', $otherCategories);
+            })->sum('duration_ms');
         
-        $untaggedDuration = Activity::untagged()->sum('duration_ms');
+        $untaggedDuration = Activity::untagged()
+            ->where('start_time_utc', '>=', $thirtyDaysAgo)
+            ->sum('duration_ms');
         
         $workHours = round($workDuration / (1000 * 60 * 60), 2);
         $otherHours = round($otherDuration / (1000 * 60 * 60), 2);

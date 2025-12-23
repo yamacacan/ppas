@@ -38,31 +38,59 @@
 
 @section('content')
 <!-- Today's Summary Bar -->
-<div class="mb-6 bg-primary-600 dark:bg-primary-700 rounded-lg shadow-md p-6 text-white">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div class="text-center border-r border-white/20 last:border-0">
-            <p class="text-sm opacity-90 mb-1">Bugün Toplam</p>
-            <p class="text-3xl font-bold">
-                <span id="counter-today-total">{{ $todayStats['total'] }}</span><span class="text-lg ml-1">saat</span>
-            </p>
+<!-- Today's Summary Bar -->
+<div class="mb-8 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 p-1 shadow-lg dark:shadow-gray-900/50">
+    <div class="flex flex-col md:flex-row bg-white/10 backdrop-blur-sm rounded-xl py-6 divide-y md:divide-y-0 md:divide-x divide-white/10 text-white">
+        <!-- Total -->
+        <div class="flex-1 px-6 flex items-center justify-center gap-4">
+             <div class="p-3 bg-white/20 rounded-xl shadow-inner">
+                <i class="fas fa-clock text-2xl"></i>
+             </div>
+             <div>
+                <p class="text-xs font-medium opacity-80 uppercase tracking-wider mb-1">Bugün Toplam</p>
+                <p class="text-3xl font-bold tracking-tight">
+                    <span id="counter-today-total">{{ $todayStats['total'] }}</span><span class="text-base font-normal opacity-70 ml-1">saat</span>
+                </p>
+             </div>
         </div>
-        <div class="text-center border-r border-white/20 last:border-0">
-            <p class="text-sm opacity-90 mb-1">İş (Verimli)</p>
-            <p class="text-3xl font-bold">
-                <span id="counter-today-work">{{ $todayStats['work'] }}</span><span class="text-lg ml-1">saat</span>
-            </p>
+        
+        <!-- Work -->
+        <div class="flex-1 px-6 flex items-center justify-center gap-4">
+             <div class="p-3 bg-green-400/20 rounded-xl shadow-inner text-green-100">
+                <i class="fas fa-check-circle text-2xl"></i>
+             </div>
+             <div>
+                <p class="text-xs font-medium opacity-80 uppercase tracking-wider mb-1">İş (Verimli)</p>
+                <p class="text-3xl font-bold tracking-tight">
+                    <span id="counter-today-work">{{ $todayStats['work'] }}</span><span class="text-base font-normal opacity-70 ml-1">saat</span>
+                </p>
+             </div>
         </div>
-        <div class="text-center border-r border-white/20 last:border-0">
-            <p class="text-sm opacity-90 mb-1">Aktivite Sayısı</p>
-            <p class="text-3xl font-bold">
-                <span id="counter-today-activities">{{ number_format($todayStats['activities']) }}</span>
-            </p>
+        
+        <!-- Activity Count -->
+        <div class="flex-1 px-6 flex items-center justify-center gap-4">
+             <div class="p-3 bg-purple-400/20 rounded-xl shadow-inner text-purple-100">
+                <i class="fas fa-chart-line text-2xl"></i>
+             </div>
+             <div>
+                <p class="text-xs font-medium opacity-80 uppercase tracking-wider mb-1">Aktivite</p>
+                <p class="text-3xl font-bold tracking-tight">
+                    <span id="counter-today-activities">{{ number_format($todayStats['activities']) }}</span>
+                </p>
+             </div>
         </div>
-        <div class="text-center">
-            <p class="text-sm opacity-90 mb-1">Tagleme Oranı</p>
-            <p class="text-3xl font-bold">
-                %<span id="counter-tagging-rate">{{ $taggingRate }}</span>
-            </p>
+        
+        <!-- Tagging Rate -->
+        <div class="flex-1 px-6 flex items-center justify-center gap-4">
+             <div class="p-3 bg-orange-400/20 rounded-xl shadow-inner text-orange-100">
+                <i class="fas fa-tags text-2xl"></i>
+             </div>
+             <div>
+                <p class="text-xs font-medium opacity-80 uppercase tracking-wider mb-1">Tagleme</p>
+                <p class="text-3xl font-bold tracking-tight">
+                    %<span id="counter-tagging-rate">{{ $taggingRate }}</span>
+                </p>
+             </div>
         </div>
     </div>
 </div>
@@ -78,7 +106,7 @@
                     <h3 class="text-3xl font-bold text-gray-900 dark:text-white">
                         <span id="counter-total-hours">{{ number_format($totalHours, 1) }}</span>
                     </h3>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Tüm Zamanlar</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Son 30 Gün</p>
                 </div>
                 <div class="stat-icon bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
                     <i class="fas fa-clock text-2xl"></i>
@@ -96,7 +124,7 @@
                     <h3 class="text-3xl font-bold text-gray-900 dark:text-white">
                         <span id="counter-work-hours">{{ number_format($workHours, 1) }}</span>
                     </h3>
-                    <p class="text-xs text-green-600 dark:text-green-400 mt-1 font-semibold">saat</p>
+                    <p class="text-xs text-green-600 dark:text-green-400 mt-1 font-semibold">saat (Son 30 Gün)</p>
                 </div>
                 <div class="stat-icon bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400">
                     <i class="fas fa-briefcase text-2xl"></i>
@@ -114,7 +142,7 @@
                     <h3 class="text-3xl font-bold text-gray-900 dark:text-white">
                         <span id="counter-other-hours">{{ number_format($otherHours, 1) }}</span>
                     </h3>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">saat</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">saat (Son 30 Gün)</p>
                 </div>
                 <div class="stat-icon bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400">
                     <i class="fas fa-coffee text-2xl"></i>
@@ -132,7 +160,7 @@
                     <h3 class="text-3xl font-bold text-gray-900 dark:text-white">
                         <span id="counter-untagged-hours">{{ number_format($untaggedHours, 1) }}</span>
                     </h3>
-                    <p class="text-xs text-red-500 mt-1">saat</p>
+                    <p class="text-xs text-red-500 mt-1">saat (Son 30 Gün)</p>
                 </div>
                 <div class="stat-icon bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400">
                     <i class="fas fa-question-circle text-2xl"></i>
