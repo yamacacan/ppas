@@ -14,7 +14,7 @@ class AutoTagNewActivities extends Command
      *
      * @var string
      */
-    protected $signature = 'performance:auto-tag-new {--limit=1000 : İşlenecek maksimum aktivite sayısı}';
+    protected $signature = 'performance:auto-tag-new {--limit=5000 : İşlenecek maksimum aktivite sayısı}';
 
     /**
      * The console command description.

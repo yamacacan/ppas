@@ -18,7 +18,7 @@ class Kernel extends ConsoleKernel
         // Taglenmemiş aktiviteleri her dakika kontrol et ve tagle
         // withoutOverlapping: Önceki işlem bitmeden yenisi başlamaz
         // runInBackground: Arka planda çalışır
-        $schedule->command('performance:auto-tag-new')
+        $schedule->command('performance:auto-tag-new --limit=5000')
             ->everyMinute()
             ->withoutOverlapping()
             ->runInBackground();
