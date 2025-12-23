@@ -150,6 +150,14 @@ class AutoTaggingService
             if ($matched) {
                 // Hedef kategoriyi belirle (Bağlamsal Kontrol)
                 $targetCategoryId = $keyword->category_id;
+                
+                // Eğer keyword'ün kategorisi yoksa (Category silinmiş ama keyword kalmış)
+                // Bu durumu logla ve atla, ya da varsayılan bir kategori ata.
+                // Şimdilik atlıyoruz çünkü kategorisiz tagleme yapılamaz.
+                if (!$targetCategoryId || !$keyword->category) {
+                    continue;
+                }
+
                 $targetCategoryName = $keyword->category->name;
                 
                 if ($computerUser) {

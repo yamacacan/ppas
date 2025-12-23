@@ -222,6 +222,21 @@
                         <p class="text-xs text-gray-500">saat</p>
                     </div>
                 </div>
+                <div class="flex items-center justify-between p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-red-500 rounded flex items-center justify-center text-white">
+                            <i class="fas fa-question-circle"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Tanımsız Aktiviteler</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Toplam süre</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xl font-bold text-red-600 dark:text-red-400">{{ $workOtherRatio30['untagged']['duration_hours'] ?? 0 }}</p>
+                        <p class="text-xs text-gray-500">saat</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -540,15 +555,17 @@
     new Chart(document.getElementById('workOtherChart'), {
         type: 'doughnut',
         data: {
-            labels: ['İş', 'Diğer'],
+            labels: ['İş', 'Diğer', 'Tanımsız'],
             datasets: [{
                 data: [
                     {{ $workOtherRatio30['work']['duration_hours'] ?? 0 }},
-                    {{ $workOtherRatio30['other']['duration_hours'] ?? 0 }}
+                    {{ $workOtherRatio30['other']['duration_hours'] ?? 0 }},
+                    {{ $workOtherRatio30['untagged']['duration_hours'] ?? 0 }}
                 ],
                 backgroundColor: [
                     'rgb(59, 130, 246)',
-                    'rgb(107, 114, 128)'
+                    'rgb(107, 114, 128)',
+                    'rgb(239, 68, 68)'
                 ],
                 borderWidth: 0
             }]

@@ -134,7 +134,11 @@
                             </code>
                         </td>
                         <td>
-                            <span class="badge badge-primary">{{ $keyword->category->name }}</span>
+                            @if($keyword->category)
+                                <span class="badge badge-primary">{{ $keyword->category->name }}</span>
+                            @else
+                                <span class="badge badge-warning custom-warning-badge text-yellow-800 bg-yellow-100 dark:text-yellow-400 dark:bg-yellow-900/30">Kategorisiz</span>
+                            @endif
                         </td>
                         <td>
                             @switch($keyword->match_type)

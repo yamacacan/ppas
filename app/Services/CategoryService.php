@@ -107,6 +107,9 @@ class CategoryService
             throw new \Exception('Bu kategorinin alt kategorileri var. Önce alt kategorileri silmelisiniz veya taşımalısınız.');
         }
 
+        // Kategoriye bağlı keywordlerin category_id'sini null yap (Orphan keywords)
+        $category->keywords()->update(['category_id' => null]);
+
         // Kategori sil
         return $category->delete();
     }

@@ -26,7 +26,7 @@ return new class extends Migration
                 $table->index('base_url');
                 $table->index('browser');
                 $table->index('motherboard_uuid');
-                $table->index('user_sid'););
+                $table->index('user_sid');
                 $table->string('base_url')->nullable();
                 $table->string('username');
                 $table->string('domain');

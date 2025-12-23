@@ -132,9 +132,14 @@ class DashboardController extends Controller
                 $q->whereIn('categories.id', $otherCategories);
             })->sum('duration_ms');
 
+        $untaggedDuration30 = Activity::untagged()
+            ->where('start_time_utc', '>=', $thirtyDaysAgo)
+            ->sum('duration_ms');
+
         $workOtherRatio30 = [
             'work' => ['duration_hours' => round($workDuration30 / (1000 * 60 * 60), 2)],
             'other' => ['duration_hours' => round($otherDuration30 / (1000 * 60 * 60), 2)],
+            'untagged' => ['duration_hours' => round($untaggedDuration30 / (1000 * 60 * 60), 2)],
         ];
 
         // 6. Top Charts (Categories, Keywords, Processes)
