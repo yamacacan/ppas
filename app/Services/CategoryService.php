@@ -102,7 +102,12 @@ class CategoryService
             return false;
         }
         
-        // Alt kategorileri de sil (cascade)
+        // Alt kategori var mı kontrol et
+        if ($category->children()->count() > 0) {
+            throw new \Exception('Bu kategorinin alt kategorileri var. Önce alt kategorileri silmelisiniz veya taşımalısınız.');
+        }
+
+        // Kategori sil
         return $category->delete();
     }
 

@@ -96,9 +96,13 @@ class CategoryViewController extends Controller
      */
     public function destroy(string $id)
     {
-        $this->categoryService->delete($id);
-
-        return redirect()->route('categories.index')
-            ->with('success', 'Kategori başarıyla silindi.');
+        try {
+            $this->categoryService->delete($id);
+            return redirect()->route('categories.index')
+                ->with('success', 'Kategori başarıyla silindi.');
+        } catch (\Exception $e) {
+            return redirect()->route('categories.index')
+                ->with('error', $e->getMessage());
+        }
     }
 }
