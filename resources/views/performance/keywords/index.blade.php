@@ -110,12 +110,7 @@
     </div>
 
     <div class="card-body">
-        @if(session('success'))
-            <div class="alert alert-success mb-4 flex items-center gap-3">
-                <i class="fas fa-check-circle text-xl"></i>
-                <span>{{ session('success') }}</span>
-            </div>
-        @endif
+
 
         <div class="overflow-x-auto">
             <table class="table" id="keywordsTable">
@@ -210,8 +205,7 @@
                                 </a>
                                 <form action="{{ route('keywords.destroy', $keyword->id) }}" 
                                       method="POST" 
-                                      class="inline"
-                                      onsubmit="return confirm('Bu keyword\'ü silmek istediğinizden emin misiniz?');">
+                                      class="inline delete-form">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" 

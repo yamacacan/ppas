@@ -315,7 +315,7 @@
                                                 </span>
                                             </td>
                                             <td class="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
-                                                <form action="{{ route('keywords.overrides.destroy', $override->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Silmek istediğinize emin misiniz?');">
+                                                <form action="{{ route('keywords.overrides.destroy', $override->id) }}" method="POST" class="inline-block delete-form">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 transition-colors">
@@ -428,7 +428,7 @@
                                                 @endif
                                             </td>
                                             <td class="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
-                                                <form action="{{ route('keywords.alert-exceptions.destroy', $exception->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Silmek istediğinize emin misiniz?');">
+                                                <form action="{{ route('keywords.alert-exceptions.destroy', $exception->id) }}" method="POST" class="inline-block delete-form">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 transition-colors">
