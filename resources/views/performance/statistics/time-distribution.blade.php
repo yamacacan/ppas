@@ -33,14 +33,20 @@
         <form method="GET" class="space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Başlangıç</label>
-                    <input type="date" name="start_date" class="form-input w-full" 
-                           value="{{ $startDate }}">
+                    <x-datepicker 
+                        label="Başlangıç" 
+                        name="start_date" 
+                        value="{{ $startDate }}"
+                        placeholder="Tarih seçiniz"
+                    />
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Bitiş</label>
-                    <input type="date" name="end_date" class="form-input w-full" 
-                           value="{{ $endDate }}">
+                    <x-datepicker 
+                        label="Bitiş" 
+                        name="end_date" 
+                        value="{{ $endDate }}"
+                        placeholder="Tarih seçiniz"
+                    />
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Gruplama</label>

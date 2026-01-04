@@ -44,19 +44,19 @@
         <form method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Başlangıç</label>
-                <div class="relative">
-                    <input type="date" name="start_date" class="datepicker form-input w-full pl-10" 
-                           value="{{ $filters['start_date'] ?? '' }}" placeholder="Tarih seçin...">
-                    <i class="fas fa-calendar absolute left-3 top-3 text-gray-400 pointer-events-none"></i>
-                </div>
+                <x-datepicker 
+                       name="start_date" 
+                       value="{{ $filters['start_date'] ?? '' }}" 
+                       placeholder="Tarih seçin..." 
+                />
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Bitiş</label>
-                <div class="relative">
-                    <input type="date" name="end_date" class="datepicker form-input w-full pl-10" 
-                           value="{{ $filters['end_date'] ?? '' }}" placeholder="Tarih seçin...">
-                    <i class="fas fa-calendar absolute left-3 top-3 text-gray-400 pointer-events-none"></i>
-                </div>
+                <x-datepicker 
+                       name="end_date" 
+                       value="{{ $filters['end_date'] ?? '' }}" 
+                       placeholder="Tarih seçin..." 
+                />
             </div>
             <div>
                 <button type="submit" class="btn btn-primary w-full">

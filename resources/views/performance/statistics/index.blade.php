@@ -32,19 +32,19 @@
     <div class="card-body">
         <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
             <div>
-                <x-input 
-                    type="date" 
+                <x-datepicker 
                     label="Başlangıç Tarihi" 
                     name="start_date" 
                     value="{{ $filters['start_date'] }}"
+                    placeholder="Tarih seçiniz"
                 />
             </div>
             <div>
-                <x-input 
-                    type="date" 
+                <x-datepicker 
                     label="Bitiş Tarihi" 
                     name="end_date" 
                     value="{{ $filters['end_date'] }}"
+                    placeholder="Tarih seçiniz"
                 />
             </div>
             <div>

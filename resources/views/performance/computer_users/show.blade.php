@@ -40,13 +40,19 @@
         <form method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Başlangıç</label>
-                <input type="date" name="start_date" class="form-input w-full" 
-                       value="{{ $filters['start_date'] ?? '' }}">
+                <x-datepicker 
+                       name="start_date" 
+                       value="{{ $filters['start_date'] ?? '' }}"
+                       placeholder="Başlangıç Tarihi"
+                />
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Bitiş</label>
-                <input type="date" name="end_date" class="form-input w-full" 
-                       value="{{ $filters['end_date'] ?? '' }}">
+                <x-datepicker 
+                       name="end_date" 
+                       value="{{ $filters['end_date'] ?? '' }}"
+                       placeholder="Bitiş Tarihi"
+                />
             </div>
             <div>
                 <button type="submit" class="btn btn-primary w-full">

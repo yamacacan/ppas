@@ -8,7 +8,7 @@
     <div class="flex flex-col h-full">
         
         <!-- Logo Section -->
-        <div class="flex items-center justify-between px-6 py-5 border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
+        <div class="flex items-center justify-between px-6 h-[70px] border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
             <a href="{{ route('/') }}" class="flex items-center space-x-3">
                 <div class="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center shadow-sm">
                     <span class="text-white font-bold text-lg">P</span>
@@ -264,7 +264,7 @@
         </nav>
 
         <!-- Sidebar Footer -->
-        <div class="px-4 py-4 border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
+        <div class="px-4 h-[60px] flex items-center border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
             <div class="flex items-center gap-3 px-2">
                 <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
                     <i class="fas fa-chart-line text-white text-sm"></i>

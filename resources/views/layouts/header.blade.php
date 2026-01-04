@@ -1,6 +1,6 @@
 <!-- Header -->
-<header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
-    <div class="flex items-center justify-between">
+<header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 h-[70px] flex items-center">
+    <div class="flex items-center justify-between w-full">
         
         <!-- Left Side: Toggle & Search -->
         <div class="flex items-center gap-4">

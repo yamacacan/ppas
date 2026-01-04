@@ -32,14 +32,20 @@
     <div class="card-body">
         <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
             <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Başlangıç</label>
-                <input type="date" name="start_date" class="form-input w-full" 
-                       value="{{ $filters['start_date'] }}">
+                <x-datepicker 
+                    label="Başlangıç" 
+                    name="start_date" 
+                    value="{{ $filters['start_date'] }}"
+                    placeholder="Tarih seçiniz"
+                />
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Bitiş</label>
-                <input type="date" name="end_date" class="form-input w-full" 
-                       value="{{ $filters['end_date'] }}">
+                <x-datepicker 
+                    label="Bitiş" 
+                    name="end_date" 
+                    value="{{ $filters['end_date'] }}"
+                    placeholder="Tarih seçiniz"
+                />
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Hızlı Seçim</label>

@@ -116,20 +116,24 @@
                 <form method="GET" action="{{ route('activities.index') }}">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                         <!-- Date Range -->
-                        <x-input 
-                            type="date"
-                            label="Başlangıç Tarihi" 
-                            name="start_date" 
-                            id="start_date"
-                            value="{{ request('start_date') }}"
-                        />
-                        <x-input 
-                            type="date"
-                            label="Bitiş Tarihi" 
-                            name="end_date" 
-                            id="end_date"
-                            value="{{ request('end_date') }}"
-                        />
+                        <div class="w-full">
+                            <x-datepicker 
+                                label="Başlangıç Tarihi" 
+                                name="start_date" 
+                                id="start_date"
+                                value="{{ request('start_date') }}"
+                                placeholder="Seçiniz"
+                            />
+                        </div>
+                        <div class="w-full">
+                            <x-datepicker 
+                                label="Bitiş Tarihi" 
+                                name="end_date" 
+                                id="end_date"
+                                value="{{ request('end_date') }}"
+                                placeholder="Seçiniz"
+                            />
+                        </div>
 
                         <!-- Status Filter -->
                         <x-select 
