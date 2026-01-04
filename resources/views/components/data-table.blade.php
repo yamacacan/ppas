@@ -27,7 +27,7 @@
                     placeholder="Ara..." 
                     class="w-full pl-4 pr-10 py-1.5 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
                 >
-                <i class="fas fa-search absolute right-3 top-2.5 text-gray-400 pointer-events-none text-sm"></i>
+                <i class="fas fa-search absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none text-sm"></i>
             </div>
         @else
             <div></div> <!-- Spacer -->
