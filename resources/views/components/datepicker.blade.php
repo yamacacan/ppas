@@ -38,6 +38,10 @@
                 this.month = today.getMonth();
                 this.year = today.getFullYear();
             }
+            // Ensure types are numbers for strict comparison if needed, though JS loose comparison usually works.
+            this.month = parseInt(this.month);
+            this.year = parseInt(this.year);
+
             this.getNoOfDays();
             
             // Re-calculate position on window resize/scroll to keep it attached
@@ -102,9 +106,13 @@
 
         getDateValue(date) {
             let selectedDate = new Date(this.year, this.month, date);
-            let year = selectedDate.getFullYear();
-            let month = ('0' + (selectedDate.getMonth() + 1)).slice(-2);
+            this.year = selectedDate.getFullYear();
+            this.month = selectedDate.getMonth();
+            
+            let year = this.year;
+            let month = ('0' + (this.month + 1)).slice(-2);
             let day = ('0' + selectedDate.getDate()).slice(-2);
+            
             this.value = `${year}-${month}-${day}`;
             this.showDatepicker = false;
         },
@@ -219,7 +227,7 @@
                     <div class="flex gap-2 w-full">
                         <!-- Month Select -->
                         <select 
-                            x-model="month" 
+                            x-model.number="month" 
                             @change="getNoOfDays()"
                             class="w-1/2 bg-gray-50 dark:bg-gray-700 border-none text-gray-900 dark:text-white text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block p-2 cursor-pointer"
                         >
@@ -230,7 +238,7 @@
                         
                         <!-- Year Select -->
                         <select 
-                            x-model="year" 
+                            x-model.number="year" 
                             @change="getNoOfDays()"
                             class="w-1/2 bg-gray-50 dark:bg-gray-700 border-none text-gray-900 dark:text-white text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block p-2 cursor-pointer"
                         >
