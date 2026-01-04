@@ -43,60 +43,85 @@
                 <form action="{{ route('firm-settings.update') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h5 class="mb-3 text-primary">Firma Bilgileri</h5>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-4">
+                            <h5 class="text-lg font-semibold text-primary-600 dark:text-primary-400 mb-4">Firma Bilgileri</h5>
                             
-                            <div class="mb-3">
-                                <label for="firm_name" class="form-label">Firma Adı</label>
-                                <input type="text" class="form-control" id="firm_name" name="firm_name" value="{{ old('firm_name', $settings->firm_name) }}">
+                            <x-input 
+                                label="Firma Adı" 
+                                name="firm_name" 
+                                id="firm_name"
+                                :value="old('firm_name', $settings->firm_name)"
+                            />
+
+                            <x-input 
+                                type="email"
+                                label="E-posta Adresi" 
+                                name="email" 
+                                id="email"
+                                :value="old('email', $settings->email)"
+                            />
+
+                            <div>
+                                <label for="address" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Adres</label>
+                                <textarea 
+                                    id="address" 
+                                    name="address" 
+                                    rows="3"
+                                    class="w-full px-4 py-2.5 rounded-lg border bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-900/30 outline-none transition-all duration-200"
+                                >{{ old('address', $settings->address) }}</textarea>
                             </div>
 
-                            <div class="mb-3">
-                                <label for="email" class="form-label">E-posta Adresi</label>
-                                <input type="email" class="form-control" id="email" name="email" value="{{ old('email', $settings->email) }}">
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="address" class="form-label">Adres</label>
-                                <textarea class="form-control" id="address" name="address" rows="3">{{ old('address', $settings->address) }}</textarea>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="logo" class="form-label">Firma Logosu</label>
-                                <input class="form-control" type="file" id="logo" name="logo">
+                            <div>
+                                <label for="logo" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Firma Logosu</label>
+                                <input 
+                                    type="file" 
+                                    id="logo" 
+                                    name="logo"
+                                    class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                                >
                                 @if($settings->logo_path)
-                                    <div class="mt-2">
-                                        <p class="text-muted text-sm mb-1">Mevcut Logo:</p>
-                                        <img src="{{ Storage::url($settings->logo_path) }}" alt="Firma Logosu" class="img-thumbnail" style="max-height: 100px;">
+                                    <div class="mt-3 p-2 border border-gray-200 dark:border-gray-700 rounded-lg inline-block bg-white dark:bg-gray-800">
+                                        <p class="text-xs text-gray-500 mb-1">Mevcut Logo:</p>
+                                        <img src="{{ Storage::url($settings->logo_path) }}" alt="Firma Logosu" class="max-h-24 rounded">
                                     </div>
                                 @endif
                             </div>
                         </div>
 
-                        <div class="col-md-6">
-                            <h5 class="mb-3 text-primary">Mesai Saatleri</h5>
-                            <p class="text-muted small">Bu saatler performans ölçümlerinde "Mesai İçi" ve "Mesai Dışı" hesaplamalarında kullanılacaktır.</p>
+                        <div class="space-y-4">
+                            <h5 class="text-lg font-semibold text-primary-600 dark:text-primary-400 mb-4">Mesai Saatleri</h5>
+                            <div class="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 p-4 rounded-lg text-sm mb-4 border border-blue-100 dark:border-blue-800">
+                                <i class="fas fa-info-circle mr-2"></i>
+                                Bu saatler performans ölçümlerinde "Mesai İçi" ve "Mesai Dışı" hesaplamalarında kullanılacaktır.
+                            </div>
                             
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="work_start_time" class="form-label">Mesai Başlangıç Saati</label>
-                                    <input type="time" class="form-control" id="work_start_time" name="work_start_time" value="{{ old('work_start_time', \Carbon\Carbon::parse($settings->work_start_time)->format('H:i')) }}" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="work_end_time" class="form-label">Mesai Bitiş Saati</label>
-                                    <input type="time" class="form-control" id="work_end_time" name="work_end_time" value="{{ old('work_end_time', \Carbon\Carbon::parse($settings->work_end_time)->format('H:i')) }}" required>
-                                </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <x-input 
+                                    type="time"
+                                    label="Mesai Başlangıç Saati" 
+                                    name="work_start_time" 
+                                    id="work_start_time"
+                                    :value="old('work_start_time', \Carbon\Carbon::parse($settings->work_start_time)->format('H:i'))"
+                                    required
+                                />
+
+                                <x-input 
+                                    type="time"
+                                    label="Mesai Bitiş Saati" 
+                                    name="work_end_time" 
+                                    id="work_end_time"
+                                    :value="old('work_end_time', \Carbon\Carbon::parse($settings->work_end_time)->format('H:i'))"
+                                    required
+                                />
                             </div>
                         </div>
                     </div>
 
-                    <div class="row mt-4">
-                        <div class="col-12 text-end">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save me-1"></i> Ayarları Kaydet
-                            </button>
-                        </div>
+                    <div class="mt-6 flex justify-end pt-6 border-t border-gray-200 dark:border-gray-700">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save mr-2"></i> Ayarları Kaydet
+                        </button>
                     </div>
                 </form>
             </div>

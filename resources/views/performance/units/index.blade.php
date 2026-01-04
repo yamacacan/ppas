@@ -2,10 +2,6 @@
 
 @section('title', 'Birim İstatistikleri')
 
-@section('css')
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/datatables.css') }}">
-@endsection
-
 @section('breadcrumb-title')
     <div>
         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Birim İstatistikleri</h2>
@@ -33,65 +29,44 @@
         </h5>
     </div>
     <div class="card-body">
-        <div class="overflow-x-auto">
-            <table class="table table-hover" id="unitsTable">
-                <thead>
-                    <tr>
-                        <th>Birim Adı</th>
-                        <th>Kullanıcı Sayısı</th>
-                        <th>Toplam Aktivite</th>
-                        <th>Toplam Süre (Saat)</th>
-                        <th class="text-right">İşlemler</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($units as $unit)
-                    <tr class="group hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                        <td>
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-sitemap text-blue-600 dark:text-blue-400"></i>
-                                </div>
-                                <span class="font-medium text-gray-900 dark:text-white">{{ $unit->name }}</span>
+        @php
+            $tableRows = $units->map(function($unit) {
+                return [
+                    'id' => $unit->id,
+                    'name' => '
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-sitemap text-blue-600 dark:text-blue-400"></i>
                             </div>
-                        </td>
-                        <td>
-                            <span class="badge badge-light-primary">
-                                <i class="fas fa-users mr-1"></i> {{ $unit->computer_users_count }}
-                            </span>
-                        </td>
-                        <td>
-                            <span class="text-gray-700 dark:text-gray-300">{{ number_format($unit->activity_count) }}</span>
-                        </td>
-                        <td>
-                            <span class="text-gray-700 dark:text-gray-300 font-medium">{{ $unit->total_duration_hours }}s</span>
-                        </td>
-                        <td class="text-right">
-                            <a href="{{ route('unit-statistics.show', $unit->id) }}" 
+                            <span class="font-medium text-gray-900 dark:text-white">'.$unit->name.'</span>
+                        </div>',
+                    'user_count' => '
+                        <span class="badge badge-light-primary">
+                            <i class="fas fa-users mr-1"></i> '.$unit->computer_users_count.'
+                        </span>',
+                    'activity_count' => '<span class="text-gray-700 dark:text-gray-300">'.number_format($unit->activity_count).'</span>',
+                    'duration' => '<span class="text-gray-700 dark:text-gray-300 font-medium">'.$unit->total_duration_hours.'s</span>',
+                    'actions' => '
+                        <div class="flex justify-end">
+                            <a href="'.route('unit-statistics.show', $unit->id).'" 
                                class="inline-flex items-center gap-1 px-3 py-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all">
                                 <i class="fas fa-chart-pie"></i> <span>Detaylar</span>
                             </a>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+                        </div>'
+                ];
+            });
+        @endphp
+
+        <x-data-table 
+            :columns="[
+                ['header' => 'Birim Adı', 'key' => 'name'],
+                ['header' => 'Kullanıcı Sayısı', 'key' => 'user_count'],
+                ['header' => 'Toplam Aktivite', 'key' => 'activity_count'],
+                ['header' => 'Toplam Süre (Saat)', 'key' => 'duration'],
+                ['header' => '', 'key' => 'actions']
+            ]" 
+            :rows="$tableRows" 
+        />
     </div>
 </div>
-@endsection
-
-@section('script')
-<script src="{{ asset('assets/js/datatable/datatables/jquery.dataTables.min.js') }}"></script>
-<script>
-    $(document).ready(function() {
-        $('#unitsTable').DataTable({
-            "language": {
-                "url": "/assets/json/turkish.json"
-            },
-            "dom": '<"flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4"lf>rtip',
-            "responsive": true
-        });
-    });
-</script>
 @endsection

@@ -21,12 +21,35 @@
 @endsection
 
 @section('content')
+@php
+    $categoryOptions = [];
+    foreach($categories as $category) {
+        $categoryOptions[$category->id] = $category->getFullPath();
+    }
+
+    $unitOptions = ['' => 'Seçiniz...'];
+    foreach($units as $unit) {
+        $unitOptions[$unit->id] = $unit->name;
+    }
+    
+    $userOptions = ['' => 'Seçiniz...'];
+    foreach($computerUsers as $cUser) {
+        $userOptions[$cUser->id] = $cUser->username;
+    }
+    
+    $categorySimpleOptions = [];
+     foreach($categories as $category) {
+        $categorySimpleOptions[$category->id] = $category->name;
+    }
+@endphp
+
 <div x-data="{ 
     formData: { 
         match_type: '{{ old('match_type', $keyword->match_type) }}', 
         priority: {{ old('priority', $keyword->priority) }} 
     },
-    overrideType: 'unit'
+    overrideType: 'unit',
+    exceptionType: 'unit'
 }">
     
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
@@ -51,33 +74,23 @@
                         <!-- Category & Keyword -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Keyword
-                                </label>
-                                <input type="text" 
-                                       name="keyword" 
-                                       class="form-input @error('keyword') border-red-500 @enderror" 
-                                       value="{{ old('keyword', $keyword->keyword) }}" 
-                                       placeholder="Örn: Visual Studio Code">
-                                @error('keyword')
-                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                                @enderror
+                                <x-input 
+                                    label="Keyword" 
+                                    name="keyword"
+                                    id="keyword" 
+                                    value="{{ old('keyword', $keyword->keyword) }}"
+                                    placeholder="Örn: Visual Studio Code"
+                                />
                             </div>
 
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Varsayılan Kategori
-                                </label>
-                                <select name="category_id" class="form-select @error('category_id') border-red-500 @enderror">
-                                    @foreach($categories as $category)
-                                        <option value="{{ $category->id }}" {{ old('category_id', $keyword->category_id) == $category->id ? 'selected' : '' }}>
-                                            {{ $category->getFullPath() }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('category_id')
-                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                                @enderror
+                                <x-select 
+                                    label="Varsayılan Kategori" 
+                                    name="category_id" 
+                                    id="category_id"
+                                    :options="$categoryOptions"
+                                    :value="old('category_id', $keyword->category_id)"
+                                />
                             </div>
                         </div>
 
@@ -132,15 +145,15 @@
                         <!-- Priority & Settings -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Öncelik (1-10)
-                                </label>
-                                <input type="number" 
-                                       name="priority" 
-                                       x-model="formData.priority"
-                                       class="form-input" 
-                                       min="1" 
-                                       max="10">
+                                <x-input 
+                                    type="number"
+                                    label="Öncelik (1-10)" 
+                                    name="priority"
+                                    id="priority" 
+                                    x-model="formData.priority"
+                                    min="1"
+                                    max="10"
+                                />
                                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                                     Yüksek öncelikli keyword'ler önce işlenir
                                 </p>
@@ -178,17 +191,14 @@
                                          x-transition:enter-start="opacity-0 scale-95"
                                          x-transition:enter-end="opacity-100 scale-100"
                                          class="pl-7">
-                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                            Bildirim Gidecek Birim <span class="text-red-500">*</span>
-                                        </label>
-                                        <select name="alert_unit_id" class="form-select text-sm w-full" :required="isAlert">
-                                            <option value="">Birim seçiniz...</option>
-                                            @foreach($units as $unit)
-                                                <option value="{{ $unit->id }}" {{ old('alert_unit_id', $keyword->alert_unit_id) == $unit->id ? 'selected' : '' }}>
-                                                    {{ $unit->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                        <x-select 
+                                            label="Bildirim Gidecek Birim" 
+                                            name="alert_unit_id" 
+                                            id="alert_unit_id"
+                                            :options="$unitOptions"
+                                            :value="old('alert_unit_id', $keyword->alert_unit_id)"
+                                            x-bind:required="isAlert"
+                                        />
                                         <p class="mt-1 text-xs text-red-500">
                                             Eşleşme olduğunda bu birimdeki kullanıcılara bildirim gider.
                                         </p>
@@ -237,32 +247,31 @@
                             </div>
 
                             <div x-show="overrideType === 'unit'">
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Birim</label>
-                                <select name="unit_id" class="form-select w-full">
-                                    <option value="">Seçiniz...</option>
-                                    @foreach($units as $unit)
-                                        <option value="{{ $unit->id }}">{{ $unit->name }}</option>
-                                    @endforeach
-                                </select>
+                                <x-select 
+                                    label="Birim" 
+                                    name="unit_id" 
+                                    id="override_unit_id"
+                                    :options="$unitOptions"
+                                />
                             </div>
 
                             <div x-show="overrideType === 'user'" style="display: none;">
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Kullanıcı</label>
-                                <select name="computer_user_id" class="form-select w-full">
-                                    <option value="">Seçiniz...</option>
-                                    @foreach($computerUsers as $cUser)
-                                        <option value="{{ $cUser->id }}">{{ $cUser->username }}</option>
-                                    @endforeach
-                                </select>
+                                <x-select 
+                                    label="Kullanıcı" 
+                                    name="computer_user_id" 
+                                    id="override_user_id"
+                                    :options="$userOptions"
+                                />
                             </div>
 
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Hedef Kategori</label>
-                                <select name="category_id" class="form-select w-full" required>
-                                    @foreach($categories as $category)
-                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                    @endforeach
-                                </select>
+                                <x-select 
+                                    label="Hedef Kategori" 
+                                    name="category_id" 
+                                    id="override_category_id"
+                                    :options="$categorySimpleOptions"
+                                    required
+                                />
                             </div>
 
                             <div>
@@ -353,7 +362,7 @@
                 
                 <div class="card-body">
                     <!-- Add Exception Form -->
-                    <form action="{{ route('keywords.alert-exceptions.store', $keyword->id) }}" method="POST" class="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl border border-gray-200 dark:border-gray-700 mb-6" x-data="{ exceptionType: 'unit' }">
+                    <form action="{{ route('keywords.alert-exceptions.store', $keyword->id) }}" method="POST" class="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl border border-gray-200 dark:border-gray-700 mb-6">
                         @csrf
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                             <div>
@@ -365,23 +374,21 @@
                             </div>
 
                             <div x-show="exceptionType === 'unit'">
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Birim</label>
-                                <select name="unit_id" class="form-select w-full">
-                                    <option value="">Seçiniz...</option>
-                                    @foreach($units as $unit)
-                                        <option value="{{ $unit->id }}">{{ $unit->name }}</option>
-                                    @endforeach
-                                </select>
+                                <x-select 
+                                    label="Birim" 
+                                    name="unit_id" 
+                                    id="exception_unit_id"
+                                    :options="$unitOptions"
+                                />
                             </div>
 
                             <div x-show="exceptionType === 'user'" style="display: none;">
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Kullanıcı</label>
-                                <select name="computer_user_id" class="form-select w-full">
-                                    <option value="">Seçiniz...</option>
-                                    @foreach($computerUsers as $cUser)
-                                        <option value="{{ $cUser->id }}">{{ $cUser->username }}</option>
-                                    @endforeach
-                                </select>
+                                <x-select 
+                                    label="Kullanıcı" 
+                                    name="computer_user_id" 
+                                    id="exception_user_id"
+                                    :options="$userOptions"
+                                />
                             </div>
 
                             <div>

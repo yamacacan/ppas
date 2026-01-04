@@ -45,11 +45,11 @@
 
             <!-- Yönetimsel İşlemler -->
             @if(auth()->user()->can('Birim Yönetimi') || auth()->user()->can('Ünvan Yönetimi') || auth()->user()->hasRole('Super Admin|Admin'))
-            <div x-data="{ open: false }">
+            <div x-data="{ open: {{ request()->routeIs('birim.*', 'firm-settings.*', 'unvan.*', 'roller.*', 'kullanicilar.*') ? 'true' : 'false' }} }">
                 <button @click="open = !open" 
-                        class="group flex items-center justify-between w-full px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">
+                        class="group flex items-center justify-between w-full px-3 py-2.5 rounded-lg text-sm font-medium transition-all {{ request()->routeIs('birim.*', 'firm-settings.*', 'unvan.*', 'roller.*', 'kullanicilar.*') ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}">
                     <div class="flex items-center gap-3">
-                        <i class="fas fa-cog w-5 text-gray-400 group-hover:text-gray-600"></i>
+                        <i class="fas fa-cog w-5 {{ request()->routeIs('birim.*', 'firm-settings.*', 'unvan.*', 'roller.*', 'kullanicilar.*') ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 group-hover:text-gray-600' }}"></i>
                         <span>Yönetimsel İşlemler</span>
                     </div>
                     <i class="fas fa-chevron-down text-xs transition-transform duration-200" 
@@ -58,44 +58,44 @@
                 <div x-show="open" x-collapse class="ml-8 mt-1 space-y-1">
                     @can('Birim Yönetimi')
                         <a href="{{ route('birim.index') }}" 
-                           class="block px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all">
+                           class="block px-3 py-2 text-sm transition-all rounded-lg {{ request()->routeIs('birim.index') ? 'text-primary-700 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800' }}">
                             Birimler
                         </a>
                         <a href="{{ route('birim.create') }}" 
-                           class="block px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all">
+                           class="block px-3 py-2 text-sm transition-all rounded-lg {{ request()->routeIs('birim.create') ? 'text-primary-700 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800' }}">
                             Birim Ekle
                         </a>
                     @endcan
 
-                    @can('Firma Ayarları')
+                    @role('Super Admin|Admin')
                         <a href="{{ route('firm-settings.edit') }}" 
-                           class="block px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all">
+                           class="block px-3 py-2 text-sm transition-all rounded-lg {{ request()->routeIs('firm-settings.*') ? 'text-primary-700 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800' }}">
                             Firma Ayarları
                         </a>
-                    @endcan
+                    @endrole
                     
                     @can('Ünvan Yönetimi')
                         <a href="{{ route('unvan.index') }}" 
-                           class="block px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all">
+                           class="block px-3 py-2 text-sm transition-all rounded-lg {{ request()->routeIs('unvan.index') ? 'text-primary-700 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800' }}">
                             Ünvanlar
                         </a>
                         <a href="{{ route('unvan.create') }}" 
-                           class="block px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all">
+                           class="block px-3 py-2 text-sm transition-all rounded-lg {{ request()->routeIs('unvan.create') ? 'text-primary-700 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800' }}">
                             Ünvan Ekle
                         </a>
                     @endcan
                     
                     @role('Super Admin|Admin')
                         <a href="{{ route('roller.index') }}" 
-                           class="block px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all">
+                           class="block px-3 py-2 text-sm transition-all rounded-lg {{ request()->routeIs('roller.index') ? 'text-primary-700 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800' }}">
                             Roller
                         </a>
                         <a href="{{ route('roller.create') }}" 
-                           class="block px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all">
+                           class="block px-3 py-2 text-sm transition-all rounded-lg {{ request()->routeIs('roller.create') ? 'text-primary-700 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800' }}">
                             Rol İzinleri
                         </a>
                         <a href="{{ route('kullanicilar.index') }}" 
-                           class="block px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all">
+                           class="block px-3 py-2 text-sm transition-all rounded-lg {{ request()->routeIs('kullanicilar.*') ? 'text-primary-700 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800' }}">
                             Kullanıcılar
                         </a>
                     @endrole

@@ -41,65 +41,44 @@
 
         <!-- İsim ve Tip -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="space-y-2">
-                <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Kategori Adı <span class="text-danger">*</span>
-                </label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i class="fas fa-tag text-gray-400"></i>
-                    </div>
-                    <input type="text" name="name" id="name" 
-                           class="form-input pl-10 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:border-primary-500 focus:ring-primary-500 sm:text-sm shadow-sm transition-colors" 
-                           value="{{ old('name', $category->name) }}" required>
-                </div>
-                @error('name')
-                    <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                @enderror
-            </div>
+            <x-input 
+                label="Kategori Adı" 
+                name="name" 
+                id="name"
+                :value="old('name', $category->name)"
+                required
+                :error="$errors->first('name')"
+                icon="fas fa-tag"
+            />
 
-            <div class="space-y-2">
-                <label for="type" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Tip <span class="text-danger">*</span>
-                </label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i class="fas fa-layer-group text-gray-400"></i>
-                    </div>
-                    <select name="type" id="type" required
-                            class="form-select pl-10 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:border-primary-500 focus:ring-primary-500 sm:text-sm shadow-sm transition-colors">
-                        <option value="">Seçiniz...</option>
-                        <option value="work" {{ old('type', $category->type) == 'work' ? 'selected' : '' }}>İş (Work)</option>
-                        <option value="other" {{ old('type', $category->type) == 'other' ? 'selected' : '' }}>Diğer (Other)</option>
-                    </select>
-                </div>
-                @error('type')
-                    <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                @enderror
-            </div>
+            <x-select 
+                label="Tip" 
+                name="type" 
+                id="type"
+                :options="['work' => 'İş', 'other' => 'Diğer']"
+                :value="old('type', $category->type)"
+                required
+                :error="$errors->first('type')"
+            />
         </div>
 
         <!-- Parent -->
         <div class="space-y-2">
-            <label for="parent_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Üst Kategori (Parent)
-            </label>
-            <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <i class="fas fa-code-branch text-gray-400"></i>
-                </div>
-                <select name="parent_id" id="parent_id"
-                        class="form-select pl-10 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:border-primary-500 focus:ring-primary-500 sm:text-sm shadow-sm transition-colors">
-                    <option value="">Ana Kategori (Parent yok)</option>
-                    @foreach($categories as $cat)
-                        @if($cat->id != $category->id && !$cat->isDescendantOf($category))
-                            <option value="{{ $cat->id }}" {{ old('parent_id', $category->parent_id) == $cat->id ? 'selected' : '' }}>
-                                {{ $cat->getFullPath() }}
-                            </option>
-                        @endif
-                    @endforeach
-                </select>
-            </div>
+            @php
+                $parentOptions = ['' => 'Ana Kategori (Parent yok)'];
+                foreach($categories as $cat) {
+                    if($cat->id != $category->id && !$cat->isDescendantOf($category)) {
+                        $parentOptions[$cat->id] = $cat->getFullPath();
+                    }
+                }
+            @endphp
+            <x-select 
+                label="Üst Kategori (Parent)" 
+                name="parent_id" 
+                id="parent_id"
+                :options="$parentOptions"
+                :value="old('parent_id', $category->parent_id)"
+            />
             <p class="text-xs text-gray-500 dark:text-gray-400">Kendi altına veya çocuklarının altına taşınamaz.</p>
         </div>
 
@@ -123,36 +102,26 @@
                 </div>
             </div>
 
-            <div class="space-y-2">
-                <label for="icon" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    İkon (Font Awesome)
-                </label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i class="fas fa-icons text-gray-400"></i>
-                    </div>
-                    <input type="text" name="icon" id="icon" 
-                           class="form-input pl-10 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:border-primary-500 focus:ring-primary-500 sm:text-sm shadow-sm transition-colors" 
-                           value="{{ old('icon', $category->icon) }}" placeholder="fa-folder">
-                </div>
-            </div>
+            <x-input 
+                label="İkon (Font Awesome)" 
+                name="icon" 
+                id="icon"
+                :value="old('icon', $category->icon)"
+                placeholder="fa-folder"
+                icon="fas fa-icons"
+            />
         </div>
 
         <!-- Sıralama ve Durum -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-            <div class="space-y-2">
-                <label for="sort_order" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Sıralama
-                </label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i class="fas fa-sort-numeric-down text-gray-400"></i>
-                    </div>
-                    <input type="number" name="sort_order" id="sort_order" 
-                           class="form-input pl-10 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:border-primary-500 focus:ring-primary-500 sm:text-sm shadow-sm transition-colors" 
-                           value="{{ old('sort_order', $category->sort_order ?? 0) }}">
-                </div>
-            </div>
+            <x-input 
+                type="number"
+                label="Sıralama" 
+                name="sort_order" 
+                id="sort_order"
+                :value="old('sort_order', $category->sort_order ?? 0)"
+                icon="fas fa-sort-numeric-down"
+            />
 
             <div class="pt-8">
                 <label class="inline-flex items-center cursor-pointer group">

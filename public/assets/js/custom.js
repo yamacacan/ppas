@@ -265,14 +265,14 @@ $(document).ready(function () {
 
 
     //boşluk analizinde sayfa yüklendiğinde de çalışması için
-    if(auditID != null){
-    //Sayfa yüklendiğinde de çalışması için
-    getPasSubGroups(selectedValue, selectedSubGroupValue, auditID);
+    if (auditID != null) {
+        //Sayfa yüklendiğinde de çalışması için
+        getPasSubGroups(selectedValue, selectedSubGroupValue, auditID);
     }
-    
+
     //Tedbire atanmış varlık grupları gelmesi
     function getPasSubGroups(selectedValue, selectedSubGroupValue, auditID) {
-        
+
         $.ajax({
             url: "/get-PAS-subgroup",
             method: "GET",
@@ -283,9 +283,9 @@ $(document).ready(function () {
             },
 
             success: function (data) {
-               $("#sub_group_id").empty();
+                $("#sub_group_id").empty();
                 //console.log(JSON.stringify(data, null, 2));
-               
+
 
                 if (data.length == 0) {
                     $("#sub_group_id").append(
@@ -342,31 +342,32 @@ $(document).ready(function () {
     });
 
     //Rol değiştiği zaman rol izinlerin alt menüde gözükmesi
-    $("#role_id").change(function (e) {
-        let roleId = e.target.value;
-
-        $(".form-check-input").prop("checked", false);
-
-        $.ajax({
-            type: "get",
-            url: `/roles/${roleId}/permissions`,
-            dataType: "json",
-            success: function (permissions) {
-                //console.log(permissions)
-
-                permissions.forEach(function (permissionName) {
-                    //$(`#switchCheck${permissionId}`).prop("checked", true);
-                    $(`.form-check-input[data="${permissionName}"]`).prop(
-                        "checked",
-                        true
-                    );
-                });
-            },
-            error: function (xhr) {
-                console.log("Hata oluştu: ", xhr.responseText);
-            },
-        });
-    });
+    //Rol değiştiği zaman rol izinlerin alt menüde gözükmesi
+    // $("#role_id").change(function (e) {
+    //     let roleId = e.target.value;
+    //
+    //     $(".form-check-input").prop("checked", false);
+    //
+    //     $.ajax({
+    //         type: "get",
+    //         url: `/roles/${roleId}/permissions`,
+    //         dataType: "json",
+    //         success: function (permissions) {
+    //             //console.log(permissions)
+    //
+    //             permissions.forEach(function (permissionName) {
+    //                 //$(`#switchCheck${permissionId}`).prop("checked", true);
+    //                 $(`.form-check-input[data="${permissionName}"]`).prop(
+    //                     "checked",
+    //                     true
+    //                 );
+    //             });
+    //         },
+    //         error: function (xhr) {
+    //             console.log("Hata oluştu: ", xhr.responseText);
+    //         },
+    //     });
+    // });
 
     $("#users").change(function (e) {
         var selectedValue = $(this).val();
@@ -448,5 +449,5 @@ $(document).ready(function () {
         });
     });
 
-   
+
 });

@@ -116,73 +116,76 @@
                 <form method="GET" action="{{ route('activities.index') }}">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                         <!-- Date Range -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Başlangıç Tarihi</label>
-                            <input type="date" name="start_date" value="{{ request('start_date') }}" 
-                                class="form-input w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:border-primary-500 focus:ring-primary-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Bitiş Tarihi</label>
-                            <input type="date" name="end_date" value="{{ request('end_date') }}" 
-                                class="form-input w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:border-primary-500 focus:ring-primary-500">
-                        </div>
+                        <x-input 
+                            type="date"
+                            label="Başlangıç Tarihi" 
+                            name="start_date" 
+                            id="start_date"
+                            value="{{ request('start_date') }}"
+                        />
+                        <x-input 
+                            type="date"
+                            label="Bitiş Tarihi" 
+                            name="end_date" 
+                            id="end_date"
+                            value="{{ request('end_date') }}"
+                        />
 
                         <!-- Status Filter -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Durum</label>
-                            <select name="status" class="form-select w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:border-primary-500 focus:ring-primary-500">
-                                <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>Hepsi</option>
-                                <option value="tagged" {{ request('status') == 'tagged' ? 'selected' : '' }}>Taglenmiş</option>
-                                <option value="untagged" {{ request('status') == 'untagged' ? 'selected' : '' }}>Taglenmemiş</option>
-                            </select>
-                        </div>
+                        <x-select 
+                            label="Durum" 
+                            name="status" 
+                            id="status"
+                            :options="[
+                                'all' => 'Hepsi',
+                                'tagged' => 'Taglenmiş',
+                                'untagged' => 'Taglenmemiş'
+                            ]"
+                            :value="request('status', 'all')"
+                        />
 
                         <!-- Category Filter -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Kategori</label>
-                            <select name="category_id" class="form-select w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:border-primary-500 focus:ring-primary-500">
-                                <option value="">Tüm Kategoriler</option>
-                                @foreach($categories as $category)
-                                    <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
-                                        {{ $category->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
+                        @php
+                            $categoryOptions = ['' => 'Tüm Kategoriler'];
+                            foreach($categories as $category) {
+                                $categoryOptions[$category->id] = $category->name;
+                            }
+                        @endphp
+                        <x-select 
+                            label="Kategori" 
+                            name="category_id" 
+                            id="category_id"
+                            :options="$categoryOptions"
+                            :value="request('category_id')"
+                        />
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                         <!-- Text Searches -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Kullanıcı Adı</label>
-                            <div class="relative">
-                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
-                                    <i class="fas fa-user text-xs"></i>
-                                </span>
-                                <input type="text" name="username" value="{{ request('username') }}" placeholder="Kullanıcı ara..."
-                                    class="form-input w-full pl-8 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:border-primary-500 focus:ring-primary-500">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Process</label>
-                            <div class="relative">
-                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
-                                    <i class="fas fa-cog text-xs"></i>
-                                </span>
-                                <input type="text" name="process" value="{{ request('process') }}" placeholder="Process ara..."
-                                    class="form-input w-full pl-8 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:border-primary-500 focus:ring-primary-500">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Başlık</label>
-                            <div class="relative">
-                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
-                                    <i class="fas fa-heading text-xs"></i>
-                                </span>
-                                <input type="text" name="title" value="{{ request('title') }}" placeholder="Başlık ara..."
-                                    class="form-input w-full pl-8 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:border-primary-500 focus:ring-primary-500">
-                            </div>
-                        </div>
+                        <x-input 
+                            label="Kullanıcı Adı" 
+                            name="username" 
+                            id="username"
+                            value="{{ request('username') }}"
+                            placeholder="Kullanıcı ara..."
+                            icon="fas fa-user"
+                        />
+                        <x-input 
+                            label="Process" 
+                            name="process" 
+                            id="process"
+                            value="{{ request('process') }}"
+                            placeholder="Process ara..."
+                            icon="fas fa-cog"
+                        />
+                        <x-input 
+                            label="Başlık" 
+                            name="title" 
+                            id="title"
+                            value="{{ request('title') }}"
+                            placeholder="Başlık ara..."
+                            icon="fas fa-heading"
+                        />
                     </div>
 
                     <div class="flex justify-end gap-2 pt-2 border-t border-gray-200 dark:border-gray-700">

@@ -41,50 +41,40 @@
                 <div class="card-body space-y-6">
                     <!-- Name & Type -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Kategori Adı <span class="text-red-500">*</span>
-                            </label>
-                            <input type="text" 
-                                   name="name" 
-                                   x-model="formData.name"
-                                   class="form-input @error('name') border-red-500 @enderror" 
-                                   value="{{ old('name') }}" 
-                                   required
-                                   placeholder="Kategori adını girin">
-                            @error('name')
-                                <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                            @enderror
-                        </div>
+                        <x-input 
+                            label="Kategori Adı" 
+                            name="name" 
+                            id="name"
+                            required
+                            placeholder="Kategori adını girin"
+                            x-model="formData.name"
+                            :error="$errors->first('name')"
+                        />
 
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Tip <span class="text-red-500">*</span>
-                            </label>
-                            <select name="type" x-model="formData.type" class="form-select @error('type') border-red-500 @enderror" required>
-                                <option value="">Seçiniz...</option>
-                                <option value="work" {{ old('type') == 'work' ? 'selected' : '' }}>İş</option>
-                                <option value="other" {{ old('type') == 'other' ? 'selected' : '' }}>Diğer</option>
-                            </select>
-                            @error('type')
-                                <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                            @enderror
-                        </div>
+                        <x-select 
+                            label="Tip" 
+                            name="type" 
+                            id="type"
+                            :options="['work' => 'İş', 'other' => 'Diğer']"
+                            required
+                            :error="$errors->first('type')"
+                        />
                     </div>
 
                     <!-- Parent Category -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Parent Kategori
-                        </label>
-                        <select name="parent_id" class="form-select">
-                            <option value="">Ana Kategori (Parent yok)</option>
-                            @foreach($categories as $cat)
-                                <option value="{{ $cat->id }}" {{ old('parent_id') == $cat->id ? 'selected' : '' }}>
-                                    {{ $cat->getFullPath() }}
-                                </option>
-                            @endforeach
-                        </select>
+                        @php
+                            $parentOptions = ['' => 'Ana Kategori (Parent yok)'];
+                            foreach($categories as $cat) {
+                                $parentOptions[$cat->id] = $cat->getFullPath();
+                            }
+                        @endphp
+                        <x-select 
+                            label="Parent Kategori" 
+                            name="parent_id" 
+                            id="parent_id"
+                            :options="$parentOptions"
+                        />
                         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                             Parent seçilmezse ana kategori olarak oluşturulur
                         </p>
@@ -101,7 +91,7 @@
                                        name="color" 
                                        id="colorPicker" 
                                        x-model="formData.color"
-                                       class="form-input flex-1" 
+                                       class="form-input flex-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-primary-500 focus:border-primary-500" 
                                        value="{{ old('color', '#3b82f6') }}"
                                        placeholder="#3b82f6">
                                 <button type="button" class="btn btn-secondary w-12" id="colorPickerBtn">
@@ -110,39 +100,33 @@
                             </div>
                         </div>
 
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Icon (Font Awesome)
-                            </label>
-                            <input type="text" 
-                                   name="icon" 
-                                   x-model="formData.icon"
-                                   class="form-input" 
-                                   value="{{ old('icon') }}" 
-                                   placeholder="fa-folder">
-                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                                Örn: fa-folder, fa-code
-                            </p>
-                        </div>
+                        <x-input 
+                            label="Icon (Font Awesome)" 
+                            name="icon" 
+                            id="icon"
+                            x-model="formData.icon"
+                            placeholder="fa-folder"
+                            value="{{ old('icon') }}"
+                        />
                     </div>
 
                     <!-- Sort Order & Active -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Sıralama
-                            </label>
-                            <input type="number" 
-                                   name="sort_order" 
-                                   class="form-input" 
-                                   value="{{ old('sort_order', 0) }}"
-                                   min="0">
+                            <x-input 
+                                type="number"
+                                label="Sıralama" 
+                                name="sort_order" 
+                                id="sort_order"
+                                value="{{ old('sort_order', 0) }}"
+                                min="0"
+                            />
                             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                                 Küçük değerler önce gösterilir
                             </p>
                         </div>
 
-                        <div class="flex items-center pt-6">
+                        <div class="flex items-center pt-8">
                             <label class="flex items-center cursor-pointer">
                                 <input type="checkbox" 
                                        name="is_active" 
@@ -154,6 +138,18 @@
                                 </span>
                             </label>
                         </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex items-center gap-3 pt-6 border-t border-gray-100 dark:border-gray-700">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save mr-2"></i>
+                            Kaydet
+                        </button>
+                        <a href="{{ route('categories.index') }}" class="btn btn-secondary">
+                            <i class="fas fa-times mr-2"></i>
+                            İptal
+                        </a>
                     </div>
                 </div>
             </div>
@@ -202,17 +198,7 @@
         </div>
     </div>
 
-    <!-- Action Buttons -->
-    <div class="flex items-center gap-3 mt-6">
-        <button type="submit" class="btn btn-primary">
-            <i class="fas fa-save mr-2"></i>
-            Kaydet
-        </button>
-        <a href="{{ route('categories.index') }}" class="btn btn-secondary">
-            <i class="fas fa-times mr-2"></i>
-            İptal
-        </a>
-    </div>
+
 </form>
 @endsection
 

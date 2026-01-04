@@ -38,96 +38,97 @@
         <form action="{{ route('kullanicilar.store') }}" method="POST">
             @csrf
             
+            @php
+                $unitOptions = $units->mapWithKeys(function ($unit) {
+                    $name = $unit->parent ? $unit->parent->name . ' / ' . $unit->name : $unit->name;
+                    return [$unit->id => $name];
+                });
+
+                $titleOptions = $titles->pluck('name', 'id');
+                
+                $roleOptions = $roles->filter(fn($r) => $r->name != 'Super Admin')->pluck('name', 'id');
+            @endphp
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Unit -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="unit_id">Birimi</label>
-                    <select id="unit_id" name="unit_id" class="form-select block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-primary-500 focus:border-primary-500">
-                        @foreach ($units as $unit)
-                            <option value="{{ $unit->id }}" @selected(old('unit_id') == $unit->id)>
-                                {{ $unit->parent ? $unit->parent->name . ' / ' : '' }}{{ $unit->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+                <x-select 
+                    label="Birimi" 
+                    name="unit_id" 
+                    id="unit_id"
+                    :options="$unitOptions" 
+                    :value="old('unit_id')"
+                    placeholder="Birim Seçiniz"
+                />
 
                 <!-- Title -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="title_id">Ünvan</label>
-                    <select id="title_id" name="title_id" class="form-select block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-primary-500 focus:border-primary-500 @error('title_id') border-red-500 @enderror">
-                        @foreach ($titles as $title)
-                            <option value="{{ $title->id }}" @selected(old('title_id') == $title->id)>
-                                {{ $title->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('title_id')
-                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                    @enderror
-                </div>
+                <x-select 
+                    label="Ünvan" 
+                    name="title_id" 
+                    id="title_id"
+                    :options="$titleOptions" 
+                    :value="old('title_id')"
+                    :error="$errors->first('title_id')"
+                    placeholder="Ünvan Seçiniz"
+                />
 
                 <!-- Role -->
                 <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="role_id">Rolü</label>
-                    <select id="role_id" name="role_id" class="form-select block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-primary-500 focus:border-primary-500">
-                        @foreach ($roles as $role)
-                            @if ($role->name != 'Super Admin')
-                                <option value="{{ $role->id }}" @selected(old('role_id') == $role->id)>
-                                    {{ $role->name }}
-                                </option>
-                            @endif
-                        @endforeach
-                    </select>
+                    <x-select 
+                        label="Rolü" 
+                        name="role_id" 
+                        id="role_id"
+                        :options="$roleOptions" 
+                        :value="old('role_id')"
+                        placeholder="Rol Seçiniz"
+                    />
                 </div>
 
                 <!-- Name -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="name">Kullanıcı Adı</label>
-                    <input id="name" name="name" type="text" value="{{ old('name') }}"
-                        class="form-input block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-primary-500 focus:border-primary-500 @error('name') border-red-500 @enderror">
-                    @error('name')
-                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                    @enderror
-                </div>
+                <x-input 
+                    label="Kullanıcı Adı" 
+                    name="name" 
+                    id="name"
+                    :value="old('name')" 
+                    :error="$errors->first('name')"
+                />
 
                 <!-- Last Name -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="last_name">Kullanıcı Soyadı</label>
-                    <input id="last_name" name="last_name" type="text" value="{{ old('last_name') }}"
-                        class="form-input block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-primary-500 focus:border-primary-500 @error('last_name') border-red-500 @enderror">
-                    @error('last_name')
-                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                    @enderror
-                </div>
+                <x-input 
+                    label="Kullanıcı Soyadı" 
+                    name="last_name" 
+                    id="last_name"
+                    :value="old('last_name')" 
+                    :error="$errors->first('last_name')"
+                />
 
                 <!-- Email -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="mail">E-Posta</label>
-                    <input id="mail" name="mail" type="email" value="{{ old('mail') }}"
-                        class="form-input block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-primary-500 focus:border-primary-500 @error('mail') border-red-500 @enderror">
-                    @error('mail')
-                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                    @enderror
-                </div>
+                <x-input 
+                    type="email"
+                    label="E-Posta" 
+                    name="mail" 
+                    id="mail"
+                    :value="old('mail')" 
+                    :error="$errors->first('mail')"
+                />
 
                 <!-- Phone -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="phone">Telefon</label>
-                    <input id="phone" name="phone" type="text" value="{{ old('phone') }}"
-                        class="form-input block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-primary-500 focus:border-primary-500 @error('phone') border-red-500 @enderror">
-                    @error('phone')
-                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                    @enderror
-                </div>
+                <x-input 
+                    label="Telefon" 
+                    name="phone" 
+                    id="phone"
+                    :value="old('phone')" 
+                    :error="$errors->first('phone')"
+                />
 
                 <!-- Password -->
                 <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="password">Şifre</label>
-                    <input id="password" name="password" type="password"
-                        class="form-input block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-primary-500 focus:border-primary-500 @error('password') border-red-500 @enderror">
-                    @error('password')
-                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                    @enderror
+                    <x-input 
+                        type="password"
+                        label="Şifre" 
+                        name="password" 
+                        id="password"
+                        :error="$errors->first('password')"
+                    />
                 </div>
             </div>
 

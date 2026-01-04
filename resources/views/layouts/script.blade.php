@@ -79,6 +79,10 @@
             Toast.fire({ icon: 'success', title: "{{ session('success') }}" });
         @endif
 
+        @if(session('message'))
+            Toast.fire({ icon: 'success', title: "{{ session('message') }}" });
+        @endif
+
         @if(session('error'))
             Toast.fire({ icon: 'error', title: "{{ session('error') }}" });
         @endif
@@ -101,6 +105,7 @@
                     title: 'Emin misiniz?',
                     text: "Bu işlem geri alınamaz!",
                     icon: 'warning',
+                    heightAuto: false, // Fix layout shift
                     background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
                     color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#545454',
                     showCancelButton: true,

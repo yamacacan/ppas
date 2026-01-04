@@ -28,60 +28,43 @@
 @section('content')
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
         <div class="p-6">
-            <div class="overflow-x-auto">
-                <table id="computers-table" class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                        <tr>
-                            <th class="px-4 py-3 rounded-tl-lg">Hostname</th>
-                            <th class="px-4 py-3">Son Kullanıcı</th>
-                            <th class="px-4 py-3">Domain</th>
-                            <th class="px-4 py-3">OS</th>
-                            <th class="px-4 py-3">Model</th>
-                            <th class="px-4 py-3">RAM (GB)</th>
-                            <th class="px-4 py-3">Disk (GB)</th>
-                            <th class="px-4 py-3">Son Görülme</th>
-                            <th class="px-4 py-3 rounded-tr-lg text-right">İşlemler</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                        @foreach($computers as $computer)
-                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                                <td class="px-4 py-3 font-medium text-gray-900 dark:text-white">
-                                    {{ $computer->hostname }}
-                                </td>
-                                <td class="px-4 py-3">
-                                    {{ $computer->username }}
-                                </td>
-                                <td class="px-4 py-3">
-                                    {{ $computer->domain }}
-                                </td>
-                                <td class="px-4 py-3">
-                                    {{ $computer->os_version ?? '-' }}
-                                </td>
-                                <td class="px-4 py-3 truncate max-w-xs" title="{{ $computer->model }}">
-                                    {{ $computer->model ?? '-' }}
-                                </td>
-                                <td class="px-4 py-3">
-                                    {{ $computer->ram_total_gb ?? '-' }} GB
-                                </td>
-                                <td class="px-4 py-3">
-                                    {{ $computer->disk_total_gb ?? '-' }} GB
-                                </td>
-                                <td class="px-4 py-3">
-                                    {{ \Carbon\Carbon::parse($computer->collected_at)->format('d.m.Y H:i') }}
-                                </td>
-                                <td class="px-4 py-3 text-right">
-                                    <a href="{{ route('computers.show', $computer->motherboard_uuid) }}" 
-                                       class="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all inline-flex items-center justify-center"
-                                       title="Detay Görüntüle">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+            @php
+                $tableRows = $computers->map(function($computer) {
+                    return [
+                        'hostname' => '<span class="font-medium text-gray-900 dark:text-white">'.$computer->hostname.'</span>',
+                        'username' => '<span class="text-gray-700 dark:text-gray-300">'.$computer->username.'</span>',
+                        'domain' => '<span class="text-gray-600 dark:text-gray-400">'.$computer->domain.'</span>',
+                        'os' => '<span class="text-gray-600 dark:text-gray-400">'.($computer->os_version ?? '-').'</span>',
+                        'model' => '<span class="text-gray-600 dark:text-gray-400 truncate max-w-xs" title="'.$computer->model.'">'.($computer->model ?? '-').'</span>',
+                        'ram' => '<span class="text-gray-600 dark:text-gray-400">'.($computer->ram_total_gb ?? '-').' GB</span>',
+                        'disk' => '<span class="text-gray-600 dark:text-gray-400">'.($computer->disk_total_gb ?? '-').' GB</span>',
+                        'last_seen' => '<span class="text-sm text-gray-500">'.\Carbon\Carbon::parse($computer->collected_at)->format('d.m.Y H:i').'</span>',
+                        'actions' => '
+                            <div class="text-right">
+                                <a href="'.route('computers.show', $computer->motherboard_uuid).'" 
+                                   class="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all inline-flex items-center justify-center"
+                                   title="Detay Görüntüle">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </div>'
+                    ];
+                });
+            @endphp
+            
+            <x-data-table 
+                :columns="[
+                    ['header' => 'Hostname', 'key' => 'hostname'],
+                    ['header' => 'Son Kullanıcı', 'key' => 'username'],
+                    ['header' => 'Domain', 'key' => 'domain'],
+                    ['header' => 'OS', 'key' => 'os'],
+                    ['header' => 'Model', 'key' => 'model'],
+                    ['header' => 'RAM', 'key' => 'ram'],
+                    ['header' => 'Disk', 'key' => 'disk'],
+                    ['header' => 'Son Görülme', 'key' => 'last_seen'],
+                    ['header' => '', 'key' => 'actions']
+                ]" 
+                :rows="$tableRows" 
+            />
         </div>
     </div>
 @endsection

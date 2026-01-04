@@ -1,12 +1,6 @@
 @extends('layouts.master')
 @section('title', 'Yeni Birim Ekle')
 
-@section('css')
-@endsection
-
-@section('style')
-@endsection
-
 @section('breadcrumb-title')
     <div>
         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Yeni Birim Ekle</h2>
@@ -38,26 +32,30 @@
         <form action="{{ route('birim.store') }}" method="POST">
             @csrf
             
+            @php
+                $unitOptions = $units->pluck('name', 'id');
+            @endphp
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Parent Unit -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="parent_id">Bağlı Olduğu Birim</label>
-                    <select id="parent_id" name="parent_id" class="form-select block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-primary-500 focus:border-primary-500">
-                        @foreach ($units as $unit)
-                            <option value="{{ $unit->id }}">{{ $unit->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
+                <x-select 
+                    label="Bağlı Olduğu Birim" 
+                    name="parent_id" 
+                    id="parent_id"
+                    :options="$unitOptions"
+                    placeholder="Seçiniz (Opsiyonel)"
+                    searchable="true"
+                />
 
                 <!-- Unit Name -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="name">Birim Adı</label>
-                    <input id="name" name="name" type="text" 
-                        class="form-input block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-primary-500 focus:border-primary-500 @error('name') border-red-500 @enderror">
-                    @error('name')
-                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                    @enderror
-                </div>
+                <x-input 
+                    label="Birim Adı" 
+                    name="name" 
+                    id="name"
+                    required
+                    :error="$errors->first('name')"
+                    placeholder="Birim adını giriniz"
+                />
             </div>
 
             <div class="mt-8 flex items-center justify-end gap-3">
@@ -67,102 +65,4 @@
         </form>
     </div>
 </div>
-@endsection
-
-@section('script')
-@endsection
-@section('css')
-@endsection
-
-@section('style')
-
-
-@endsection
-
-@section('breadcrumb-title')
-<h3>Birimler</h3>
-@endsection
-
-@section('breadcrumb-items')
-<li class="breadcrumb-item">Birim İşlemleri</li>
-<li class="breadcrumb-item active">Birim Ekle</li>
-@endsection
-
-@section('content')
-
-
-<div class="container-fluid">
-    <div class="row">
-        <!-- Zero Configuration  Starts-->
-        <div class="col-sm-12">
-            <div class="card">
-
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3 class="mb-0">Yeni Birim Ekle</h3>
-                </div>
-                
-                
-                <div class="card-body">
-                    
-                    <form class="form-horizontal" action="{{route('birim.store')}}" method="POST">
-                        @csrf
-                        <fieldset>
-                        
-                        <!-- Select Basic -->
-                        <div class="mb-3 row">
-                          <label class="col-lg-12 form-label text-lg-start" for="selectbasic">Bağlı Olduğu Birim</label>
-                          <div class="col-lg-12">
-                            <select id="parent_id" name="parent_id" class="form-control btn-square">
-                                @if ($units->count())
-
-                                    @foreach ($units as $key=>$unit)
-
-                                        
-                                        <option value="{{$unit->id}}">{{$unit->name}}</option>   
-
-                                    @endforeach
-
-                                @endif
-
-                              
-                            </select>
-                          </div>
-                        </div>
-                        
-                        <!-- Text input-->
-                        <div class="mb-3 row">
-                          <label class="col-lg-12 form-label text-lg-start" for="textinput">Birim Adı</label>  
-                          <div class="col-lg-12">
-                          <input id="name" name="name" type="text" class="form-control btn-square input-md @error('name') is-invalid @enderror">
-                          @error('name')
-                          <div class="invalid-feedback">
-                           {{$message}}
-                          </div>
-                          @enderror
-                          
-                          </div>
-                        </div>
-                        
-                        <!-- Button -->
-                        <div class="mb-3 row">
-                          
-                          <div class="col-lg-12">
-                            <button id="btnKaydet" type="submit" name="btnKaydet" class="btn btn-primary">Kaydet</button>
-                          </div>
-                        </div>
-                        
-                        </fieldset>
-                        </form>
-                        
-                </div>
-            </div>
-        </div>
-        <!-- Zero Configuration  Ends-->
-     
-    </div>
-</div>
-@endsection
-
-@section('script')
-
 @endsection

@@ -1,33 +1,23 @@
 @extends('layouts.errors.master')
-@section('title', 'Hata')
-
-@section('css')
-@endsection
-
-@section('style')
-@endsection
-
+@section('title', 'Error')
 
 @section('content')
-
-<div class="page-wrapper compact-wrapper" id="pageWrapper">
-<!-- error-400 start-->
-   <div class="error-wrapper">
-        <div class="container"><img class="img-100" src="{{ asset('assets/images/other-images/sad.png') }}" alt="">
-               <div class="error-heading">
-                  <h2 class="headline font-info">Hata</h2>
-               </div>
-               <div class="col-md-8 offset-md-2">
-                  <p class="sub-content">{{$error}}</p>
-                  <p class="sub-content">Lütfen program yöneteciniz ile irtibata geçin</p>
-               </div>
-               <div><a class="btn btn-info-gradien btn-lg" href="{{ route('/')}}">Ana Sayfaya Dön</a></div>
+<div class="max-w-lg w-full bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden text-center p-8">
+    <div class="mb-6 flex justify-center">
+        <div class="w-24 h-24 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center">
+            <i class="fas fa-exclamation-triangle text-4xl text-yellow-600 dark:text-yellow-400"></i>
         </div>
-   </div>
-<!-- error-400 end-->
+    </div>
+    
+    <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Bir Hata Oluştu</h2>
+    
+    <p class="text-gray-600 dark:text-gray-300 mb-8">
+        {{ $message ?? 'Beklenmeyen bir hata oluştu. Lütfen daha sonra tekrar deneyiniz.' }}
+    </p>
+    
+    <a href="{{ url('/') }}" class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-primary-600 hover:bg-primary-700 transition-colors duration-200">
+        <i class="fas fa-home mr-2"></i>
+        Ana Sayfaya Dön
+    </a>
 </div>
-@endsection
-
-@section('script')
-
 @endsection

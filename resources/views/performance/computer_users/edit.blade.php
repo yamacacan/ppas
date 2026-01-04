@@ -73,36 +73,32 @@
 
                     <!-- Editable Fields -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Ad Soyad / Görünen İsim
-                        </label>
-                        <div class="relative">
-                            <input type="text" name="name" 
-                                   class="form-input @error('name') border-red-500 ring-red-500 @enderror" 
-                                   value="{{ old('name', $user->name) }}" 
-                                   placeholder="Örn: Yamaç A.">
-                            @error('name')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
+                        <x-input 
+                            label="Ad Soyad / Görünen İsim" 
+                            name="name" 
+                            id="name"
+                            :value="old('name', $user->name)"
+                            placeholder="Örn: Yamaç A."
+                            :error="$errors->first('name')"
+                        />
                         <p class="mt-1 text-xs text-gray-500">Raporlarda görünecek isim</p>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Birim
-                        </label>
-                        <select name="unit_id" class="form-select @error('unit_id') border-red-500 @enderror">
-                            <option value="">Birim Seçiniz...</option>
-                            @foreach($units as $unit)
-                                <option value="{{ $unit->id }}" {{ old('unit_id', $user->unit_id) == $unit->id ? 'selected' : '' }}>
-                                    {{ $unit->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('unit_id')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
+                        @php
+                            $unitOptions = ['' => 'Birim Seçiniz...'];
+                            foreach($units as $unit) {
+                                $unitOptions[$unit->id] = $unit->name;
+                            }
+                        @endphp
+                        <x-select 
+                            label="Birim" 
+                            name="unit_id" 
+                            id="unit_id"
+                            :options="$unitOptions"
+                            :value="old('unit_id', $user->unit_id)"
+                            :error="$errors->first('unit_id')"
+                        />
                         <p class="mt-1 text-xs text-gray-500">
                             <i class="fas fa-info-circle mr-1"></i>
                             Kullanıcının birimi, keyword sınıflandırmalarındaki istisnalar için kullanılır.

@@ -129,10 +129,8 @@
                                 {{ Auth::user()->email ?? 'user@example.com' }}
                             </p>
                         </div>
-                        <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-full flex items-center justify-center">
-                            <span class="text-white font-semibold">
-                                {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
-                            </span>
+                        <div class="w-10 h-10 rounded-full overflow-hidden border border-gray-200 dark:border-gray-600">
+                            <img src="{{ auth()->user()->profile_photo_url }}" alt="Profile Photo" class="w-full h-full object-cover">
                         </div>
                     </div>
                     <i class="fas fa-chevron-down text-xs text-gray-400"></i>
@@ -151,13 +149,9 @@
                         <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ Auth::user()->email ?? 'user@example.com' }}</p>
                     </div>
                     <div class="py-2">
-                        <a href="#" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        <a href="{{ route('profile.edit') }}" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                             <i class="fas fa-user w-4"></i>
                             <span>Profilim</span>
-                        </a>
-                        <a href="#" class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                            <i class="fas fa-cog w-4"></i>
-                            <span>Ayarlar</span>
                         </a>
                     </div>
                     <div class="border-t border-gray-200 dark:border-gray-700 py-2">

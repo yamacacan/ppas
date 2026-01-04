@@ -47,15 +47,16 @@
 
             <!-- Role Selection -->
             <div class="mb-8 max-w-xl">
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="role_id">Rol Seçin</label>
-                <select id="role_id" name="role_id" class="form-select block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-primary-500 focus:border-primary-500">
-                    <option value="" disabled selected>Lütfen bir rol seçiniz.</option>
-                    @foreach ($roles as $role)
-                        @if ($role->name != 'Super Admin')
-                            <option value="{{ $role->id }}">{{ $role->name }}</option>
-                        @endif
-                    @endforeach
-                </select>
+                @php
+                     $roleOptions = $roles->filter(fn($r) => $r->name != 'Super Admin')->pluck('name', 'id');
+                @endphp
+                <x-select 
+                    label="Rol Seçin" 
+                    name="role_id" 
+                    id="role_id"
+                    :options="$roleOptions" 
+                    placeholder="Lütfen bir rol seçiniz."
+                />
             </div>
 
             <!-- Permissions Matrix -->
@@ -164,13 +165,37 @@
 
         // --- ROLE PERMISSION LOADING ---
 
-        const roleSelect = document.getElementById('role_id');
-        if (roleSelect) {
-            roleSelect.addEventListener('change', function() {
-                const roleId = this.value;
-                console.log('Role selected:', roleId);
+        // --- ROLE PERMISSION LOADING ---
+
+        // Config for Toast
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+            color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#545454',
+            customClass: {
+                popup: 'colored-toast dark:!bg-gray-800 dark:!text-white',
+                title: 'dark:!text-white'
+            },
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        });
+
+        // Use event delegation to catch the change event from the hidden input
+        document.addEventListener('change', function(e) {
+            console.log('Global change event:', e.target.tagName, e.target.id, e.target.className);
+            
+            if (e.target && e.target.id === 'role_id') {
+                const roleId = e.target.value;
+                console.log('Role selected (Delegated):', roleId);
 
                 if (roleId) {
+                    // Show loading toast
                     // Reset all permission checkboxes
                     document.querySelectorAll('input[type="checkbox"][class*="selection-child-"]').forEach(cb => {
                         cb.checked = false;
@@ -195,9 +220,9 @@
                             console.log('Permissions received:', permissions);
 
                             if (Array.isArray(permissions)) {
+                                let count = 0;
                                 permissions.forEach(permissionName => {
-                                    // Handle space to underscore conversion as done in Blade
-                                    // Try both exact name and underscore replaced name for robustness
+                                    // Handle space to underscore conversion
                                     let checkbox = document.querySelector(`input[name="${permissionName}"]`);
                                     
                                     if (!checkbox) {
@@ -207,20 +232,20 @@
 
                                     if (checkbox) {
                                         checkbox.checked = true;
-                                        // Update the parent "Select All" state
                                         updateSelectAllState(checkbox);
-                                    } else {
-                                        console.warn('Could not find checkbox for permission:', permissionName);
+                                        count++;
                                     }
                                 });
+                                Toast.fire({ icon: 'success', title: `${count} izin yüklendi` });
                             }
                         })
                         .catch(error => {
                             console.error('Error fetching permissions:', error);
+                            Toast.fire({ icon: 'error', title: 'İzinler yüklenirken hata oluştu' });
                         });
                 }
-            });
-        }
+            }
+        });
     });
 </script>
 @endsection

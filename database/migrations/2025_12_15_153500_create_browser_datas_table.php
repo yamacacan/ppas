@@ -19,7 +19,7 @@ return new class extends Migration
                 $table->text('url');
                 $table->text('title')->nullable();
                 $table->string('browser');
-                $table->dateTime('visit_time_utc'>nullable();
+                $table->dateTime('visit_time_utc')->nullable();
                 $table->dateTime('created_at_utc');
                 $table->dateTime('received_at')->nullable()->useCurrent();
 
@@ -31,7 +31,7 @@ return new class extends Migration
                 $table->string('username');
                 $table->string('domain');
                 $table->string('user_sid')->nullable();
-                $table->string('motherboard_uuid')-
+                $table->string('motherboard_uuid')->nullable();
                 $table->index('username');
                 $table->index('visit_time_utc');
             });

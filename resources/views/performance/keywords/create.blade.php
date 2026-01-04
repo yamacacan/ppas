@@ -21,6 +21,18 @@
 @endsection
 
 @section('content')
+@php
+    $categoryOptions = ['' => 'Kategori seçiniz...'];
+    foreach($categories as $category) {
+        $categoryOptions[$category->id] = $category->getFullPath();
+    }
+
+    $unitOptions = ['' => 'Birim seçiniz...'];
+    foreach($units as $unit) {
+        $unitOptions[$unit->id] = $unit->name;
+    }
+@endphp
+
 <form action="{{ route('keywords.store') }}" method="POST" x-data="{ formData: { category_id: '', keyword: '', match_type: 'contains', priority: 5 } }">
     @csrf
     
@@ -36,38 +48,27 @@
                 </div>
                 <div class="card-body space-y-6">
                     <!-- Category -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Kategori <span class="text-red-500">*</span>
-                        </label>
-                        <select name="category_id" x-model="formData.category_id" class="form-select @error('category_id') border-red-500 @enderror" required>
-                            <option value="">Kategori seçiniz...</option>
-                            @foreach($categories as $category)
-                                <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
-                                    {{ $category->getFullPath() }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('category_id')
-                            <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                        @enderror
-                    </div>
+                    <x-select 
+                        label="Kategori" 
+                        name="category_id" 
+                        id="category_id"
+                        :options="$categoryOptions"
+                        :value="old('category_id')"
+                        x-model="formData.category_id"
+                        required
+                    />
 
                     <!-- Keyword -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Keyword <span class="text-red-500">*</span>
-                        </label>
-                        <input type="text" 
-                               name="keyword" 
-                               x-model="formData.keyword"
-                               class="form-input @error('keyword') border-red-500 @enderror" 
-                               value="{{ old('keyword') }}" 
-                               required
-                               placeholder="Örn: Visual Studio Code">
-                        @error('keyword')
-                            <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                        @enderror
+                        <x-input 
+                            label="Keyword" 
+                            name="keyword" 
+                            id="keyword"
+                            x-model="formData.keyword"
+                            value="{{ old('keyword') }}"
+                            placeholder="Örn: Visual Studio Code"
+                            required
+                        />
                         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                             Process name, title veya URL'de aranacak kelime
                         </p>
@@ -124,20 +125,17 @@
                     <!-- Priority & Settings -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Öncelik (1-10) <span class="text-red-500">*</span>
-                            </label>
-                            <input type="number" 
-                                   name="priority" 
-                                   x-model="formData.priority"
-                                   class="form-input @error('priority') border-red-500 @enderror" 
-                                   value="{{ old('priority', 5) }}" 
-                                   min="1" 
-                                   max="10" 
-                                   required>
-                            @error('priority')
-                                <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                            @enderror
+                            <x-input 
+                                type="number"
+                                label="Öncelik (1-10)" 
+                                name="priority" 
+                                id="priority"
+                                x-model="formData.priority"
+                                value="{{ old('priority', 5) }}"
+                                min="1"
+                                max="10"
+                                required
+                            />
                             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                                 Yüksek öncelik önce eşleşir
                             </p>
@@ -177,23 +175,32 @@
                                      x-transition:enter-start="opacity-0 scale-95"
                                      x-transition:enter-end="opacity-100 scale-100"
                                      class="pl-7">
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        Bildirim Gidecek Birim <span class="text-red-500">*</span>
-                                    </label>
-                                    <select name="alert_unit_id" class="form-select text-sm w-full" :required="isAlert">
-                                        <option value="">Birim seçiniz...</option>
-                                        @foreach($units as $unit)
-                                            <option value="{{ $unit->id }}" {{ old('alert_unit_id') == $unit->id ? 'selected' : '' }}>
-                                                {{ $unit->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                    <x-select 
+                                        label="Bildirim Gidecek Birim" 
+                                        name="alert_unit_id" 
+                                        id="alert_unit_id"
+                                        :options="$unitOptions"
+                                        :value="old('alert_unit_id')"
+                                        x-bind:required="isAlert"
+                                    />
                                     <p class="mt-1 text-xs text-red-500">
                                         Eşleşme olduğunda bu birimdeki kullanıcılara bildirim gider.
                                     </p>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="flex items-center gap-3 pt-6 border-t border-gray-100 dark:border-gray-700">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save mr-2"></i>
+                            Kaydet
+                        </button>
+                        <a href="{{ route('keywords.index') }}" class="btn btn-secondary">
+                            <i class="fas fa-times mr-2"></i>
+                            İptal
+                        </a>
                     </div>
                 </div>
             </div>
@@ -259,15 +266,6 @@
     </div>
 
     <!-- Action Buttons -->
-    <div class="flex items-center gap-3 mt-6">
-        <button type="submit" class="btn btn-primary">
-            <i class="fas fa-save mr-2"></i>
-            Kaydet
-        </button>
-        <a href="{{ route('keywords.index') }}" class="btn btn-secondary">
-            <i class="fas fa-times mr-2"></i>
-            İptal
-        </a>
-    </div>
+
 </form>
 @endsection

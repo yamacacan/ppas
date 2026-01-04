@@ -2,10 +2,6 @@
 
 @section('title', 'Keyword Yönetimi')
 
-@section('css')
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/datatables.css') }}">
-@endsection
-
 @section('breadcrumb-title')
     <div>
         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Keyword Yönetimi</h2>
@@ -110,121 +106,61 @@
     </div>
 
     <div class="card-body">
+        @php
+            $tableRows = $keywords->map(function($keyword) {
+                 $matchTypeBadge = '';
+                 switch($keyword->match_type) {
+                    case 'exact': $matchTypeBadge = '<span class="badge bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"><i class="fas fa-equals text-xs mr-1"></i> Tam Eşleşme</span>'; break;
+                    case 'contains': $matchTypeBadge = '<span class="badge bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400"><i class="fas fa-search text-xs mr-1"></i> İçeriyor</span>'; break;
+                    case 'starts_with': $matchTypeBadge = '<span class="badge bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400"><i class="fas fa-arrow-right text-xs mr-1"></i> Başlıyor</span>'; break;
+                    case 'ends_with': $matchTypeBadge = '<span class="badge bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400"><i class="fas fa-arrow-left text-xs mr-1"></i> Bitiyor</span>'; break;
+                    case 'regex': $matchTypeBadge = '<span class="badge bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"><i class="fas fa-code text-xs mr-1"></i> Regex</span>'; break;
+                 }
 
+                 $categoryBadge = $keyword->category 
+                    ? '<span class="badge badge-primary">'.$keyword->category->name.'</span>'
+                    : '<span class="badge badge-warning custom-warning-badge text-yellow-800 bg-yellow-100 dark:text-yellow-400 dark:bg-yellow-900/30">Kategorisiz</span>';
 
-        <div class="overflow-x-auto">
-            <table class="table" id="keywordsTable">
-                <thead>
-                    <tr>
-                        <th>Keyword</th>
-                        <th>Kategori</th>
-                        <th>Eşleşme Tipi</th>
-                        <th>Öncelik</th>
-                        <th>Case Sensitive</th>
-                        <th>Durum</th>
-                        <th class="text-right">İşlemler</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($keywords as $keyword)
-                    <tr>
-                        <td>
-                            <code class="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-primary-600 dark:text-primary-400 rounded text-sm font-mono border border-gray-200 dark:border-gray-700">
-                                {{ $keyword->keyword }}
-                            </code>
-                        </td>
-                        <td>
-                            @if($keyword->category)
-                                <span class="badge badge-primary">{{ $keyword->category->name }}</span>
-                            @else
-                                <span class="badge badge-warning custom-warning-badge text-yellow-800 bg-yellow-100 dark:text-yellow-400 dark:bg-yellow-900/30">Kategorisiz</span>
-                            @endif
-                        </td>
-                        <td>
-                            @switch($keyword->match_type)
-                                @case('exact')
-                                    <span class="badge bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                                        <i class="fas fa-equals text-xs mr-1"></i> Tam Eşleşme
-                                    </span>
-                                    @break
-                                @case('contains')
-                                    <span class="badge bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
-                                        <i class="fas fa-search text-xs mr-1"></i> İçeriyor
-                                    </span>
-                                    @break
-                                @case('starts_with')
-                                    <span class="badge bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">
-                                        <i class="fas fa-arrow-right text-xs mr-1"></i> Başlıyor
-                                    </span>
-                                    @break
-                                @case('ends_with')
-                                    <span class="badge bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400">
-                                        <i class="fas fa-arrow-left text-xs mr-1"></i> Bitiyor
-                                    </span>
-                                    @break
-                                @case('regex')
-                                    <span class="badge bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
-                                        <i class="fas fa-code text-xs mr-1"></i> Regex
-                                    </span>
-                                    @break
-                            @endswitch
-                        </td>
-                        <td>
-                            <div class="flex items-center gap-2">
-                                <div class="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                                    <div class="h-full bg-primary-500 rounded-full" 
-                                         style="width: {{ $keyword->priority * 10 }}%"></div>
-                                </div>
-                                <span class="text-sm font-semibold text-gray-700 dark:text-gray-300 w-8">{{ $keyword->priority }}</span>
+                 $statusBadge = $keyword->is_active 
+                    ? '<span class="badge badge-success"><i class="fas fa-check text-xs mr-1"></i> Aktif</span>'
+                    : '<span class="badge badge-danger"><i class="fas fa-times text-xs mr-1"></i> Pasif</span>';
+
+                 return [
+                    'id' => $keyword->id,
+                    'keyword' => '
+                        <code class="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-primary-600 dark:text-primary-400 rounded text-sm font-mono border border-gray-200 dark:border-gray-700">
+                            '.$keyword->keyword.'
+                        </code>',
+                    'category' => $categoryBadge,
+                    'match_type' => $matchTypeBadge,
+                    'priority' => '
+                        <div class="flex items-center gap-2">
+                            <div class="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden w-24">
+                                <div class="h-full bg-primary-500 rounded-full" style="width: '.($keyword->priority * 10).'%"></div>
                             </div>
-                        </td>
-                        <td>
-                            @if($keyword->is_case_sensitive)
-                                <span class="badge bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
-                                    <i class="fas fa-font text-xs mr-1"></i> Evet
-                                </span>
-                            @else
-                                <span class="badge badge-secondary">
-                                    <i class="fas fa-font text-xs mr-1"></i> Hayır
-                                </span>
-                            @endif
-                        </td>
-                        <td>
-                            @if($keyword->is_active)
-                                <span class="badge badge-success">
-                                    <i class="fas fa-check text-xs mr-1"></i> Aktif
-                                </span>
-                            @else
-                                <span class="badge badge-danger">
-                                    <i class="fas fa-times text-xs mr-1"></i> Pasif
-                                </span>
-                            @endif
-                        </td>
-                        <td>
-                            <div class="flex items-center justify-end gap-2">
-                                <a href="{{ route('keywords.edit', $keyword->id) }}" 
-                                   class="p-2 text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded-lg transition-all"
-                                   title="Düzenle">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <form action="{{ route('keywords.destroy', $keyword->id) }}" 
-                                      method="POST" 
-                                      class="inline delete-form">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" 
-                                            class="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all"
-                                            title="Sil">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+                            <span class="text-sm font-semibold text-gray-700 dark:text-gray-300 w-8">'.$keyword->priority.'</span>
+                        </div>',
+                    'case_sensitive' => $keyword->is_case_sensitive 
+                        ? '<span class="badge bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400"><i class="fas fa-font text-xs mr-1"></i> Evet</span>'
+                        : '<span class="badge badge-secondary"><i class="fas fa-font text-xs mr-1"></i> Hayır</span>',
+                    'status' => $statusBadge
+                 ];
+            });
+        @endphp
+
+        <x-data-table 
+            :columns="[
+                ['header' => 'Keyword', 'key' => 'keyword'],
+                ['header' => 'Kategori', 'key' => 'category'],
+                ['header' => 'Eşleşme Tipi', 'key' => 'match_type'],
+                ['header' => 'Öncelik', 'key' => 'priority'],
+                ['header' => 'Case Sensitive', 'key' => 'case_sensitive'],
+                ['header' => 'Durum', 'key' => 'status']
+            ]" 
+            :rows="$tableRows" 
+            edit-route="keywords.edit" 
+            delete-route="keywords.destroy" 
+        />
     </div>
 </div>
 
@@ -264,21 +200,4 @@
         </div>
     </div>
 </div>
-@endsection
-
-@section('script')
-<script src="{{ asset('assets/js/datatable/datatables/jquery.dataTables.min.js') }}"></script>
-<script>
-    $(document).ready(function() {
-        $('#keywordsTable').DataTable({
-            "pageLength": 25,
-            "order": [[3, 'desc']], // Priority'ye göre sırala
-            "language": {
-                "url": "/assets/json/turkish.json"
-            },
-            "dom": '<"flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4"lf>rtip',
-            "responsive": true
-        });
-    });
-</script>
 @endsection
