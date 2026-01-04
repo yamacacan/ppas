@@ -1,12 +1,6 @@
 @extends('layouts.master')
 @section('title', 'Ünvan Güncelle')
 
-@section('css')
-@endsection
-
-@section('style')
-@endsection
-
 @section('breadcrumb-title')
     <div>
         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Ünvan Güncelle</h2>
@@ -40,12 +34,14 @@
             @method('PUT')
             
             <div class="mb-6">
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="name">Ünvan Adı</label>
-                <input id="name" name="name" type="text" value="{{ $title->name }}"
-                    class="form-input block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-primary-500 focus:border-primary-500 @error('name') border-red-500 @enderror">
-                @error('name')
-                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                @enderror
+                <x-input 
+                    label="Ünvan Adı" 
+                    name="name" 
+                    id="name" 
+                    value="{{ $title->name }}"
+                    placeholder="Örn: Yazılım Uzmanı" 
+                    required="true"
+                />
             </div>
 
             <div class="flex items-center gap-3">
@@ -55,78 +51,4 @@
         </form>
     </div>
 </div>
-@endsection
-
-@section('script')
-@endsection
-@section('css')
-@endsection
-
-@section('style')
-
-
-@endsection
-
-@section('breadcrumb-title')
-<h3>Ünvanlar</h3>
-@endsection
-
-@section('breadcrumb-items')
-<li class="breadcrumb-item">Ünvan İşlemleri</li>
-<li class="breadcrumb-item active">Ünvan Güncelle</li>
-@endsection
-
-@section('content')
-
-
-<div class="container-fluid">
-    <div class="row">
-        <!-- Zero Configuration  Starts-->
-        <div class="col-sm-12">
-            <div class="card">
-
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3 class="mb-0">Ünvan Güncelle</h3>
-                </div>
-                
-                
-                <div class="card-body">
-                    
-                    <form class="form-horizontal" action="{{route('unvan.update',$title->id)}}" method="POST">
-                        @csrf
-                        @method('PUT')
-                        <fieldset>
-                       
-                        
-                        <!-- Text input-->
-                        <div class="mb-3 row">
-                          <label class="col-lg-12 form-label text-lg-start" for="textinput">Ünvan Adı</label>  
-                          <div class="col-lg-12">
-                          <input id="name" name="name" type="text" class="form-control btn-square input-md" value="{{$title->name}}">
-                          
-                          </div>
-                        </div>
-                        
-                        <!-- Button -->
-                        <div class="mb-3 row">
-                          
-                          <div class="col-lg-12">
-                            <button id="btnKaydet" type="submit" name="btnKaydet" class="btn btn-primary">Güncelle</button>
-                          </div>
-                        </div>
-                        
-                        </fieldset>
-                        </form>
-                        
-                </div>
-            </div>
-        </div>
-        <!-- Zero Configuration  Ends-->
-     
-    </div>
-</div>
-@endsection
-
-@section('script')
-
 @endsection

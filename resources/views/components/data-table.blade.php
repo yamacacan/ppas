@@ -25,9 +25,9 @@
                     type="text" 
                     x-model="searchTerm" 
                     placeholder="Ara..." 
-                    class="w-full pl-4 pr-10 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
+                    class="w-full pl-4 pr-10 py-1.5 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
                 >
-                <i class="fas fa-search absolute right-3 top-3 text-gray-400 pointer-events-none"></i>
+                <i class="fas fa-search absolute right-3 top-2.5 text-gray-400 pointer-events-none text-sm"></i>
             </div>
         @else
             <div></div> <!-- Spacer -->
@@ -57,7 +57,7 @@
                         <label class="flex items-center px-2 py-1.5 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg cursor-pointer">
                             <input 
                                 type="checkbox" 
-                                class="rounded border-gray-300 text-primary-600 focus:ring-primary-500 mr-2"
+                                class="rounded border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-primary-600 focus:ring-primary-500 mr-2"
                                 :checked="visibleColumns[col.key || col.header]"
                                 @change="toggleColumn(col.key || col.header)"
                             >
