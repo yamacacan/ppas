@@ -11,6 +11,7 @@ use App\Services\StatisticsService;
 use App\Models\Activity;
 use App\Models\Category;
 use App\Models\CategoryKeyword;
+use Illuminate\Support\Facades\Cache;
 
 class DashboardController extends Controller
 {
@@ -60,72 +61,82 @@ class DashboardController extends Controller
         $taggingRate = $totalDuration > 0 ? round((($workDuration + $otherDuration) / $totalDuration) * 100, 2) : 0;
 
         // 2. Son 7 Günlük Çoklu Trend (Toplam, İş, Diğer, Tanımsız)
-        $last7Days = [];
-        $last7DaysWork = [];
-        $last7DaysOther = [];
-        $last7DaysUntagged = [];
-        
-        for ($i = 6; $i >= 0; $i--) {
-            $date = now()->subDays($i)->format('Y-m-d');
+        $trendStats = Cache::remember('dashboard_trend_7days', 3600, function () use ($workCategories, $otherCategories) {
+            $last7Days = [];
+            $last7DaysWork = [];
+            $last7DaysOther = [];
+            $last7DaysUntagged = [];
             
-            $totalDaily = Activity::whereDate('start_time_utc', $date)->sum('duration_ms');
-            
-            // Work (İş) aktiviteleri
-            $workDaily = Activity::whereDate('start_time_utc', $date)
-                ->whereHas('categories', function($q) use ($workCategories) {
-                    $q->whereIn('categories.id', $workCategories);
-                })->sum('duration_ms');
-            
-            // Other (Diğer) aktiviteleri
-            $otherDaily = Activity::whereDate('start_time_utc', $date)
-                ->whereHas('categories', function($q) use ($otherCategories) {
-                    $q->whereIn('categories.id', $otherCategories);
-                })->sum('duration_ms');
-
-            $untaggedDaily = Activity::untagged()->whereDate('start_time_utc', $date)->sum('duration_ms');
-            
-            $last7Days[] = [
-                'date' => $date,
-                'count' => round($totalDaily / (1000 * 60 * 60), 2),
-            ];
-            $last7DaysWork[] = round($workDaily / (1000 * 60 * 60), 2);
-            $last7DaysOther[] = round($otherDaily / (1000 * 60 * 60), 2);
-            $last7DaysUntagged[] = round($untaggedDaily / (1000 * 60 * 60), 2);
-        }
+            for ($i = 6; $i >= 0; $i--) {
+                $date = now()->subDays($i)->format('Y-m-d');
+                
+                $totalDaily = Activity::whereDate('start_time_utc', $date)->sum('duration_ms');
+                
+                // Work (İş) aktiviteleri
+                $workDaily = Activity::whereDate('start_time_utc', $date)
+                    ->whereHas('categories', function($q) use ($workCategories) {
+                        $q->whereIn('categories.id', $workCategories);
+                    })->sum('duration_ms');
+                
+                // Other (Diğer) aktiviteleri
+                $otherDaily = Activity::whereDate('start_time_utc', $date)
+                    ->whereHas('categories', function($q) use ($otherCategories) {
+                        $q->whereIn('categories.id', $otherCategories);
+                    })->sum('duration_ms');
+    
+                $untaggedDaily = Activity::untagged()->whereDate('start_time_utc', $date)->sum('duration_ms');
+                
+                $last7Days[] = [
+                    'date' => $date,
+                    'count' => round($totalDaily / (1000 * 60 * 60), 2),
+                ];
+                $last7DaysWork[] = round($workDaily / (1000 * 60 * 60), 2);
+                $last7DaysOther[] = round($otherDaily / (1000 * 60 * 60), 2);
+                $last7DaysUntagged[] = round($untaggedDaily / (1000 * 60 * 60), 2);
+            }
+            return compact('last7Days', 'last7DaysWork', 'last7DaysOther', 'last7DaysUntagged');
+        });
+        extract($trendStats);
 
         // 3. Son 30 Günlük İş Performans Trendi
-        $last30Days = [];
-        for ($i = 29; $i >= 0; $i--) {
-            $date = now()->subDays($i)->format('Y-m-d');
-            $dailyWorkDuration = Activity::whereDate('start_time_utc', $date)
-                ->whereHas('categories', function($query) use ($workCategories) {
-                    $query->whereIn('categories.id', $workCategories);
-                })
-                ->sum('duration_ms');
-                
-            $last30Days[] = [
-                'date' => $date,
-                'count' => round($dailyWorkDuration / (1000 * 60 * 60), 2),
-            ];
-        }
+        $last30Days = Cache::remember('dashboard_work_trend_30days', 3600, function () use ($workCategories) {
+            $data = [];
+            for ($i = 29; $i >= 0; $i--) {
+                $date = now()->subDays($i)->format('Y-m-d');
+                $dailyWorkDuration = Activity::whereDate('start_time_utc', $date)
+                    ->whereHas('categories', function($query) use ($workCategories) {
+                        $query->whereIn('categories.id', $workCategories);
+                    })
+                    ->sum('duration_ms');
+                    
+                $data[] = [
+                    'date' => $date,
+                    'count' => round($dailyWorkDuration / (1000 * 60 * 60), 2),
+                ];
+            }
+            return $data;
+        });
 
         // 4. Saatlik Dağılım (24 saat - 30 günlük ortalama - Sadece İş)
-        $hourlyDistribution = [];
-        $thirtyDaysAgo = now()->subDays(30);
-        
-        for ($hour = 0; $hour < 24; $hour++) {
-            // Son 30 gündeki o saatteki toplam aktivite süresi
-            $totalHourlyDuration = Activity::where('start_time_utc', '>=', $thirtyDaysAgo)
-                ->whereRaw('HOUR(start_time_utc) = ?', [$hour])
-                ->whereHas('categories', function($query) use ($workCategories) {
-                    $query->whereIn('categories.id', $workCategories);
-                })
-                ->sum('duration_ms');
-                
-            // 30 güne bölerek ortalama alıyoruz
-            $hourlyAvg = $totalHourlyDuration / 30;
-            $hourlyDistribution[] = round($hourlyAvg / (1000 * 60 * 60), 2);
-        }
+        $hourlyDistribution = Cache::remember('dashboard_hourly_distribution', 3600, function () use ($workCategories) {
+            $data = [];
+            $thirtyDaysAgo = now()->subDays(30);
+            
+            for ($hour = 0; $hour < 24; $hour++) {
+                // Son 30 gündeki o saatteki toplam aktivite süresi
+                $totalHourlyDuration = Activity::where('start_time_utc', '>=', $thirtyDaysAgo)
+                    ->whereRaw('HOUR(start_time_utc) = ?', [$hour])
+                    ->whereHas('categories', function($query) use ($workCategories) {
+                        $query->whereIn('categories.id', $workCategories);
+                    })
+                    ->sum('duration_ms');
+                    
+                // 30 güne bölerek ortalama alıyoruz
+                $hourlyAvg = $totalHourlyDuration / 30;
+                $data[] = round($hourlyAvg / (1000 * 60 * 60), 2);
+            }
+            return $data;
+        });
 
         // 5. İş/Diğer Dağılımı (Son 30 Gün)
         $workDuration30 = Activity::where('start_time_utc', '>=', $thirtyDaysAgo)

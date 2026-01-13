@@ -7,6 +7,7 @@ use App\Services\AutoTaggingService;
 use App\Models\Activity;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ActivityViewController extends Controller
 {
@@ -79,8 +80,13 @@ class ActivityViewController extends Controller
             $statsQuery->whereDate('start_time_utc', '<=', $request->end_date);
         }
 
-        $taggedCount = (clone $statsQuery)->has('categories')->count();
-        $untaggedCount = (clone $statsQuery)->doesntHave('categories')->count();
+        $filtersHash = md5(json_encode($request->only(['start_date', 'end_date'])));
+        $taggedCount = Cache::remember('activity_tagged_' . $filtersHash, 300, function () use ($statsQuery) {
+            return (clone $statsQuery)->has('categories')->count();
+        });
+        $untaggedCount = Cache::remember('activity_untagged_' . $filtersHash, 300, function () use ($statsQuery) {
+            return (clone $statsQuery)->doesntHave('categories')->count();
+        });
         
         // Pagination kullan
         $activities = $query->paginate(50)->withQueryString();
