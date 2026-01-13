@@ -61,7 +61,7 @@ class DashboardController extends Controller
         $taggingRate = $totalDuration > 0 ? round((($workDuration + $otherDuration) / $totalDuration) * 100, 2) : 0;
 
         // 2. Son 7 Günlük Çoklu Trend (Toplam, İş, Diğer, Tanımsız)
-        $trendStats = Cache::remember('dashboard_trend_7days', 3600, function () use ($workCategories, $otherCategories) {
+        $trendStats = Cache::remember('dashboard_trend_7days', 200, function () use ($workCategories, $otherCategories) {
             $last7Days = [];
             $last7DaysWork = [];
             $last7DaysOther = [];

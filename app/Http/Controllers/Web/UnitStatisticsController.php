@@ -7,6 +7,7 @@ use App\Models\Unit;
 use App\Models\Activity;
 use App\Services\StatisticsService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class UnitStatisticsController extends Controller
 {
@@ -19,27 +20,28 @@ class UnitStatisticsController extends Controller
 
     public function index()
     {
-        // Birim listesi ve özet istatistikleri
-        $units = Unit::withCount('computerUsers') 
-            ->orderBy('name')
-            ->get();
-
-        // Her birim için temel istatistikleri hesapla
-        // Bu işlem her sayfada yapmak ağır olabilir, cache veya ayrı bir tablo gerekebilir
-        // Şimdilik basitçe döngü içinde yapalım ama dikkatli olalım
-        
-        $units = $units->map(function ($unit) {
-            // Bu birime ait kullanıcıların aktiviteleri
-            $activityStats = Activity::whereHas('computerUser', function ($q) use ($unit) {
-                $q->where('unit_id', $unit->id);
-            })
-            ->selectRaw('COUNT(*) as count, SUM(duration_ms) as total_duration')
-            ->first();
-
-            $unit->activity_count = $activityStats->count ?? 0;
-            $unit->total_duration_hours = $activityStats->total_duration ? round($activityStats->total_duration / (1000 * 60 * 60), 1) : 0;
-            
-            return $unit;
+        // Cache key: units_with_stats
+        // Cache Duration: 30 minutes (1800 seconds)
+        $units = Cache::remember('units_with_stats', 200, function () {
+            // Birim listesi ve özet istatistikleri
+            $units = Unit::withCount('computerUsers') 
+                ->orderBy('name')
+                ->get();
+    
+            // Her birim için temel istatistikleri hesapla
+            return $units->map(function ($unit) {
+                // Bu birime ait kullanıcıların aktiviteleri
+                $activityStats = Activity::whereHas('computerUser', function ($q) use ($unit) {
+                    $q->where('unit_id', $unit->id);
+                })
+                ->selectRaw('COUNT(*) as count, SUM(duration_ms) as total_duration')
+                ->first();
+    
+                $unit->activity_count = $activityStats->count ?? 0;
+                $unit->total_duration_hours = $activityStats->total_duration ? round($activityStats->total_duration / (1000 * 60 * 60), 1) : 0;
+                
+                return $unit;
+            });
         });
 
         return view('performance.units.index', compact('units'));

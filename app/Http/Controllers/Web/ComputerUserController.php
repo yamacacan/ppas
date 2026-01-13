@@ -9,6 +9,7 @@ use App\Models\Unit;
 use App\Services\StatisticsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class ComputerUserController extends Controller
 {
@@ -24,26 +25,36 @@ class ComputerUserController extends Controller
      */
     public function index()
     {
-        // Veritabanındaki unique kullanıcıları bul ve computer_users tablosuna ekle (Sync)
-        // Bu işlem normalde bir Job ile yapılmalı ama şimdilik burada yapalım
-        $uniqueUsers = Activity::select('username', 'motherboard_uuid')
-            ->distinct()
-            ->get();
-
-        foreach ($uniqueUsers as $user) {
-            ComputerUser::firstOrCreate(
-                [
-                    'username' => $user->username,
-                    'motherboard_uuid' => $user->motherboard_uuid
-                ],
-                ['name' => null]
-            );
-        }
-
-        $users = ComputerUser::with('unit')
-            ->withCount('activities')
-            ->withSum('activities', 'duration_ms')
-            ->get();
+        // Cache Key: computer_users_list
+        // Duration: 10 minutes
+        $users = Cache::remember('computer_users_list', 200, function () {
+            // Veritabanındaki unique kullanıcıları bul ve computer_users tablosuna ekle (Sync - Optimized)
+            // Bu işlem artık her requestte değil, cache süresi dolduğunda bir kere çalışacak.
+            // Daha ideali bunu bir job'a taşımaktır.
+            
+            $existingUsers = ComputerUser::pluck('username')->toArray();
+            
+            // Sadece henüz eklenmemiş kullanıcıları bul
+            $newUsers = Activity::whereNotIn('username', $existingUsers)
+                ->select('username', 'motherboard_uuid')
+                ->distinct()
+                ->get();
+    
+            foreach ($newUsers as $user) {
+                ComputerUser::firstOrCreate(
+                    [
+                        'username' => $user->username,
+                        'motherboard_uuid' => $user->motherboard_uuid
+                    ],
+                    ['name' => null]
+                );
+            }
+    
+            return ComputerUser::with('unit')
+                ->withCount('activities')
+                ->withSum('activities', 'duration_ms')
+                ->get();
+        });
 
         return view('performance.computer_users.index', compact('users'));
     }
