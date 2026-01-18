@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 100" fill="none">
+  <!-- Analysis Icon -->
+  <g>
+    <!-- Hexagon Background (Subtle) -->
+    <path d="M55 10L95 32.5V77.5L55 100L15 77.5V32.5L55 10Z" fill="#006642" fill-opacity="0.1"/>
+    
+    <!-- Rising Bars (Analysis) -->
+    <rect x="28" y="55" width="12" height="25" rx="2" fill="#006642"/>
+    <rect x="49" y="40" width="12" height="40" rx="2" fill="#19a70c"/>
+    <rect x="70" y="25" width="12" height="55" rx="2" fill="#19a70c"/>
+    
+    <!-- Trend Line / Arrow -->
+    <path d="M25 65L45 45L60 55L85 20" stroke="#18181b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M85 20L75 22V20H85V28L85 20Z" fill="#18181b"/>
+  </g>
+
+  <!-- Text Part -->
+  <g class="logo-text" fill="#18181b" style="font-family: 'Inter', 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 44px;">
+    <!-- PERFAS -->
+    <text x="120" y="65">PERFAS</text>
+  </g>
+  
+  <!-- Subtitle (Optional, maybe "Performance Agent" or similar, but keeping it clean for now) -->
+  
+</svg>

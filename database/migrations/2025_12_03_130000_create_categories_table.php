@@ -25,7 +25,7 @@ return new class extends Migration
             $table->timestamps();
             
             // Foreign key
-            $table->foreign('parent_id')->references('id')->on('categories')->onDelete('cascade');
+            $table->foreign('parent_id')->references('id')->on('categories')->onDelete('set null');
             
             // Indexes
             $table->index('parent_id', 'idx_parent_id');

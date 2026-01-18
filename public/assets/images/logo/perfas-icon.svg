@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110 110" fill="none">
+    <!-- Hexagon Background (Subtle) -->
+    <path d="M55 10L95 32.5V77.5L55 100L15 77.5V32.5L55 10Z" fill="#006642" fill-opacity="0.1"/>
+    
+    <!-- Rising Bars (Analysis) -->
+    <rect x="28" y="55" width="12" height="25" rx="2" fill="#006642"/>
+    <rect x="49" y="40" width="12" height="40" rx="2" fill="#19a70c"/>
+    <rect x="70" y="25" width="12" height="55" rx="2" fill="#19a70c"/>
+    
+    <!-- Trend Line rounded -->
+    <circle cx="28" cy="65" r="3" fill="#18181b"/>
+    <circle cx="50" cy="45" r="3" fill="#18181b"/>
+    <circle cx="85" cy="20" r="3" fill="#18181b"/>
+</svg>
