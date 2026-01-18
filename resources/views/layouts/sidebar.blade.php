@@ -8,21 +8,16 @@
     <div class="flex flex-col h-full">
         
         <!-- Logo Section -->
-        <div class="flex items-center justify-between px-6 h-[70px] border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
-            <a href="{{ route('/') }}" class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center shadow-sm">
-                    <span class="text-white font-bold text-lg">P</span>
-                </div>
-                <div>
-                    <span class="text-lg font-bold text-gray-900 dark:text-white">Perfas</span>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">Performance Analytics</p>
-                </div>
+        <div class="flex items-center justify-center px-6 py-8 h-40 border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 relative">
+            <a href="{{ route('/') }}" class="flex items-center justify-center transition-transform hover:scale-105">
+                <img src="{{ asset('assets/images/perfas-light.png') }}" class="w-40 h-40 object-contain dark:hidden" alt="Perfas">
+                <img src="{{ asset('assets/images/perfas-dark.svg') }}" class="w-40 h-40 object-contain hidden dark:block" alt="Perfas">
             </a>
             
             <!-- Mobile Close Button -->
             <button 
                 @click="mobileMenuOpen = false" 
-                class="lg:hidden text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+                class="lg:hidden absolute right-4 top-4 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
             >
                 <i class="fas fa-times text-lg"></i>
             </button>

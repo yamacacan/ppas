@@ -1,0 +1,44 @@
+<svg width="512" height="512" viewBox="0 0 512 512"
+     xmlns="http://www.w3.org/2000/svg" aria-label="PERFAS white logo">
+
+  <defs>
+    <!-- Soft shadow optional; keep subtle for white mark -->
+    <filter id="shadowWhite" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#000000" flood-opacity="0.28"/>
+    </filter>
+  </defs>
+
+  <!-- Transparent background by default -->
+
+  <g filter="url(#shadowWhite)">
+    <!-- Big hexagon (semi-transparent white fill, white stroke) -->
+    <polygon
+      points="256,40 440,152 440,360 256,472 72,360 72,152"
+      fill="#FFFFFF"
+      fill-opacity="0.10"
+      stroke="#FFFFFF"
+      stroke-width="10"
+      stroke-linejoin="round"
+    />
+
+    <!-- 5 bars: small to large (solid white) -->
+    <rect x="182" y="252" width="22" height="48" rx="7" fill="#FFFFFF" opacity="0.65"/>
+    <rect x="210" y="236" width="22" height="64" rx="7" fill="#FFFFFF" opacity="0.72"/>
+    <rect x="238" y="216" width="22" height="84" rx="7" fill="#FFFFFF" opacity="0.80"/>
+    <rect x="266" y="194" width="22" height="106" rx="7" fill="#FFFFFF" opacity="0.88"/>
+    <rect x="294" y="172" width="22" height="128" rx="7" fill="#FFFFFF" opacity="0.96"/>
+
+    <!-- Wordmark -->
+    <text
+      x="256"
+      y="362"
+      text-anchor="middle"
+      font-size="38"
+      font-weight="800"
+      letter-spacing="3.5"
+      fill="#FFFFFF"
+      font-family="Plus Jakarta Sans, Manrope, Inter, system-ui, Arial, sans-serif">
+      PERFAS
+    </text>
+  </g>
+</svg>

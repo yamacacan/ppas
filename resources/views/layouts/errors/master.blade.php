@@ -6,6 +6,9 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Perfas - @yield('title')</title>
     
+    <!-- Favicon -->
+    <link rel="icon" href="{{asset('assets/images/logo/perfas-icon.svg')}}" type="image/x-icon">
+    
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

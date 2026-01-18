@@ -10,7 +10,7 @@
     <title>@yield('title', 'Perfas') - Performance Agent</title>
     
     <!-- Favicon -->
-    <link rel="icon" href="{{asset('assets/images/favicon.png')}}" type="image/x-icon">
+    <link rel="icon" href="{{asset('assets/images/perfas-dark.svg')}}" type="image/x-icon">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

@@ -7,8 +7,8 @@
     <meta name="description" content="Perfas - 4Dimension">
     <meta name="keywords" content="Perfas DDO, BGYS, KVKK, ISO27001, ISO9001, ISO14001, ISO45001">
     <meta name="author" content="pixelstrap">
-    <link rel="icon" href="{{asset('assets/images/favicon.png')}}" type="image/x-icon">
-    <link rel="shortcut icon" href="{{asset('assets/images/favicon.png')}}" type="image/x-icon">
+    <link rel="icon" href="{{asset('assets/images/perfas-dark.svg')}}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{asset('assets/images/perfas-dark.svg')}}" type="image/x-icon">
      <title>Perfas V2 - @yield('title')</title>
     <!-- Google font-->
     <link href="https://fonts.googleapis.com/css?family=Rubik:400,400i,500,500i,700,700i&amp;display=swap" rel="stylesheet">

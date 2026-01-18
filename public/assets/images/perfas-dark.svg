@@ -1,0 +1,56 @@
+<svg width="512" height="512" viewBox="0 0 512 512"
+     xmlns="http://www.w3.org/2000/svg" aria-label="PERFAS dark logo refined">
+
+  <defs>
+    <linearGradient id="strokeDarkR" x1="92" y1="52" x2="432" y2="460" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#48F7B8"/>
+      <stop offset="0.55" stop-color="#18C981"/>
+      <stop offset="1" stop-color="#0A7F55"/>
+    </linearGradient>
+
+    <linearGradient id="hexFillDarkR" x1="160" y1="120" x2="360" y2="448" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0F3F31" stop-opacity="0.44"/>
+      <stop offset="1" stop-color="#070E0C" stop-opacity="0.22"/>
+    </linearGradient>
+
+    <linearGradient id="barDarkR" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3AF0A5"/>
+      <stop offset="1" stop-color="#109B67"/>
+    </linearGradient>
+
+    <filter id="shadowDarkR" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#000000" flood-opacity="0.32"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#shadowDarkR)">
+    <!-- Büyük altıgen -->
+    <polygon
+      points="256,40 440,152 440,360 256,472 72,360 72,152"
+      fill="url(#hexFillDarkR)"
+      stroke="url(#strokeDarkR)"
+      stroke-width="10"
+      stroke-linejoin="round"
+    />
+
+    <!-- 5 Bar: soldan sağa küçükten büyüğe -->
+    <rect x="182" y="252" width="22" height="48" rx="7" fill="url(#barDarkR)" opacity="0.62"/>
+    <rect x="210" y="236" width="22" height="64" rx="7" fill="url(#barDarkR)" opacity="0.70"/>
+    <rect x="238" y="216" width="22" height="84" rx="7" fill="url(#barDarkR)" opacity="0.80"/>
+    <rect x="266" y="194" width="22" height="106" rx="7" fill="url(#barDarkR)" opacity="0.90"/>
+    <rect x="294" y="172" width="22" height="128" rx="7" fill="url(#barDarkR)" opacity="1"/>
+
+    <!-- Wordmark (kurumsal ayar) -->
+    <text
+      x="256"
+      y="362"
+      text-anchor="middle"
+      font-size="38"
+      font-weight="800"
+      letter-spacing="3.5"
+      fill="#E9FFF6"
+      font-family="Plus Jakarta Sans, Manrope, Inter, system-ui, Arial, sans-serif">
+      PERFAS
+    </text>
+  </g>
+</svg>
