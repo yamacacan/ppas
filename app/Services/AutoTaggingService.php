@@ -130,6 +130,8 @@ class AutoTaggingService
         }
         
         $keywords = $this->cachedKeywords;
+        
+        foreach ($keywords as $keyword) {
             $matched = false;
             $matchedField = null;
             

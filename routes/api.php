@@ -20,7 +20,8 @@ use App\Http\Controllers\StatisticsController;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
-    
+});
+
 // ============================================
 // Kategori API'leri
 // ============================================
@@ -71,4 +72,9 @@ Route::prefix('statistics')->group(function () {
     Route::get('/work-other-ratio', [StatisticsController::class, 'workOtherRatio']); // İş/Diğer oranı
 });
 
+// ============================================
+// Data Ingestion API (V1)
+// ============================================
+Route::prefix('v1')->group(function () {
+    Route::post('/ingest', [\App\Http\Controllers\Api\V1\IngestController::class, 'ingest']);
 });
