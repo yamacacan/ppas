@@ -33,15 +33,22 @@ class SyncBrowserData extends Command
     {
         $this->info('Starting browser data sync...');
 
-        // URL'i olmayan ve son 24 saatte oluşturulmuş aktiviteleri al (performans için limitli)
-        // Eğer tüm geçmişi taramak gerekirse tarihi kaldırabiliriz ama çok yavaş olabilir.
-        $activities = Activity::whereNull('url')
+        // Son 1 saatlik browser verisini önbelleğe alalım ki her aktivite için DB'ye gitmeyelim
+        $recentBrowserData = BrowserData::where('visit_time_utc', '>=', Carbon::now()->subHours(25))
+            ->get()
+            ->groupBy('username');
+
+        // URL'i olmayan ve son 24 saatte oluşturulmuş aktiviteleri al
+        Activity::whereNull('url')
             ->whereNotNull('start_time_utc')
             ->where('start_time_utc', '>=', Carbon::now()->subHours(24))
             ->orderBy('id', 'desc')
-            ->chunk(100, function ($activities) {
+            ->chunk(200, function ($activities) use ($recentBrowserData) {
                 foreach ($activities as $activity) {
-                    $this->syncActivity($activity);
+                    $userBrowserData = $recentBrowserData->get($activity->username, collect());
+                    if ($userBrowserData->isNotEmpty()) {
+                        $this->syncActivity($activity, $userBrowserData);
+                    }
                 }
             });
 
@@ -49,25 +56,27 @@ class SyncBrowserData extends Command
         return Command::SUCCESS;
     }
 
-    protected function syncActivity(Activity $activity)
+    protected function syncActivity(Activity $activity, $candidates = null)
     {
-        // Eşleşme kriterleri:
-        // 1. KESİN: Aynı kullanıcı (username)
-        // 2. KESİN: Zaman penceresi (Activity start_time +/- 15 sn)
-        // 3. PUANLAMA: Metin Benzerliği (Title vs Title/URL)
-        
         $startTime = $activity->start_time_utc;
-        $windowSeconds = 15; // Biraz daha genişletelim
+        $windowSeconds = 15;
         
-        $query = BrowserData::where('username', $activity->username)
-            ->where('visit_time_utc', '>=', $startTime->copy()->subSeconds($windowSeconds))
-            ->where('visit_time_utc', '<=', $startTime->copy()->addSeconds($windowSeconds));
-            
-        if ($activity->motherboard_uuid) {
-            $query->where('motherboard_uuid', $activity->motherboard_uuid);
+        if ($candidates === null) {
+            $candidates = BrowserData::where('username', $activity->username)
+                ->where('visit_time_utc', '>=', $startTime->copy()->subSeconds($windowSeconds))
+                ->where('visit_time_utc', '<=', $startTime->copy()->addSeconds($windowSeconds))
+                ->get();
+        } else {
+            // Memory'deki listeden filtrele
+            $candidates = $candidates->filter(function($item) use ($startTime, $windowSeconds, $activity) {
+                $timeDiff = abs(Carbon::parse($item->visit_time_utc)->diffInSeconds($startTime));
+                $uuidMatch = true;
+                if ($activity->motherboard_uuid && $item->motherboard_uuid) {
+                    $uuidMatch = ($activity->motherboard_uuid === $item->motherboard_uuid);
+                }
+                return $timeDiff <= $windowSeconds && $uuidMatch;
+            });
         }
-
-        $candidates = $query->get();
         
         if ($candidates->isEmpty()) {
             return;

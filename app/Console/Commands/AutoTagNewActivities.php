@@ -38,10 +38,11 @@ class AutoTagNewActivities extends Command
     {
         $limit = $this->option('limit');
         
-        $this->info("Otomatik tagleme başlatılıyor (Limit: $limit)...");
+        $this->info("Otomatik tagleme (asenkron) başlatılıyor (Limit: $limit)...");
         
-        // Taglenmemiş aktiviteleri al (en yeniler önce)
+        // Taglenmemiş aktiviteleri al
         $activities = Activity::untagged()
+            ->select('id')
             ->orderBy('id', 'desc')
             ->limit($limit)
             ->get();
@@ -51,35 +52,19 @@ class AutoTagNewActivities extends Command
             return;
         }
 
-        $this->info("{$activities->count()} adet aktivite bulundu. İşleniyor...");
+        $this->info("{$activities->count()} adet aktivite için tagleme işleri kuyruğa ekleniyor...");
         
         $bar = $this->output->createProgressBar($activities->count());
         $bar->start();
 
-        $taggedCount = 0;
-        $errorCount = 0;
-
         foreach ($activities as $activity) {
-            try {
-                $tags = $this->autoTaggingService->tagActivity($activity->id);
-                
-                if (!empty($tags)) {
-                    $taggedCount++;
-                }
-            } catch (\Exception $e) {
-                $errorCount++;
-                Log::error("Auto-tag command error for activity {$activity->id}: " . $e->getMessage());
-            }
-            
+            \App\Jobs\TagActivityJob::dispatch($activity->id)->onQueue('tagging');
             $bar->advance();
         }
 
         $bar->finish();
         $this->newLine();
         
-        $this->info("İşlem tamamlandı.");
-        $this->info("Taglenen: $taggedCount");
-        $this->info("Hata: $errorCount");
-        $this->info("Taglenemeyen (Eşleşme yok): " . ($activities->count() - $taggedCount - $errorCount));
+        $this->info("İşlem tamamlandı. Aktiviteler arka planda işlenecek.");
     }
 }

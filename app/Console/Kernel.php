@@ -18,15 +18,23 @@ class Kernel extends ConsoleKernel
         // Taglenmemiş aktiviteleri her dakika kontrol et ve tagle
         // withoutOverlapping: Önceki işlem bitmeden yenisi başlamaz
         // runInBackground: Arka planda çalışır
+        // Taglenmemiş aktiviteleri kuyruğa gönderir (CPU Lock önlemek için asenkron)
         $schedule->command('performance:auto-tag-new --limit=5000')
             ->everyMinute()
+            ->onOneServer()
             ->withoutOverlapping()
             ->runInBackground();
 
         // Browser datalarını senkronize et (URL eşleştirme)
         $schedule->command('performance:sync-browser-data')
-            ->everyMinute()
+            ->everyFiveMinutes()
+            ->onOneServer()
             ->withoutOverlapping()
+            ->runInBackground();
+
+        // Özet tabloyu her gün gece 00:05'te bir önceki gün için doldur
+        $schedule->command('activities:sync-summaries --days=1')
+            ->dailyAt('00:05')
             ->runInBackground();
     }
 
