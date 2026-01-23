@@ -183,7 +183,7 @@
                 </table>
             </div>
             <div class="bg-gray-50 dark:bg-gray-800 px-4 py-3 border-t border-gray-200 dark:border-gray-700 sm:px-6 flex justify-center">
-                {{ $activities->links('pagination.custom') }}
+                {{ $activities->links() }}
             </div>
         </div>
     </div>

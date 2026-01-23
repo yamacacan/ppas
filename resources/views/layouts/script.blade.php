@@ -62,7 +62,7 @@
             showConfirmButton: false,
             timer: 3000,
             timerProgressBar: true,
-            background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+            background: document.documentElement.classList.contains('dark') ? '#14181dff' : '#ffffff',
             color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#545454',
             customClass: {
                 popup: 'colored-toast dark:!bg-gray-800 dark:!text-white',
@@ -106,11 +106,11 @@
                     text: "Bu işlem geri alınamaz!",
                     icon: 'warning',
                     heightAuto: false, // Fix layout shift
-                    background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
+                    background: document.documentElement.classList.contains('dark') ? '#202020ff' : '#ffffff',
                     color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#545454',
                     showCancelButton: true,
                     confirmButtonColor: '#ef4444',
-                    cancelButtonColor: '#3b82f6',
+                    cancelButtonColor: '#003f1aff',
                     confirmButtonText: 'Evet, Sil!',
                     cancelButtonText: 'İptal',
                     customClass: {

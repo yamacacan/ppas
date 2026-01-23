@@ -98,6 +98,8 @@ class AutoTaggingService
         ];
     }
 
+    protected $cachedKeywords = null;
+
     /**
      * Aktivite için keyword eşleştirme yapar
      * 
@@ -119,11 +121,15 @@ class AutoTaggingService
         }
 
         // Tüm aktif keyword'leri priority'ye göre getir
-        // Override'ları da eager load edelim
-        $keywords = CategoryKeyword::with(['category', 'overrides.category'])
-            ->active()
-            ->byPriority()
-            ->get();
+        // Memory cache kullanarak her job'da DB'ye gitmeyi önleyebiliriz (mevcut request süresince)
+        if ($this->cachedKeywords === null) {
+            $this->cachedKeywords = CategoryKeyword::with(['category', 'overrides.category'])
+                ->active()
+                ->byPriority()
+                ->get();
+        }
+        
+        $keywords = $this->cachedKeywords;
         
         foreach ($keywords as $keyword) {
             $matched = false;

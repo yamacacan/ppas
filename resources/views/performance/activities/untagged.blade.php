@@ -35,9 +35,6 @@
                 </h5>
             </div>
             <div class="flex flex-wrap gap-2">
-                <a href="{{ route('activities.auto-tag') }}" class="btn btn-primary text-sm shadow-lg hover:shadow-xl transition-shadow">
-                    <i class="fas fa-magic mr-1"></i> Otomatik Tagleme
-                </a>
                 <a href="{{ route('activities.index') }}" class="btn btn-secondary text-sm">
                     <i class="fas fa-list mr-1"></i> Tümü
                 </a>
@@ -190,7 +187,7 @@
             </div>
             
             <div class="bg-gray-50 dark:bg-gray-800 px-4 py-3 border-t border-gray-200 dark:border-gray-700 sm:px-6 flex justify-center">
-                {{ $activities->links('pagination.custom') }}
+                {{ $activities->links() }}
             </div>
         </div>
     </div>

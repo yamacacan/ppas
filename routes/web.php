@@ -159,6 +159,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Profile
     Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+
+    // API Client Management
+    Route::middleware('role:Admin|Super Admin')->group(function () {
+        Route::get('/api-clients', [\App\Http\Controllers\Web\ApiClientController::class, 'index'])->name('admin.api-clients.index');
+        Route::post('/api-clients', [\App\Http\Controllers\Web\ApiClientController::class, 'store'])->name('admin.api-clients.store');
+        Route::post('/api-clients/{apiClient}/toggle', [\App\Http\Controllers\Web\ApiClientController::class, 'toggle'])->name('admin.api-clients.toggle');
+        Route::delete('/api-clients/{apiClient}', [\App\Http\Controllers\Web\ApiClientController::class, 'destroy'])->name('admin.api-clients.destroy');
+    });
 });
 
 

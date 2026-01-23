@@ -93,6 +93,10 @@
                            class="block px-3 py-2 text-sm transition-all rounded-lg {{ request()->routeIs('kullanicilar.*') ? 'text-primary-700 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800' }}">
                             Kullanıcılar
                         </a>
+                        <a href="{{ route('admin.api-clients.index') }}" 
+                           class="block px-3 py-2 text-sm transition-all rounded-lg {{ request()->routeIs('admin.api-clients.*') ? 'text-primary-700 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800' }}">
+                            API Yönetimi
+                        </a>
                     @endrole
                 </div>
             </div>
@@ -185,10 +189,6 @@
                     <a href="{{ route('activities.untagged') }}" 
                        class="block px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all">
                         Taglenmemiş
-                    </a>
-                    <a href="{{ route('activities.auto-tag') }}" 
-                       class="block px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all">
-                        Otomatik Tagleme
                     </a>
                 </div>
             </div>

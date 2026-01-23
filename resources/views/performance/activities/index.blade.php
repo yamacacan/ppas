@@ -28,7 +28,9 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Toplam</p>
-                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">{{ number_format($activities instanceof \Illuminate\Pagination\LengthAwarePaginator ? $activities->total() : $activities->count()) }}</h3>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">
+                        {{ ($taggedCount >= 0 && $untaggedCount >= 0) ? number_format($taggedCount + $untaggedCount) : 'Milyonlarca' }}
+                    </h3>
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">aktivite</p>
                 </div>
                 <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
@@ -101,9 +103,6 @@
                 </a>
                 <a href="{{ route('activities.tagged') }}" class="btn btn-sm btn-success">
                     <i class="fas fa-check-circle mr-1"></i> Taglenmiş
-                </a>
-                <a href="{{ route('activities.auto-tag') }}" class="btn btn-sm btn-primary">
-                    <i class="fas fa-magic mr-1"></i> Otomatik Tagleme
                 </a>
             </div>
         </div>
@@ -338,12 +337,16 @@
             </div>
             
             <div class="bg-gray-50 dark:bg-gray-800 px-4 py-3 border-t border-gray-200 dark:border-gray-700 sm:px-6 flex justify-center">
-                {{ $activities->links('pagination.custom') }}
+                {{ $activities->links() }}
             </div>
         </div>
         
         <div class="mt-4 text-xs text-gray-500 text-right">
-            Toplam {{ number_format($activities->total()) }} kayıt listelendi.
+             @if($taggedCount >= 0 && $untaggedCount >= 0)
+                Toplam yaklaşık {{ number_format($taggedCount + $untaggedCount) }} kayıt arasından listelenmektedir.
+             @else
+                Filtrelenmiş kayıtlar listeleniyor.
+             @endif
         </div>
     </div>
 </div>
