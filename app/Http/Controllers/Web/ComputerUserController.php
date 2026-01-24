@@ -32,23 +32,43 @@ class ComputerUserController extends Controller
             // Bu işlem artık her requestte değil, cache süresi dolduğunda bir kere çalışacak.
             // Daha ideali bunu bir job'a taşımaktır.
             
-            $existingUsers = ComputerUser::pluck('username')->toArray();
-            
-            // Sadece henüz eklenmemiş kullanıcıları bul
-            $newUsers = Activity::whereNotIn('username', $existingUsers)
-                ->select('username', 'motherboard_uuid')
+            // Veritabanında olmayan (username + motherboard_uuid) kombinasyonlarını bul
+            $newUsers = Activity::select('username', 'motherboard_uuid')
                 ->distinct()
+                ->whereNotExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('computer_users')
+                        ->whereRaw('computer_users.username = activities.username')
+                        ->whereRaw('computer_users.motherboard_uuid = activities.motherboard_uuid');
+                })
                 ->get();
     
-            foreach ($newUsers as $user) {
-                ComputerUser::firstOrCreate(
-                    [
-                        'username' => $user->username,
-                        'motherboard_uuid' => $user->motherboard_uuid
-                    ],
-                    ['name' => null]
-                );
+            foreach ($newUsers as $new) {
+                // Hostname'i bulmaya çalış (system_hardware tablosundan en güncelini al)
+                $hostname = DB::table('system_hardware')
+                    ->where('motherboard_uuid', $new->motherboard_uuid)
+                    ->orderBy('collected_at', 'desc')
+                    ->value('hostname');
+
+                ComputerUser::create([
+                    'username' => $new->username,
+                    'motherboard_uuid' => $new->motherboard_uuid,
+                    'hostname' => $hostname,
+                    'name' => null
+                ]);
             }
+
+            // Mevcut kullanıcılarda hostname eksikse güncellemeye çalış
+            ComputerUser::whereNull('hostname')->each(function($user) {
+                $hostname = DB::table('system_hardware')
+                    ->where('motherboard_uuid', $user->motherboard_uuid)
+                    ->orderBy('collected_at', 'desc')
+                    ->value('hostname');
+                
+                if ($hostname) {
+                    $user->update(['hostname' => $hostname]);
+                }
+            });
     
             return ComputerUser::with('unit')
                 ->withCount('activities')

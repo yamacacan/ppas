@@ -11,21 +11,22 @@ class ActivitySummary extends Model
 
     protected $table = 'activity_summaries';
 
+    public $timestamps = false;
+
     protected $fillable = [
         'date',
-        'summary_type',
+        'hour',
+        'category_type',
         'category_id',
-        'type_name',
-        'total_duration_seconds',
+        'total_duration_ms',
         'activity_count',
-        'unique_users',
     ];
 
     protected $casts = [
         'date' => 'date',
-        'total_duration_seconds' => 'integer',
+        'hour' => 'integer',
+        'total_duration_ms' => 'integer',
         'activity_count' => 'integer',
-        'unique_users' => 'integer',
     ];
 
     public function category()

@@ -15,13 +15,12 @@ class TagActivityJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $queue = 'tagging';
-
     protected $activityId;
 
     public function __construct($activityId)
     {
         $this->activityId = $activityId;
+        $this->queue = 'tagging';
     }
 
     public function handle(AutoTaggingService $autoTaggingService): void

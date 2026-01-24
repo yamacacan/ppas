@@ -47,7 +47,12 @@
 
                 $titleOptions = $titles->pluck('name', 'id');
                 
-                $roleOptions = $roles->filter(fn($r) => $r->name != 'Super Admin')->pluck('name', 'id');
+                $roleOptions = $roles->filter(function($r) {
+                    if ($r->name === 'Super Admin') {
+                        return auth()->user()->hasRole('Super Admin');
+                    }
+                    return true;
+                })->pluck('name', 'id');
             @endphp
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -57,7 +62,7 @@
                     name="unit_id" 
                     id="unit_id"
                     :options="$unitOptions" 
-                    :value="old('unit_id', $user->unit_id)"
+                    :value="old('unit_id', $user->details->unit_id ?? '')"
                     placeholder="Birim Seçiniz"
                 />
 
@@ -67,7 +72,7 @@
                     name="title_id" 
                     id="title_id"
                     :options="$titleOptions" 
-                    :value="old('title_id', $user->title_id)"
+                    :value="old('title_id', $user->details->title_id ?? '')"
                     :error="$errors->first('title_id')"
                     placeholder="Ünvan Seçiniz"
                 />
@@ -108,7 +113,7 @@
                     label="E-Posta" 
                     name="mail" 
                     id="mail"
-                    :value="old('mail', $user->mail)" 
+                    :value="old('mail', $user->email)" 
                     :error="$errors->first('mail')"
                 />
 
@@ -117,7 +122,7 @@
                     label="Telefon" 
                     name="phone" 
                     id="phone"
-                    :value="old('phone', $user->phone)" 
+                    :value="old('phone', $user->details->phone ?? '')" 
                     :error="$errors->first('phone')"
                 />
 

@@ -71,7 +71,16 @@ class UserController extends Controller
             
         $user->markEmailAsVerified();
 
-        $user->roles()->sync($request->role_id);
+        $role_ids = $request->role_id;
+        // Super Admin olmayanlar Super Admin rolü atayamaz
+        if (!auth()->user()->hasRole('Super Admin')) {
+            $superAdminRole = Role::where('name', 'Super Admin')->first();
+            if ($superAdminRole && in_array($superAdminRole->id, (array)$role_ids)) {
+                return redirect()->back()->with('error', 'Super Admin rolü atama yetkiniz yok.');
+            }
+        }
+
+        $user->roles()->sync($role_ids);
 
 
         UserDetail::create([
@@ -101,6 +110,11 @@ class UserController extends Controller
         $roles= Role::all();
 
       
+        if (auth()->user()->hasRole('Admin') && !auth()->user()->hasRole('Super Admin')) {
+            if ($kullanicilar->hasAnyRole(['Admin', 'Super Admin'])) {
+                return redirect()->route('kullanicilar.index')->with('error', 'Diğer admin kullanıcılarını düzenleme yetkiniz yok.');
+            }
+        }
 
         return view('yonetimsel-islemler.kullanicilar.edit',compact('user','units','titles','roles'));
     }
@@ -108,23 +122,36 @@ class UserController extends Controller
 
     public function update(Request $request, string $id)
     {
+        $user = User::with('details')->findOrFail($id);
 
-        $user=User::find($id);
-        //dd( $user->roles[0]->id);
-        $user->roles()->sync($request->role_id);
+        if (auth()->user()->hasRole('Admin') && !auth()->user()->hasRole('Super Admin')) {
+            if ($user->hasAnyRole(['Admin', 'Super Admin'])) {
+                return redirect()->route('kullanicilar.index')->with('error', 'Diğer admin kullanıcılarını güncelleme yetkiniz yok.');
+            }
+        }
 
+        $role_ids = $request->role_id;
+        // Super Admin olmayanlar Super Admin rolü atayamaz veya kaldıramaz (başkasından)
+        if (!auth()->user()->hasRole('Super Admin')) {
+            $superAdminRole = Role::where('name', 'Super Admin')->first();
+            if ($superAdminRole && in_array($superAdminRole->id, (array)$role_ids)) {
+                return redirect()->back()->with('error', 'Super Admin rolü atama yetkiniz yok.');
+            }
+        }
+
+        $user->roles()->sync($role_ids);
 
         $request->validate([
             'name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'email' => [
+            'mail' => [
                 'required',
                 'email',
                 'max:255',
-                Rule::unique('users')->ignore($id),
+                Rule::unique('users', 'email')->ignore($id),
             ],
             'phone' => 'required|digits:11',
-            
+            'title_id' => 'required',
         ]);
 
         if ($request->filled('password')) {
@@ -134,30 +161,25 @@ class UserController extends Controller
         }
 
         $userData=[
-
             'name'=>$request->name,
             'last_name'=>$request->last_name,
-            'email'=>$request->email,
-            
-
-
+            'email'=>$request->mail,
         ];
 
         if ($request->filled('password')) {
             $userData['password'] = Hash::make($request->password);
         }
 
-        User::whereId($id)->update($userData);
+        $user->update($userData);
 
-        $userDetailsData=[
-
-            'unit_id'=>$request->unit_id,
-            'title_id'=>$request->title_id,
-            'phone'=>$request->phone
-
-        ];
-
-        UserDetail::where('user_id',$id)->update($userDetailsData);
+        $user->details()->updateOrCreate(
+            ['user_id' => $id],
+            [
+                'unit_id'=>$request->unit_id,
+                'title_id'=>$request->title_id,
+                'phone'=>$request->phone
+            ]
+        );
 
        
         return redirect()->route('kullanicilar.index')->with('message','Kullanıcı başarılı bir şekilde güncellendi');
@@ -169,6 +191,12 @@ class UserController extends Controller
 
     public function destroy(User $kullanicilar)
     {
+        if (auth()->user()->hasRole('Admin') && !auth()->user()->hasRole('Super Admin')) {
+            if ($kullanicilar->hasAnyRole(['Admin', 'Super Admin'])) {
+                return redirect()->route('kullanicilar.index')->with('error', 'Diğer admin kullanıcılarını silme yetkiniz yok.');
+            }
+        }
+
         $kullanicilar->delete();
         return redirect()->route('kullanicilar.index')->with('message','Kullanıcı başarılı bir şekilde silindi');
     }

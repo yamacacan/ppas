@@ -40,9 +40,21 @@
 
 
         @php
+            $isSuperAdmin = auth()->user()->hasRole('Super Admin');
+            $isAdmin = auth()->user()->hasRole('Admin');
+
             $tableRows = $users->filter(function($user) {
+                // Super Admin'leri listede gösterme (kendisi değilse)
                 return !isset($user->roles[0]) || $user->roles[0]->name != 'Super Admin';
-            })->map(function($user) {
+            })->map(function($user) use ($isSuperAdmin, $isAdmin) {
+                $targetRole = $user->roles[0]->name ?? null;
+                
+                // Admin'ler diğer Admin'leri düzenleyemez/silemez
+                $canModify = true;
+                if ($isAdmin && !$isSuperAdmin && ($targetRole === 'Admin' || $targetRole === 'Super Admin')) {
+                    $canModify = false;
+                }
+
                 return [
                     'id' => $user->id,
                     'role' => isset($user->roles[0]) 
@@ -50,9 +62,11 @@
                         : 'Rol Yok',
                     'fullname' => '<div class="font-medium text-gray-900 dark:text-white">'.$user->name . ' ' . $user->last_name.'</div>',
                     'email' => '<div class="text-gray-500 dark:text-gray-400">'.$user->email.'</div>',
-                    'unit' => isset($user->details) ? $user->details->unit->name : '-',
-                    'title' => isset($user->details) ? $user->details->title->name : '-',
+                    'unit' => isset($user->details->unit) ? $user->details->unit->name : '-',
+                    'title' => isset($user->details->title) ? $user->details->title->name : '-',
                     'phone' => isset($user->details) ? $user->details->phone : '-',
+                    'can_edit' => $canModify,
+                    'can_delete' => $canModify,
                 ];
             })->values();
         @endphp

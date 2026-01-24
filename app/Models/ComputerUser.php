@@ -12,6 +12,7 @@ class ComputerUser extends Model
     protected $fillable = [
         'username',
         'motherboard_uuid',
+        'hostname',
         'name',
         'unit_id',
     ];

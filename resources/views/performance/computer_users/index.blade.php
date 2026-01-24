@@ -56,11 +56,11 @@
                         : '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">Global</span>',
                     'system_info' => '
                         <div class="flex flex-col">
-                            <span class="text-xs text-gray-500 font-mono" title="'.$user->motherboard_uuid.'">
-                                UUID: '.Str::limit($user->motherboard_uuid, 8).'
+                            <span class="text-sm font-bold text-gray-800 dark:text-gray-200">
+                                '.($user->hostname ?? 'Bilinmeyen PC').'
                             </span>
-                            <span class="text-[10px] text-gray-400 mt-1">
-                                '.$user->updated_at->format('d.m.Y H:i').'
+                            <span class="text-[10px] text-gray-400 mt-1" title="'.$user->motherboard_uuid.'">
+                                UUID: '.Str::limit($user->motherboard_uuid, 12).'
                             </span>
                         </div>',
                     'total_duration' => '<span class="text-sm font-mono text-gray-900 dark:text-white">'.number_format(($user->activities_sum_duration_ms ?? 0) / (1000 * 60 * 60), 1).' Saat</span>',

@@ -46,7 +46,12 @@
 
                 $titleOptions = $titles->pluck('name', 'id');
                 
-                $roleOptions = $roles->filter(fn($r) => $r->name != 'Super Admin')->pluck('name', 'id');
+                $roleOptions = $roles->filter(function($r) {
+                    if ($r->name === 'Super Admin') {
+                        return auth()->user()->hasRole('Super Admin');
+                    }
+                    return true;
+                })->pluck('name', 'id');
             @endphp
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

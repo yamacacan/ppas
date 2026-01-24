@@ -50,43 +50,104 @@ class IngestController extends Controller
         }
 
         $processedCount = 0;
+        $errors = [];
         
-        switch ($type) {
-            case 'activities':
-                foreach ($items as $item) {
-                    Activity::create($item);
-                    $processedCount++;
-                }
-                break;
-            case 'hardware':
-                foreach ($items as $item) {
-                    SystemHardware::create($item);
-                    $processedCount++;
-                }
-                break;
-            case 'apps':
-                foreach ($items as $item) {
-                    InstalledApp::create($item);
-                    $processedCount++;
-                }
-                break;
-            case 'browser':
-                foreach ($items as $item) {
-                    BrowserData::create($item);
-                    $processedCount++;
-                }
-                break;
-            default:
-                return response()->json(['error' => 'Unknown data type: ' . $type], 400);
+        try {
+            switch ($type) {
+                case 'activities':
+                    foreach ($items as $index => $item) {
+                        try {
+                            // Ensure required fields are set
+                            if (empty($item['created_at_utc'])) {
+                                $item['created_at_utc'] = now();
+                            }
+                            // Add received_at timestamp
+                            $item['received_at'] = now();
+                            Activity::create($item);
+                            $processedCount++;
+                        } catch (\Exception $e) {
+                            $errors[] = "Item {$index}: " . $e->getMessage();
+                            Log::error("Failed to create activity at index {$index}", [
+                                'error' => $e->getMessage(),
+                                'item' => $item,
+                                'trace' => $e->getTraceAsString()
+                            ]);
+                        }
+                    }
+                    break;
+                case 'hardware':
+                    foreach ($items as $index => $item) {
+                        try {
+                            SystemHardware::create($item);
+                            $processedCount++;
+                        } catch (\Exception $e) {
+                            $errors[] = "Item {$index}: " . $e->getMessage();
+                            Log::error("Failed to create hardware at index {$index}", [
+                                'error' => $e->getMessage(),
+                                'item' => $item
+                            ]);
+                        }
+                    }
+                    break;
+                case 'apps':
+                    foreach ($items as $index => $item) {
+                        try {
+                            InstalledApp::create($item);
+                            $processedCount++;
+                        } catch (\Exception $e) {
+                            $errors[] = "Item {$index}: " . $e->getMessage();
+                            Log::error("Failed to create app at index {$index}", [
+                                'error' => $e->getMessage(),
+                                'item' => $item
+                            ]);
+                        }
+                    }
+                    break;
+                case 'browser':
+                    foreach ($items as $index => $item) {
+                        try {
+                            BrowserData::create($item);
+                            $processedCount++;
+                        } catch (\Exception $e) {
+                            $errors[] = "Item {$index}: " . $e->getMessage();
+                            Log::error("Failed to create browser data at index {$index}", [
+                                'error' => $e->getMessage(),
+                                'item' => $item
+                            ]);
+                        }
+                    }
+                    break;
+                default:
+                    return response()->json(['error' => 'Unknown data type: ' . $type], 400);
+            }
+        } catch (\Exception $e) {
+            Log::error("Ingest processing failed", [
+                'error' => $e->getMessage(),
+                'type' => $type,
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json([
+                'error' => 'Processing failed',
+                'message' => $e->getMessage(),
+                'processed' => $processedCount
+            ], 500);
         }
 
         $client->update(['last_used_at' => now()]);
 
-        return response()->json([
+        $response = [
             'success' => true,
             'processed' => $processedCount,
+            'total' => count($items),
             'client' => $client->name
-        ]);
+        ];
+
+        if (!empty($errors)) {
+            $response['errors'] = $errors;
+            $response['partial_success'] = true;
+        }
+
+        return response()->json($response, !empty($errors) && $processedCount === 0 ? 400 : 200);
     }
 
     protected function decrypt($payload, $key)
