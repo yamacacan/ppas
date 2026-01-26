@@ -146,21 +146,14 @@
                 </button>
                 <div x-show="open" x-collapse class="ml-8 mt-1 space-y-1">
                     <a href="{{ route('keywords.index') }}" 
-                       class="block px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all">
+                       class="block px-3 py-2 text-sm transition-all {{ request()->routeIs('keywords.index') ? 'text-primary-700 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800' }}">
                         Keyword'ler
                     </a>
                     <a href="{{ route('keywords.create') }}" 
-                       class="block px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all">
+                       class="block px-3 py-2 text-sm transition-all {{ request()->routeIs('keywords.create') ? 'text-primary-700 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800' }}">
                         Yeni Keyword
                     </a>
-                    <a href="{{ route('keywords.test') }}" 
-                       class="block px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all">
-                        Keyword Test
-                    </a>
-                    <a href="{{ route('keywords.import') }}" 
-                       class="block px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all">
-                        Toplu İçe Aktar
-                    </a>
+                   
                 </div>
             </div>
             @endcan
@@ -179,15 +172,15 @@
                 </button>
                 <div x-show="open" x-collapse class="ml-8 mt-1 space-y-1">
                     <a href="{{ route('activities.index') }}" 
-                       class="block px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all">
+                       class="block px-3 py-2 text-sm transition-all {{ request()->routeIs('activities.index') ? 'text-primary-700 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800' }}">
                         Tüm Aktiviteler
                     </a>
                     <a href="{{ route('activities.tagged') }}" 
-                       class="block px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all">
+                       class="block px-3 py-2 text-sm transition-all {{ request()->routeIs('activities.tagged') ? 'text-primary-700 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800' }}">
                         Taglenmiş
                     </a>
                     <a href="{{ route('activities.untagged') }}" 
-                       class="block px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all">
+                       class="block px-3 py-2 text-sm transition-all {{ request()->routeIs('activities.untagged') ? 'text-primary-700 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800' }}">
                         Taglenmemiş
                     </a>
                 </div>
@@ -208,23 +201,23 @@
                 </button>
                 <div x-show="open" x-collapse class="ml-8 mt-1 space-y-1">
                     <a href="{{ route('statistics.index') }}" 
-                       class="block px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all">
+                       class="block px-3 py-2 text-sm transition-all {{ request()->routeIs('statistics.index') ? 'text-primary-700 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800' }}">
                         Kategori İstatistikleri
                     </a>
                     <a href="{{ route('statistics.tagging-rate') }}" 
-                       class="block px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all">
+                       class="block px-3 py-2 text-sm transition-all {{ request()->routeIs('statistics.tagging-rate') ? 'text-primary-700 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800' }}">
                         Tagleme Oranı
                     </a>
                     <a href="{{ route('statistics.time-distribution') }}" 
-                       class="block px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all">
+                       class="block px-3 py-2 text-sm transition-all {{ request()->routeIs('statistics.time-distribution') ? 'text-primary-700 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800' }}">
                         Zaman Dağılımı
                     </a>
                     <a href="{{ route('statistics.work-other') }}" 
-                       class="block px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all">
+                       class="block px-3 py-2 text-sm transition-all {{ request()->routeIs('statistics.work-other') ? 'text-primary-700 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800' }}">
                         İş/Diğer Oranı
                     </a>
                     <a href="{{ route('unit-statistics.index') }}" 
-                       class="block px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all">
+                       class="block px-3 py-2 text-sm transition-all {{ request()->routeIs('unit-statistics.index') ? 'text-primary-700 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800' }}">
                         Birim İstatistikleri
                     </a>
                 </div>
@@ -245,11 +238,11 @@
                 </button>
                 <div x-show="open" x-collapse class="ml-8 mt-1 space-y-1">
                     <a href="{{ route('computer-users.index') }}" 
-                       class="block px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all">
+                       class="block px-3 py-2 text-sm transition-all {{ request()->routeIs('computer-users.*') ? 'text-primary-700 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800' }}">
                         Bilgisayar Kullanıcıları
                     </a>
                     <a href="{{ route('computers.index') }}" 
-                       class="block px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all">
+                       class="block px-3 py-2 text-sm transition-all {{ request()->routeIs('computers-users.*') ? 'text-primary-700 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800' }}">
                         Bilgisayar Yönetimi
                     </a>
                 </div>
