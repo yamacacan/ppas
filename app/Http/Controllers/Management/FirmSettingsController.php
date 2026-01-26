@@ -30,6 +30,13 @@ class FirmSettingsController extends Controller
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'work_start_time' => 'required|date_format:H:i',
             'work_end_time' => 'required|date_format:H:i',
+            'mail_host' => 'nullable|string|max:255',
+            'mail_port' => 'nullable|integer',
+            'mail_username' => 'nullable|string|max:255',
+            'mail_password' => 'nullable|string|max:255',
+            'mail_encryption' => 'nullable|string|max:10',
+            'mail_from_address' => 'nullable|email|max:255',
+            'mail_from_name' => 'nullable|string|max:255',
         ]);
 
         $settings = FirmSettings::instance();
@@ -39,7 +46,14 @@ class FirmSettingsController extends Controller
             'address', 
             'email', 
             'work_start_time', 
-            'work_end_time'
+            'work_end_time',
+            'mail_host',
+            'mail_port',
+            'mail_username',
+            'mail_password',
+            'mail_encryption',
+            'mail_from_address',
+            'mail_from_name'
         ]);
 
         if ($request->hasFile('logo')) {

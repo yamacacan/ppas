@@ -165,12 +165,20 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                         <!-- Text Searches -->
-                        <x-input 
-                            label="Kullanıcı Adı" 
+                        @php
+                            $userOptions = ['' => 'Tüm Kullanıcılar'];
+                            foreach($computerUsers as $cu) {
+                                $key = $cu->username . '|' . $cu->motherboard_uuid;
+                                $label = ($cu->name ?: $cu->username) . ' (' . $cu->username . ')';
+                                $userOptions[$key] = $label;
+                            }
+                        @endphp
+                        <x-select 
+                            label="Kullanıcı" 
                             name="username" 
                             id="username"
-                            value="{{ request('username') }}"
-                            placeholder="Kullanıcı ara..."
+                            :options="$userOptions"
+                            :value="request('username')"
                             icon="fas fa-user"
                         />
                         <x-input 
@@ -274,11 +282,15 @@
                         <tr class="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-150 group">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center gap-3">
-                                    <div class="flex-shrink-0 h-8 w-8 rounded-full bg-primary-100 dark:bg-primary-900/50 flex items-center justify-center text-primary-600 dark:text-primary-400 font-bold text-xs">
-                                        {{ substr($activity->username, 0, 2) }}
+                                    @php
+                                        $displayName = $activity->computer_user_display_name ?? $activity->username;
+                                        $displayInitial = substr($displayName, 0, 2);
+                                    @endphp
+                                    <div class="flex-shrink-0 h-8 w-8 rounded-full bg-primary-100 dark:bg-primary-900/50 flex items-center justify-center text-primary-600 dark:text-primary-400 font-bold text-xs" title="{{ $activity->username }}">
+                                        {{ $displayInitial }}
                                     </div>
-                                    <div class="text-sm font-medium text-gray-900 dark:text-white">
-                                        {{ $activity->username }}
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white" title="{{ $activity->username }}">
+                                        {{ $displayName }}
                                     </div>
                                 </div>
                             </td>

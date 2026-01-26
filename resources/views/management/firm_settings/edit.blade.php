@@ -115,6 +115,74 @@
                                     required
                                 />
                             </div>
+
+                            <hr class="my-6 border-gray-200 dark:border-gray-700">
+
+                            <h5 class="text-lg font-semibold text-primary-600 dark:text-primary-400 mb-4">SMTP Mail Ayarları</h5>
+                            
+                            <div class="grid grid-cols-1 gap-4">
+                                <x-input 
+                                    label="SMTP Host" 
+                                    name="mail_host" 
+                                    id="mail_host"
+                                    :value="old('mail_host', $settings->mail_host)"
+                                    placeholder="smtp.example.com"
+                                />
+
+                                <div class="grid grid-cols-2 gap-4">
+                                    <x-input 
+                                        type="number"
+                                        label="SMTP Port" 
+                                        name="mail_port" 
+                                        id="mail_port"
+                                        :value="old('mail_port', $settings->mail_port)"
+                                        placeholder="587"
+                                    />
+
+                                    <x-input 
+                                        label="Şifreleme" 
+                                        name="mail_encryption" 
+                                        id="mail_encryption"
+                                        :value="old('mail_encryption', $settings->mail_encryption)"
+                                        placeholder="tls"
+                                    />
+                                </div>
+
+                                <x-input 
+                                    label="SMTP Kullanıcı Adı" 
+                                    name="mail_username" 
+                                    id="mail_username"
+                                    :value="old('mail_username', $settings->mail_username)"
+                                    placeholder="user@example.com"
+                                />
+
+                                <x-input 
+                                    type="password"
+                                    label="SMTP Şifre" 
+                                    name="mail_password" 
+                                    id="mail_password"
+                                    :value="old('mail_password', $settings->mail_password)"
+                                    placeholder="••••••••"
+                                />
+
+                                <div class="grid grid-cols-2 gap-4">
+                                    <x-input 
+                                        label="Gönderen E-posta" 
+                                        name="mail_from_address" 
+                                        id="mail_from_address"
+                                        :value="old('mail_from_address', $settings->mail_from_address)"
+                                        placeholder="noreply@example.com"
+                                    />
+
+                                    <x-input 
+                                        label="Gönderen Adı" 
+                                        name="mail_from_name" 
+                                        id="mail_from_name"
+                                        :value="old('mail_from_name', $settings->mail_from_name)"
+                                        placeholder="Perfas"
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </div>
 

@@ -17,7 +17,14 @@ class FirmSettings extends Model
         'email',
         'logo_path',
         'work_start_time',
-        'work_end_time'
+        'work_end_time',
+        'mail_host',
+        'mail_port',
+        'mail_username',
+        'mail_password',
+        'mail_encryption',
+        'mail_from_address',
+        'mail_from_name'
     ];
 
     /**

@@ -1,64 +1,144 @@
-@extends('layouts.authentication.master')
-@section('title', 'Reset-password')
-
-@section('css')
-@endsection
-
-@section('style')
-@endsection
-
-
-@section('content')
-<!-- tap on top starts-->
-<div class="tap-top"><i data-feather="chevrons-up"></i></div>
-<!-- tap on tap ends-->
-<!-- page-wrapper Start-->
-<div class="page-wrapper">
-   <div class="container-fluid p-0">
-      <div class="row">
-         <div class="col-12">
-            <div class="login-card">
-               <div>
-                  <div class="text-center mb-4">
-                     <a class="logo" href="{{ route('/') }}">
-                        <img class="img-fluid" src="{{asset('assets/images/logo/logo.png')}}" alt="Perfas" style="max-height: 80px;">
-                     </a>
-                  </div>
-                  <div class="login-main">
-                     <form class="theme-form" action="{{route('password.update')}}" method="POST">
-                        @csrf
-                        <h4>Şifre Oluşturun</h4>
-                        <div class="form-group">
-                           <label class="col-form-label">Şifre</label>
-                           <input class="form-control @error('password') is-invalid @enderror" type="password" name="password" value="{{old('password')}}">
-                                 @error('password')
-                                 <div class="invalid-feedback">{{$message}}</div>
-                                 @enderror
-                           <div class="show-hide"><span class="show"></span></div>
+<!DOCTYPE html>
+<html class="light" lang="tr">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Perfas Yeni Şifre Oluşturma</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .mesh-gradient {
+            background-color: #006642;
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(158, 82%, 25%, 1) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, hsla(115, 86%, 35%, 1) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, hsla(164, 100%, 15%, 1) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, hsla(145, 100%, 20%, 1) 0px, transparent 50%);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display">
+    <div class="flex min-h-screen w-full overflow-hidden">
+        <!-- Left Side: Brand Image/Graphic (Hidden on mobile) -->
+        <div class="relative hidden lg:flex lg:w-1/2 mesh-gradient items-center justify-center p-12 overflow-hidden">
+            <!-- Decorative Elements -->
+            <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-primary-500/30 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-brand-teal/20 rounded-full blur-3xl"></div>
+            <div class="relative z-10 w-full max-w-lg">
+                <!-- Abstract Glassmorphism UI Elements -->
+                <div class="glass-card rounded-xl p-8 shadow-2xl mb-6 transform -rotate-2 hover:rotate-0 transition-transform duration-500">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="size-12 rounded-lg bg-white/20 flex items-center justify-center">
+                            <i class="fa-solid fa-shield-halved text-white text-3xl"></i>
                         </div>
-                        <div class="form-group">
-                           <label class="col-form-label">Şifre tekrar </label>
-                           <input class="form-control @error('password_confirmation') is-invalid @enderror" type="password" name="password_confirmation" value="{{old('password_confirmation')}}">
-                                 @error('password_confirmation')
-                                 <div class="invalid-feedback">{{$message}}</div>
-                                 @enderror
-                           <div class="show-hide"><span class="show"></span></div>
-
-                           <input type="hidden" name="token" value="{{request()->route('token')}}">
+                        <div>
+                            <div class="h-2 w-24 bg-white/40 rounded-full mb-2"></div>
+                            <div class="h-2 w-16 bg-white/20 rounded-full"></div>
                         </div>
-                        <div class="form-group mb-0">
-                           <button class="btn btn-primary btn-block" type="submit">Şifreyi Değiştir</button>
-                        </div>
-                     </form>
-                  </div>
-               </div>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="h-4 w-full bg-white/10 rounded-lg"></div>
+                        <div class="h-4 w-4/5 bg-white/10 rounded-lg"></div>
+                        <div class="h-4 w-3/4 bg-white/10 rounded-lg"></div>
+                    </div>
+                </div>
             </div>
-         </div>
-      </div>
-   </div>
-</div>
-@endsection
+            <!-- Brand Logo Watermark -->
+            <div class="absolute bottom-10 left-10 flex items-center">
+                <img src="{{ asset('assets/images/perfas-white.svg') }}" alt="Perfas Enterprise" class="h-28 w-auto opacity-90">
+            </div>
+        </div>
+        <!-- Right Side: Reset Form -->
+        <div class="w-full lg:w-1/2 flex flex-col bg-white dark:bg-background-dark">
+            <!-- Top Nav Style Language Switcher -->
+            <header class="flex items-center justify-between px-8 py-6">
+                <div class="flex items-center gap-2 lg:hidden">
+                    <img src="{{ asset('assets/images/perfas-light.png') }}" alt="Perfas" class="h-10 w-auto dark:hidden">
+                    <img src="{{ asset('assets/images/perfas-dark.svg') }}" alt="Perfas" class="h-10 w-auto hidden dark:block">
+                </div>
+                <div class="ml-auto">
+                    <button class="flex min-w-[50px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-[#f0f5f3] dark:bg-primary-500/20 text-[#101816] dark:text-white text-sm font-bold">
+                        <span>TR</span>
+                    </button>
+                </div>
+            </header>
+            <main class="flex-1 flex flex-col justify-center px-8 sm:px-16 lg:px-24 py-12">
+                <div class="max-w-[440px] w-full mx-auto">
+                    <!-- Page Heading -->
+                    <div class="mb-10">
+                        <h1 class="text-[#101816] dark:text-white text-4xl font-black leading-tight tracking-[-0.033em] mb-3">Yeni Şifre Oluştur</h1>
+                        <p class="text-[#5e8d7c] dark:text-[#a0c4b8] text-base font-normal leading-normal">Lütfen hesabınız için yeni ve güvenli bir şifre belirleyin.</p>
+                    </div>
 
-@section('script')
+                    <!-- Form -->
+                    <form class="space-y-5" method="POST" action="{{ route('password.update') }}">
+                        @csrf
+                        <input type="hidden" name="token" value="{{ request()->route('token') }}">
+                        
+                        <!-- Email Field (Required by some reset flows, often hidden or readonly) -->
+                        <div class="flex flex-col gap-2">
+                            <label class="text-[#101816] dark:text-white text-sm font-semibold leading-normal" for="email">E-posta</label>
+                            <input id="email" name="email" value="{{ $email ?? old('email') }}" required
+                                class="form-input w-full rounded-lg text-[#101816] focus:outline-0 focus:ring-2 focus:ring-primary-500/20 border border-[#dae7e2] dark:border-primary-500/30 bg-white dark:bg-background-dark/50 focus:border-primary-500 h-14 placeholder:text-[#5e8d7c]/60 p-[15px] text-base font-normal transition-colors @error('email') border-red-500 @enderror" 
+                                placeholder="eposta@perfas.com" type="email"/>
+                            @error('email')
+                                <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
 
-@endsection
+                        <!-- Password Field -->
+                        <div class="flex flex-col gap-2" x-data="{ show: false }">
+                            <label class="text-[#101816] dark:text-white text-sm font-semibold leading-normal" for="password">Yeni Şifre</label>
+                            <div class="relative flex items-center">
+                                <input id="password" name="password" required
+                                    :type="show ? 'text' : 'password'"
+                                    class="form-input w-full rounded-lg text-[#101816] focus:outline-0 focus:ring-2 focus:ring-primary-500/20 border border-[#dae7e2] dark:border-primary-500/30 bg-white dark:bg-background-dark/50 focus:border-primary-500 h-14 placeholder:text-[#5e8d7c]/60 p-[15px] pr-12 text-base font-normal transition-colors @error('password') border-red-500 @enderror" 
+                                    placeholder="••••••••" />
+                                <button type="button" @click="show = !show" class="absolute right-4 text-[#5e8d7c] hover:text-primary-500 transition-colors flex items-center justify-center">
+                                    <i class="fa-solid" :class="show ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                </button>
+                            </div>
+                            @error('password')
+                                <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Confirm Password Field -->
+                        <div class="flex flex-col gap-2">
+                            <label class="text-[#101816] dark:text-white text-sm font-semibold leading-normal" for="password_confirmation">Şifre Tekrar</label>
+                            <input id="password_confirmation" name="password_confirmation" required
+                                type="password"
+                                class="form-input w-full rounded-lg text-[#101816] focus:outline-0 focus:ring-2 focus:ring-primary-500/20 border border-[#dae7e2] dark:border-primary-500/30 bg-white dark:bg-background-dark/50 focus:border-primary-500 h-14 placeholder:text-[#5e8d7c]/60 p-[15px] text-base font-normal transition-colors" 
+                                placeholder="••••••••" />
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="pt-4">
+                            <button class="w-full bg-primary-500 hover:bg-[#005235] text-white h-14 rounded-lg font-bold text-lg transition-all shadow-lg shadow-primary-500/20 active:scale-[0.98]" type="submit">
+                                Şifreyi Güncelle
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </main>
+            <footer class="p-8 text-center lg:text-left">
+                <p class="text-[#5e8d7c] dark:text-[#a0c4b8]/50 text-xs">
+                    © {{ date('Y') }} Perfas Performance Systems. Tüm hakları saklıdır.
+                </p>
+            </footer>
+        </div>
+    </div>
+    <!-- Alpine.js -->
+    <script src="//unpkg.com/alpinejs" defer></script>
+</body>
+</html>

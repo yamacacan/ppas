@@ -139,11 +139,15 @@
                         <tr class="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-150 group">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center gap-3">
-                                    <div class="flex-shrink-0 h-8 w-8 rounded-full bg-primary-100 dark:bg-primary-900/50 flex items-center justify-center text-primary-600 dark:text-primary-400 font-bold text-xs">
-                                        {{ substr($activity->username, 0, 2) }}
+                                    @php
+                                        $displayName = $activity->computer_user_display_name ?? $activity->username;
+                                        $displayInitial = substr($displayName, 0, 2);
+                                    @endphp
+                                    <div class="flex-shrink-0 h-8 w-8 rounded-full bg-primary-100 dark:bg-primary-900/50 flex items-center justify-center text-primary-600 dark:text-primary-400 font-bold text-xs" title="{{ $activity->username }}">
+                                        {{ $displayInitial }}
                                     </div>
-                                    <div class="text-sm font-medium text-gray-900 dark:text-white">
-                                        {{ $activity->username }}
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white" title="{{ $activity->username }}">
+                                        {{ $displayName }}
                                     </div>
                                 </div>
                             </td>
