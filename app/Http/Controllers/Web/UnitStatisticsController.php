@@ -20,25 +20,36 @@ class UnitStatisticsController extends Controller
 
     public function index()
     {
-        // Cache key: units_with_stats
-        // Cache Duration: 30 minutes (1800 seconds)
-        $units = Cache::remember('units_with_stats', 200, function () {
-            // Birim listesi ve özet istatistikleri
-            $units = Unit::withCount('computerUsers') 
+        // Cache key: units_with_stats_v2
+        $units = Cache::remember('units_with_stats_v2', 300, function () {
+            // Tüm birimleri ve kullanıcı sayılarını al
+            $units = Unit::withCount('computerUsers')
                 ->orderBy('name')
                 ->get();
-    
-            // Her birim için temel istatistikleri hesapla
-            return $units->map(function ($unit) {
-                // Bu birime ait kullanıcıların aktiviteleri
-                $activityStats = Activity::whereHas('computerUser', function ($q) use ($unit) {
-                    $q->where('unit_id', $unit->id);
+
+            // Birim bazlı süre ve aktivite sayılarını toplu halde çek (JOIN ile)
+            // Sadece tekil eşleşme (username + uuid) yapıyoruz
+            $stats = \DB::table('activities')
+                ->join('computer_users', function($join) {
+                    $join->on('activities.username', '=', 'computer_users.username')
+                         ->on('activities.motherboard_uuid', '=', 'computer_users.motherboard_uuid');
                 })
-                ->selectRaw('COUNT(*) as count, SUM(duration_ms) as total_duration')
-                ->first();
-    
-                $unit->activity_count = $activityStats->count ?? 0;
-                $unit->total_duration_hours = $activityStats->total_duration ? round($activityStats->total_duration / (1000 * 60 * 60), 1) : 0;
+                ->select(
+                    'computer_users.unit_id',
+                    \DB::raw('COUNT(*) as activity_count'),
+                    \DB::raw('SUM(activities.duration_ms) as total_duration')
+                )
+                ->whereNotNull('computer_users.unit_id')
+                ->groupBy('computer_users.unit_id')
+                ->get()
+                ->keyBy('unit_id');
+
+            // İstatistikleri birimlerle eşleştir
+            return $units->map(function ($unit) use ($stats) {
+                $unitStats = $stats->get($unit->id);
+                
+                $unit->activity_count = $unitStats->activity_count ?? 0;
+                $unit->total_duration_hours = $unitStats ? round($unitStats->total_duration / (1000 * 60 * 60), 1) : 0;
                 
                 return $unit;
             });
@@ -68,9 +79,10 @@ class UnitStatisticsController extends Controller
 
         $computerUsers = \App\Models\ComputerUser::where('unit_id', $unit->id)
             ->withCount('activities')
+            ->withSum('activities as total_duration_ms', 'duration_ms')
             ->get()
             ->map(function($user) {
-                $user->total_duration_hours = $user->activities()->sum('duration_ms') / (1000 * 60 * 60);
+                $user->total_duration_hours = ($user->total_duration_ms ?? 0) / (1000 * 60 * 60);
                 return $user;
             });
 

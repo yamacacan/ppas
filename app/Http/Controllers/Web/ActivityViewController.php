@@ -22,7 +22,7 @@ class ActivityViewController extends Controller
     public function index(Request $request)
     {
         $query = Activity::query()
-            ->select('activities.*', 'computer_users.name as computer_user_display_name')
+            ->select('activities.*', 'computer_users.name as computer_user_display_name', 'computer_users.hostname as computer_user_hostname')
             ->leftJoin('computer_users', function($join) {
                 $join->on('activities.username', '=', 'computer_users.username')
                      ->on('activities.motherboard_uuid', '=', 'computer_users.motherboard_uuid');
@@ -116,7 +116,7 @@ class ActivityViewController extends Controller
     public function tagged(Request $request)
     {
         $query = Activity::tagged()
-            ->select('activities.*', 'computer_users.name as computer_user_display_name')
+            ->select('activities.*', 'computer_users.name as computer_user_display_name', 'computer_users.hostname as computer_user_hostname')
             ->leftJoin('computer_users', function($join) {
                 $join->on('activities.username', '=', 'computer_users.username')
                      ->on('activities.motherboard_uuid', '=', 'computer_users.motherboard_uuid');
@@ -145,7 +145,7 @@ class ActivityViewController extends Controller
     public function untagged(Request $request)
     {
         $query = Activity::untagged()
-            ->select('activities.*', 'computer_users.name as computer_user_display_name')
+            ->select('activities.*', 'computer_users.name as computer_user_display_name', 'computer_users.hostname as computer_user_hostname')
             ->leftJoin('computer_users', function($join) {
                 $join->on('activities.username', '=', 'computer_users.username')
                      ->on('activities.motherboard_uuid', '=', 'computer_users.motherboard_uuid');

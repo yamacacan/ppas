@@ -73,24 +73,6 @@
      x-transition:enter="transition ease-out duration-500 delay-100"
      x-transition:enter-start="opacity-0 translate-y-4"
      x-transition:enter-end="opacity-100 translate-y-0">
-    <!-- Toplam Çalışma (Purple) -->
-    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 relative overflow-hidden group hover:shadow-lg transition-all border border-gray-200 dark:border-gray-800">
-        <div class="relative z-10">
-            <p class="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1">Toplam Çalışma</p>
-            <h3 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                <span id="counter-total-work">{{ number_format($workOtherRatio['total']['duration_hours'], 1) }}</span>
-            </h3>
-            <p class="text-xs text-gray-500">saat aktivite</p>
-        </div>
-        <div class="absolute right-5 top-6 w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/30 group-hover:scale-110 transition-transform">
-            <i class="fas fa-clock text-white text-xl"></i>
-        </div>
-        <div class="absolute bottom-4 right-5 text-purple-400 text-xs flex items-center gap-1">
-            <span>{{ $unit->computer_users_count }} personel</span>
-            <i class="fas fa-chart-line"></i>
-        </div>
-    </div>
-
     <!-- Verim Oranı (Green) -->
     <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 relative overflow-hidden group hover:shadow-lg transition-all border border-gray-200 dark:border-gray-800">
         <div class="relative z-10">
@@ -394,7 +376,6 @@
                     <tr>
                         <th class="px-6 py-3 text-left font-semibold text-gray-500">Personel</th>
                         <th class="px-6 py-3 text-left font-semibold text-gray-500">Bilgisayar</th>
-                        <th class="px-6 py-3 text-left font-semibold text-gray-500">Toplam Süre</th>
                         <th class="px-6 py-3 text-right font-semibold text-gray-500">İşlemler</th>
                     </tr>
                 </thead>
@@ -411,9 +392,6 @@
                         </td>
                          <td class="px-6 py-4 text-sm text-gray-500">
                             {{ $user->computer_name }}
-                        </td>
-                        <td class="px-6 py-4 font-bold text-gray-700 dark:text-gray-300">
-                            {{ number_format($user->total_duration_hours, 1) }}h
                         </td>
                         <td class="px-6 py-4 text-right">
                              <a href="{{ route('computer-users.show', $user->id) }}" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 transition-all shadow-sm">
@@ -520,7 +498,6 @@
 
         // Delay slightly for visual effect after Alpine transition
         setTimeout(() => {
-            initCounter('counter-total-work', 1);
             initCounter('counter-efficiency', 2);
             initCounter('counter-personnel', 0);
             initCounter('counter-overtime', 2);

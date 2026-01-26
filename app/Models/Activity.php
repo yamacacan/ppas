@@ -47,7 +47,8 @@ class Activity extends Model
      */
     public function computerUser()
     {
-         return $this->belongsTo(ComputerUser::class, 'username', 'username');
+         return $this->belongsTo(ComputerUser::class, 'username', 'username')
+             ->whereColumn('computer_users.motherboard_uuid', 'activities.motherboard_uuid');
     }
 
 

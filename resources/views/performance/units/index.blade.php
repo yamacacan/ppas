@@ -45,7 +45,6 @@
                             <i class="fas fa-users mr-1"></i> '.$unit->computer_users_count.'
                         </span>',
                     'activity_count' => '<span class="text-gray-700 dark:text-gray-300">'.number_format($unit->activity_count).'</span>',
-                    'duration' => '<span class="text-gray-700 dark:text-gray-300 font-medium">'.$unit->total_duration_hours.'s</span>',
                     'actions' => '
                         <div class="flex justify-end">
                             <a href="'.route('unit-statistics.show', $unit->id).'" 
@@ -62,7 +61,6 @@
                 ['header' => 'Birim Adı', 'key' => 'name'],
                 ['header' => 'Kullanıcı Sayısı', 'key' => 'user_count'],
                 ['header' => 'Toplam Aktivite', 'key' => 'activity_count'],
-                ['header' => 'Toplam Süre (Saat)', 'key' => 'duration'],
                 ['header' => '', 'key' => 'actions']
             ]" 
             :rows="$tableRows" 

@@ -34,7 +34,14 @@
     
     $userOptions = ['' => 'Seçiniz...'];
     foreach($computerUsers as $cUser) {
-        $userOptions[$cUser->id] = $cUser->username;
+        $label = $cUser->username;
+        if ($cUser->name) {
+            $label = $cUser->name . ' (' . $cUser->username . ')';
+        }
+        if ($cUser->hostname) {
+            $label .= ' - ' . $cUser->hostname;
+        }
+        $userOptions[$cUser->id] = $label;
     }
     
     $categorySimpleOptions = [];

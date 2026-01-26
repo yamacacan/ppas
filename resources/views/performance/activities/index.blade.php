@@ -170,6 +170,9 @@
                             foreach($computerUsers as $cu) {
                                 $key = $cu->username . '|' . $cu->motherboard_uuid;
                                 $label = ($cu->name ?: $cu->username) . ' (' . $cu->username . ')';
+                                if ($cu->hostname) {
+                                    $label .= ' - ' . $cu->hostname;
+                                }
                                 $userOptions[$key] = $label;
                             }
                         @endphp
@@ -289,8 +292,16 @@
                                     <div class="flex-shrink-0 h-8 w-8 rounded-full bg-primary-100 dark:bg-primary-900/50 flex items-center justify-center text-primary-600 dark:text-primary-400 font-bold text-xs" title="{{ $activity->username }}">
                                         {{ $displayInitial }}
                                     </div>
-                                    <div class="text-sm font-medium text-gray-900 dark:text-white" title="{{ $activity->username }}">
-                                        {{ $displayName }}
+                                    <div class="flex flex-col">
+                                        <div class="text-sm font-medium text-gray-900 dark:text-white" title="{{ $activity->username }}">
+                                            {{ $displayName }}
+                                        </div>
+                                        @if($activity->computer_user_hostname)
+                                            <div class="text-[10px] text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                                                <i class="fas fa-desktop text-[9px]"></i>
+                                                {{ $activity->computer_user_hostname }}
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                             </td>
