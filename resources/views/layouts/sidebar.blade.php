@@ -189,17 +189,21 @@
 
             <!-- İstatistik & Raporlar -->
             @can('İstatistikler')
-            <div x-data="{ open: {{ request()->routeIs('statistics.*') ? 'true' : 'false' }} }">
+            <div x-data="{ open: {{ request()->routeIs('statistics.*', 'reports.*') ? 'true' : 'false' }} }">
                 <button @click="open = !open" 
-                        class="group flex items-center justify-between w-full px-3 py-2.5 rounded-lg text-sm font-medium transition-all {{ request()->routeIs('statistics.*') ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}">
+                        class="group flex items-center justify-between w-full px-3 py-2.5 rounded-lg text-sm font-medium transition-all {{ request()->routeIs('statistics.*', 'reports.*') ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}">
                     <div class="flex items-center gap-3">
-                        <i class="fas fa-chart-bar w-5 {{ request()->routeIs('statistics.*') ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 group-hover:text-gray-600' }}"></i>
+                        <i class="fas fa-chart-bar w-5 {{ request()->routeIs('statistics.*', 'reports.*') ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 group-hover:text-gray-600' }}"></i>
                         <span>İstatistik & Raporlar</span>
                     </div>
                     <i class="fas fa-chevron-down text-xs transition-transform duration-200" 
                        :class="{ 'rotate-180': open }"></i>
                 </button>
                 <div x-show="open" x-collapse class="ml-8 mt-1 space-y-1">
+                    <a href="{{ route('reports.index') }}" 
+                       class="block px-3 py-2 text-sm transition-all {{ request()->routeIs('reports.index') ? 'text-primary-700 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800' }}">
+                        Raporlarım
+                    </a>
                     <a href="{{ route('statistics.index') }}" 
                        class="block px-3 py-2 text-sm transition-all {{ request()->routeIs('statistics.index') ? 'text-primary-700 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800' }}">
                         Kategori İstatistikleri

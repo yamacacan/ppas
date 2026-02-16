@@ -32,18 +32,35 @@ class ComputerUserController extends Controller
             // Bu işlem artık her requestte değil, cache süresi dolduğunda bir kere çalışacak.
             // Daha ideali bunu bir job'a taşımaktır.
             
-            // Veritabanında olmayan (username + motherboard_uuid) kombinasyonlarını bul
-            $newUsers = Activity::select('username', 'motherboard_uuid')
+            // 1. Önce özet tablodan (activity_summaries) yeni kullanıcıları bul
+            $newUsersFromSummaries = DB::table('activity_summaries')
+                ->select('username', 'motherboard_uuid')
                 ->distinct()
+                ->whereNotExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('computer_users')
+                        ->whereRaw('computer_users.username = activity_summaries.username')
+                        ->whereRaw('computer_users.motherboard_uuid = activity_summaries.motherboard_uuid');
+                });
+
+            // 2. Sonra ham aktivitelerden (activities) son 24 saatteki yeni kullanıcıları bul (Hızlı olması için limitli zaman dilimi)
+            $newUsersFromActivities = DB::table('activities')
+                ->select('username', 'motherboard_uuid')
+                ->distinct()
+                ->where('start_time_utc', '>', now()->subHours(24))
                 ->whereNotExists(function ($query) {
                     $query->select(DB::raw(1))
                         ->from('computer_users')
                         ->whereRaw('computer_users.username = activities.username')
                         ->whereRaw('computer_users.motherboard_uuid = activities.motherboard_uuid');
-                })
-                ->get();
+                });
+
+            // İkisini birleştir ve işle
+            $allNewUsers = $newUsersFromSummaries->get()->merge($newUsersFromActivities->get())->unique(function ($item) {
+                return $item->username . '|' . $item->motherboard_uuid;
+            });
     
-            foreach ($newUsers as $new) {
+            foreach ($allNewUsers as $new) {
                 // Hostname'i bulmaya çalış (system_hardware tablosundan en güncelini al)
                 $hostname = DB::table('system_hardware')
                     ->where('motherboard_uuid', $new->motherboard_uuid)
@@ -70,10 +87,23 @@ class ComputerUserController extends Controller
                 }
             });
     
-            return ComputerUser::with('unit')
-                ->withCount('activities')
-                ->withSum('activities', 'duration_ms')
-                ->get();
+            $stats = DB::table('activity_summaries')
+                ->select(
+                    'username',
+                    'motherboard_uuid',
+                    DB::raw('SUM(activity_count) as activity_count'),
+                    DB::raw('SUM(total_duration_ms) as total_duration_ms')
+                )
+                ->groupBy('username', 'motherboard_uuid')
+                ->get()
+                ->keyBy(fn($i) => $i->username . '|' . $i->motherboard_uuid);
+
+            return ComputerUser::with('unit')->get()->map(function($user) use ($stats) {
+                $userStats = $stats->get($user->username . '|' . $user->motherboard_uuid);
+                $user->activities_count = $userStats->activity_count ?? 0;
+                $user->activities_sum_duration_ms = $userStats->total_duration_ms ?? 0;
+                return $user;
+            });
         });
 
         return view('performance.computer_users.index', compact('users'));

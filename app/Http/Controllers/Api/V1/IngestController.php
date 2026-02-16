@@ -55,31 +55,57 @@ class IngestController extends Controller
         try {
             switch ($type) {
                 case 'activities':
+                    $uniqueUsers = [];
                     foreach ($items as $index => $item) {
                         try {
-                            // Ensure required fields are set
                             if (empty($item['created_at_utc'])) {
                                 $item['created_at_utc'] = now();
                             }
-                            // Add received_at timestamp
                             $item['received_at'] = now();
                             Activity::create($item);
                             $processedCount++;
+
+                            // Collect unique users to ensure they exist in computer_users table
+                            if (!empty($item['username']) && !empty($item['motherboard_uuid'])) {
+                                $userKey = $item['username'] . '|' . $item['motherboard_uuid'];
+                                if (!isset($uniqueUsers[$userKey])) {
+                                    $uniqueUsers[$userKey] = [
+                                        'username' => $item['username'],
+                                        'motherboard_uuid' => $item['motherboard_uuid']
+                                    ];
+                                }
+                            }
                         } catch (\Exception $e) {
                             $errors[] = "Item {$index}: " . $e->getMessage();
                             Log::error("Failed to create activity at index {$index}", [
                                 'error' => $e->getMessage(),
-                                'item' => $item,
-                                'trace' => $e->getTraceAsString()
+                                'item' => $item
                             ]);
                         }
                     }
+
+                    // Ensure computer users exist
+                    foreach ($uniqueUsers as $u) {
+                        \App\Models\ComputerUser::firstOrCreate(
+                            ['username' => $u['username'], 'motherboard_uuid' => $u['motherboard_uuid']],
+                            ['name' => null]
+                        );
+                    }
                     break;
+
                 case 'hardware':
                     foreach ($items as $index => $item) {
                         try {
                             SystemHardware::create($item);
                             $processedCount++;
+
+                            // Ensure computer user exists and has hostname
+                            if (!empty($item['username']) && !empty($item['motherboard_uuid'])) {
+                                \App\Models\ComputerUser::updateOrCreate(
+                                    ['username' => $item['username'], 'motherboard_uuid' => $item['motherboard_uuid']],
+                                    ['hostname' => $item['hostname'] ?? null]
+                                );
+                            }
                         } catch (\Exception $e) {
                             $errors[] = "Item {$index}: " . $e->getMessage();
                             Log::error("Failed to create hardware at index {$index}", [

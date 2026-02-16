@@ -14,6 +14,7 @@ use App\Models\CategoryKeyword;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use App\Models\ActivitySummary;
+use App\Models\ProcessSummary;
 
 class DashboardController extends Controller
 {
@@ -35,7 +36,7 @@ class DashboardController extends Controller
         $todayStatsData = $this->getTodaySummaries();
 
         // 2. Geçmiş Özetler (Summary Tablosu + 1 Saat Cache)
-        $pastStats = Cache::remember('dashboard_past_stats_30d_v4', 3600, function () use ($thirtyDaysAgo, $yesterdayStr) {
+        $pastStats = Cache::remember('dashboard_past_stats_30d_v4', 300, function () use ($thirtyDaysAgo, $yesterdayStr) {
             return ActivitySummary::where('date', '>=', $thirtyDaysAgo->toDateString())
                 ->where('date', '<=', $yesterdayStr)
                 ->whereNull('category_id')
@@ -62,17 +63,20 @@ class DashboardController extends Controller
                 ->whereNull('category_id')->get();
 
             for ($i = 6; $i >= 0; $i--) {
-                $date = now()->subDays($i)->format('Y-m-d');
+                $carbonDate = now()->subDays($i);
+                $date = $carbonDate->format('Y-m-d');
+                $label = $carbonDate->translatedFormat('d M'); 
+                
                 if ($date === today()->toDateString()) {
                     $w = $todayStatsData['work_ms']; $o = $todayStatsData['other_ms']; $u = $todayStatsData['untagged_ms'];
                 } else {
-                    $daily = $summaries->where('date', $date);
+                    $daily = $summaries->filter(fn($s) => $s->date->format('Y-m-d') === $date);
                     $w = $daily->where('category_type', 'work')->sum('total_duration_ms');
                     $o = $daily->where('category_type', 'other')->sum('total_duration_ms');
                     $u = $daily->where('category_type', 'untagged')->sum('total_duration_ms');
                 }
                 $total = $w + $o + $u;
-                $last7Days[] = ['date' => $date, 'count' => round($total / (1000 * 60 * 60), 2)];
+                $last7Days[] = ['date' => $label, 'count' => round($total / (1000 * 60 * 60), 2)];
                 $last7DaysWork[] = round($w / (1000 * 60 * 60), 2);
                 $last7DaysOther[] = round($o / (1000 * 60 * 60), 2);
                 $last7DaysUntagged[] = round($u / (1000 * 60 * 60), 2);
@@ -90,7 +94,9 @@ class DashboardController extends Controller
 
             for ($i = 29; $i >= 0; $i--) {
                 $date = now()->subDays($i)->format('Y-m-d');
-                $val = ($date === today()->toDateString()) ? $todayStatsData['work_ms'] : $summaries->where('date', $date)->sum('total_duration_ms');
+                $val = ($date === today()->toDateString()) 
+                    ? $todayStatsData['work_ms'] 
+                    : $summaries->filter(fn($s) => $s->date->format('Y-m-d') === $date)->sum('total_duration_ms');
                 $data[] = ['date' => $date, 'count' => round($val / (1000 * 60 * 60), 2)];
             }
             return $data;
@@ -111,8 +117,9 @@ class DashboardController extends Controller
             return $data;
         });
 
-        // 6. Top Charts (Blade Uyumlu)
-        $topCharts = Cache::remember('dashboard_top_charts_30d_v4', 3600, function () use ($thirtyDaysAgo) {
+        // 6. Top Charts (Summary Tablolarından)
+        $topCharts = Cache::remember('dashboard_top_charts_30d_v5', 600, function () use ($thirtyDaysAgo) {
+            // Top Categories (ActivitySummary'den)
             $cats = ActivitySummary::whereNotNull('category_id')
                 ->where('date', '>=', $thirtyDaysAgo->toDateString())
                 ->with('category')
@@ -128,6 +135,7 @@ class DashboardController extends Controller
                     'activity_count' => $s->activity_count,
                 ]);
 
+            // Top Keywords (ActivityCategories'den - Burası hala ham tablo ama indexli ve kategori bazlı)
             $keys = DB::table('activity_categories')
                 ->join('categories', 'activity_categories.category_id', '=', 'categories.id')
                 ->select('activity_categories.matched_keyword as keyword', 'categories.name as category_name', DB::raw('COUNT(*) as match_count'))
@@ -142,9 +150,12 @@ class DashboardController extends Controller
                     'match_count' => $k->match_count
                 ]);
 
-            $procs = Activity::select('process_name')
-                ->selectRaw('COUNT(*) as activity_count, SUM(duration_ms) as total_duration')
-                ->groupBy('process_name')->orderByDesc('total_duration')->limit(10)->get()
+            // Top Processes (ProcessSummary'den - Kritik Optimizasyon!)
+            $procs = ProcessSummary::where('date', '>=', $thirtyDaysAgo->toDateString())
+                ->select('process_name', DB::raw('SUM(total_duration_ms) as total_duration'), DB::raw('SUM(activity_count) as activity_count'))
+                ->groupBy('process_name')
+                ->orderByDesc('total_duration')
+                ->limit(10)->get()
                 ->map(fn($i) => (object)[
                     'process_name' => $i->process_name,
                     'activity_count' => $i->activity_count,

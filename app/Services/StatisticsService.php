@@ -6,6 +6,9 @@ use App\Models\Activity;
 use App\Models\Category;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use App\Models\ActivitySummary;
+use App\Models\ProcessSummary;
+use App\Models\KeywordSummary;
 
 class StatisticsService
 {
@@ -24,33 +27,23 @@ class StatisticsService
      */
     public function getCategoryStatistics(array $filters = [], ?int $limit = null): array
     {
-        $cacheKey = $this->getCacheKey('category_stats', $filters + ['limit' => $limit]);
+        $cacheKey = $this->getCacheKey('category_stats_v3', $filters + ['limit' => $limit]);
 
-        return Cache::remember($cacheKey, 3600, function () use ($filters, $limit) {
-            $query = $this->applyFilters(Activity::query(), $filters);
-            
-            $statsQuery = DB::table('activity_categories')
-                ->join('activities', 'activity_categories.activity_id', '=', 'activities.id')
-                ->join('categories', 'activity_categories.category_id', '=', 'categories.id')
+        return Cache::remember($cacheKey, 300, function () use ($filters, $limit) {
+            $query = ActivitySummary::whereNotNull('category_id')
+                ->with('category')
                 ->select(
-                    'categories.id',
-                    'categories.name',
-                    'categories.type',
-                    DB::raw('COUNT(DISTINCT activity_categories.activity_id) as activity_count'),
-                    DB::raw('SUM(activities.duration_ms) as total_duration_ms'),
-                    DB::raw('AVG(activity_categories.confidence_score) as avg_confidence')
-                )
-                ->groupBy('categories.id', 'categories.name', 'categories.type')
-                ->orderBy('total_duration_ms', 'desc');
+                    'category_id',
+                    DB::raw('SUM(activity_count) as activity_count'),
+                    DB::raw('SUM(total_duration_ms) as total_duration_ms')
+                );
 
-            // Apply filters to the query
-            $statsQuery = $this->applyFilters($statsQuery, $filters);
+            $query = $this->applySummaryFilters($query, $filters);
 
-            if ($limit) {
-                $statsQuery->limit($limit);
-            }
-                
-            $stats = $statsQuery->get();
+            $stats = $query->groupBy('category_id')
+                ->orderByDesc('total_duration_ms')
+                ->when($limit, fn($q) => $q->limit($limit))
+                ->get();
             
             // Eğer limit varsa, genel toplamı hesaplamak için ayrı sorgu gerekebilir
             // Ancak performans için şimdilik sadece çekilenlerin toplamını kullanacağız
@@ -62,15 +55,15 @@ class StatisticsService
                     $avgDurationSeconds = $stat->activity_count > 0 ? $durationSeconds / $stat->activity_count : 0;
                     
                     return [
-                        'id' => $stat->id,
-                        'name' => $stat->name,
-                        'type' => $stat->type,
+                        'id' => $stat->category_id,
+                        'name' => $stat->category->name ?? 'Unknown',
+                        'type' => $stat->category->type ?? 'other',
                         'activity_count' => $stat->activity_count,
                         'total_duration_ms' => $stat->total_duration_ms ?? 0,
                         'total_duration_seconds' => round($durationSeconds, 0),
                         'total_duration_hours' => round($durationSeconds / 3600, 2),
                         'avg_duration_seconds' => round($avgDurationSeconds, 0),
-                        'avg_confidence' => round($stat->avg_confidence ?? 0, 2),
+                        'avg_confidence' => 0, // Özet tabloda tutulmuyor
                         'percentage' => $totalDurationMs > 0 ? round(($stat->total_duration_ms / $totalDurationMs) * 100, 2) : 0,
                     ];
                 }),
@@ -130,41 +123,35 @@ class StatisticsService
      */
     public function getTaggingRate(array $filters = []): array
     {
-        $cacheKey = $this->getCacheKey('tagging_rate', $filters);
+        $cacheKey = $this->getCacheKey('tagging_rate_v3', $filters);
 
         return Cache::remember($cacheKey, 1800, function () use ($filters) {
-            $query = $this->applyFilters(Activity::query(), $filters);
+            $query = ActivitySummary::whereNull('category_id');
+            $query = $this->applySummaryFilters($query, $filters);
+
+            $stats = (clone $query)->select(
+                'category_type',
+                DB::raw('SUM(total_duration_ms) as duration')
+            )->groupBy('category_type')->pluck('duration', 'category_type');
+
+            $totalDuration = $stats->sum();
+            $taggedDuration = ($stats['work'] ?? 0) + ($stats['other'] ?? 0);
+            $untaggedDuration = $stats['untagged'] ?? 0;
+
+            // Manuel/Otomatik ayrımı için Kategori bazlı özetlere bakmalıyız
+            $manualQuery = ActivitySummary::whereNotNull('category_id')->where('is_manual', true);
+            $manualQuery = $this->applySummaryFilters($manualQuery, $filters);
             
-            // Tüm hesaplamaları süre (duraiton_ms) üzerinden yap
-            $totalDuration = (clone $query)->sum('duration_ms');
-            $taggedDuration = (clone $query)->tagged()->sum('duration_ms');
-            $untaggedDuration = (count($filters) > 0) ? (clone $query)->untagged()->sum('duration_ms') : ($totalDuration - $taggedDuration);
+            $manualTaggedDuration = $manualQuery->sum('total_duration_ms');
+            $autoTaggedDuration = $taggedDuration - $manualTaggedDuration;
             
-            // Otomatik ve manuel ayrımı (Süre bazlı)
-            $autoTaggedDuration = (clone $query)
-                ->whereHas('categories', function($q) {
-                    $q->where('activity_categories.is_manual', false);
-                })
-                ->sum('duration_ms');
-                
-            $manualTaggedDuration = (clone $query)
-                ->whereHas('categories', function($q) {
-                    $q->where('activity_categories.is_manual', true);
-                })
-                ->sum('duration_ms');
-            
-            // Ms -> Saat çevrimi için katsayı
             $divisor = 1000 * 60 * 60;
 
-            $taggingRate = $totalDuration > 0 
-                ? round(($taggedDuration / $totalDuration) * 100, 2) 
-                : 0;
-                
+            $taggingRate = $totalDuration > 0 ? round(($taggedDuration / $totalDuration) * 100, 2) : 0;
             $autoPercentage = $totalDuration > 0 ? round(($autoTaggedDuration / $totalDuration) * 100, 2) : 0;
             $manualPercentage = $totalDuration > 0 ? round(($manualTaggedDuration / $totalDuration) * 100, 2) : 0;
             
             return [
-                // Değerleri saat cinsinden döndürüyoruz
                 'total' => round($totalDuration / $divisor, 2),
                 'tagged' => round($taggedDuration / $divisor, 2),
                 'untagged' => round($untaggedDuration / $divisor, 2),
@@ -196,94 +183,51 @@ class StatisticsService
      * @param string $groupBy 'day', 'week', 'month'
      * @return array
      */
-    public function getTimeDistribution(string $startDate, string $endDate, string $groupBy = 'day'): array
+    public function getTimeDistribution(string $startDate, string $endDate, string $groupBy = 'day', array $filters = []): array
     {
-        $dateFormat = match($groupBy) {
-            'hour' => '%Y-%m-%d %H:00',
-            'day' => '%Y-%m-%d',
-            'week' => '%Y-%U',
-            'month' => '%Y-%m',
-            default => '%Y-%m-%d',
-        };
-        
-        // Temel istatistikler (Toplam süre, ortalama süre, toplam sayı)
-        $stats = DB::table('activities')
-            ->whereBetween('start_time_utc', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])
-            ->select(
-                DB::raw("DATE_FORMAT(start_time_utc, '{$dateFormat}') as period"),
-                DB::raw('COUNT(*) as activity_count'),
-                DB::raw('SUM(COALESCE(duration_ms, 0)) as total_duration_ms'),
-                DB::raw('AVG(COALESCE(duration_ms, 0)) as avg_duration_ms')
-            )
-            ->groupBy('period')
-            ->orderBy('period')
-            ->get();
-        
-        // Work Duration per period
-        $workStats = DB::table('activities')
-            ->whereBetween('start_time_utc', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                      ->from('activity_categories')
-                      ->join('categories', 'activity_categories.category_id', '=', 'categories.id')
-                      ->whereColumn('activity_categories.activity_id', 'activities.id')
-                      ->where('categories.type', 'work');
-            })
-            ->select(
-                DB::raw("DATE_FORMAT(start_time_utc, '{$dateFormat}') as period"),
-                DB::raw('SUM(duration_ms) as duration')
-            )
-            ->groupBy('period')
-            ->pluck('duration', 'period');
+        $filters['start_date'] = $startDate;
+        $filters['end_date'] = $endDate;
 
-        // Other Duration per period
-        $otherStats = DB::table('activities')
-            ->whereBetween('start_time_utc', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])
-            ->whereNotExists(function ($query) {
-                $query->select(DB::raw(1))
-                      ->from('activity_categories')
-                      ->join('categories', 'activity_categories.category_id', '=', 'categories.id')
-                      ->whereColumn('activity_categories.activity_id', 'activities.id')
-                      ->where('categories.type', 'work');
-            })
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                      ->from('activity_categories')
-                      ->join('categories', 'activity_categories.category_id', '=', 'categories.id')
-                      ->whereColumn('activity_categories.activity_id', 'activities.id')
-                      ->where('categories.type', 'other');
-            })
-            ->select(
-                DB::raw("DATE_FORMAT(start_time_utc, '{$dateFormat}') as period"),
-                DB::raw('SUM(duration_ms) as duration')
-            )
-            ->groupBy('period')
-            ->pluck('duration', 'period');
+        // Özet tablodan verileri çekelim
+        $query = ActivitySummary::whereNull('category_id');
+        $query = $this->applySummaryFilters($query, $filters);
+
+        $stats = (clone $query)
+            ->select('date', DB::raw('SUM(activity_count) as activity_count'), DB::raw('SUM(total_duration_ms) as total_duration_ms'))
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get();
+
+        // İş ve Diğer süreleri de periyot bazlı (günlük) çekelim
+        $workStatsQuery = ActivitySummary::where('category_type', 'work');
+        $workStatsQuery = $this->applySummaryFilters($workStatsQuery, $filters);
+        $workStats = $workStatsQuery->groupBy('date')
+            ->select('date', DB::raw('SUM(total_duration_ms) as duration'))
+            ->get()
+            ->pluck('duration', 'date_string');
+
+        $otherStatsQuery = ActivitySummary::where('category_type', 'other');
+        $otherStatsQuery = $this->applySummaryFilters($otherStatsQuery, $filters);
+        $otherStats = $otherStatsQuery->groupBy('date')
+            ->select('date', DB::raw('SUM(total_duration_ms) as duration'))
+            ->get()
+            ->pluck('duration', 'date_string');
         
         return $stats->map(function($stat) use ($workStats, $otherStats) {
+            $dateStr = $stat->date->toDateString();
             $durationSeconds = $stat->total_duration_ms ? $stat->total_duration_ms / 1000 : 0;
-            $avgDurationSeconds = $stat->avg_duration_ms ? $stat->avg_duration_ms / 1000 : 0;
             
-            // Work/Other duration in hours for display? Or seconds?
-            // Usually charts want consistent units. Let's provide seconds to be safe or hours.
-            // Let's provide hours as that's likely the requested unit for "duration based", or just seconds and format in frontend.
-            // Re-reading: "tüm grafikler... süre bazlı"
-            // Since I changed TaggingRate to hours, consistency is good.
-            // But TimeDistribution view might be expecting specific values.
-            // Let's check what it uses: it expects 'work_count' and 'other_count' keys originally.
-            // I will return hours in those keys to switch the data source of the chart.
-            
-            $workDuration = $workStats[$stat->period] ?? 0;
-            $otherDuration = $otherStats[$stat->period] ?? 0;
+            $workDuration = $workStats[$dateStr] ?? 0;
+            $otherDuration = $otherStats[$dateStr] ?? 0;
             
             return [
-                'period' => $stat->period,
-                'activity_count' => $stat->activity_count,
+                'period' => $dateStr,
+                'activity_count' => (int)$stat->activity_count,
                 'total_duration_seconds' => round($durationSeconds, 0),
                 'total_duration_hours' => round($durationSeconds / 3600, 2),
-                'avg_duration_seconds' => round($avgDurationSeconds, 0),
-                'work_count' => round($workDuration / (1000 * 60 * 60), 2), // Now represents Hours
-                'other_count' => round($otherDuration / (1000 * 60 * 60), 2), // Now represents Hours
+                'avg_duration_seconds' => $stat->activity_count > 0 ? round($durationSeconds / $stat->activity_count, 0) : 0,
+                'work_count' => round($workDuration / (1000 * 60 * 60), 2),
+                'other_count' => round($otherDuration / (1000 * 60 * 60), 2),
                 'unit' => 'Saat'
             ];
         })->toArray();
@@ -297,39 +241,21 @@ class StatisticsService
      */
     public function getWorkOtherRatio(array $filters = []): array
     {
-        $query = $this->applyFilters(Activity::query(), $filters);
-        
-        // Tek bir sorgu ile Work ve Other istatistiklerini alalım
-        // Bu, 4 ayrı sorgu yerine 2 sorgu (biri work, biri other) yapmaktan daha iyi olabilir
-        // Ancak Eloquent/Query Builder ile karmaşık conditional aggregation yapmak zor olabilir
-        // Bu yüzden optimize edilmiş 2 sorgu kullanacağız.
-        
-        // 1. Work Stats
-        $workStats = (clone $query)
-            ->whereHas('categories', function($q) {
-                $q->where('type', 'work');
-            })
-            ->selectRaw('COUNT(*) as count, SUM(duration_ms) as duration')
-            ->first();
-            
-        $workCount = $workStats->count ?? 0;
-        $workDuration = $workStats->duration ?? 0;
+        $query = ActivitySummary::whereNull('category_id');
+        $query = $this->applySummaryFilters($query, $filters);
 
-        // 2. Other Stats (Work olmayan ama Other olanlar)
-        $otherStats = (clone $query)
-            ->whereDoesntHave('categories', function($q) {
-                $q->where('type', 'work');
-            })
-            ->whereHas('categories', function($q) {
-                $q->where('type', 'other');
-            })
-            ->selectRaw('COUNT(*) as count, SUM(duration_ms) as duration')
-            ->first();
+        $stats = $query->select(
+            'category_type',
+            DB::raw('SUM(activity_count) as count'),
+            DB::raw('SUM(total_duration_ms) as duration')
+        )->groupBy('category_type')->get()->keyBy('category_type');
 
-        $otherCount = $otherStats->count ?? 0;
-        $otherDuration = $otherStats->duration ?? 0;
+        $workCount = $stats['work']->count ?? 0;
+        $workDuration = $stats['work']->duration ?? 0;
+
+        $otherCount = $stats['other']->count ?? 0;
+        $otherDuration = $stats['other']->duration ?? 0;
         
-        // Toplam (Sadece iş ve diğer olarak sınıflandırılmışlar)
         $totalDuration = $workDuration + $otherDuration;
         $totalCount = $workCount + $otherCount;
         
@@ -362,25 +288,12 @@ class StatisticsService
      */
     protected function applyFilters($query, array $filters)
     {
-        if (!empty($filters['start_date'])) {
-            $query->where('activities.start_time_utc', '>=', $filters['start_date']);
-        }
-        
-        if (!empty($filters['end_date'])) {
-            $query->where('activities.start_time_utc', '<=', $filters['end_date']);
-        }
-        
-        if (!empty($filters['username'])) {
-            $query->where('activities.username', $filters['username']);
-        }
-
-        if (!empty($filters['motherboard_uuid'])) {
-            $query->where('activities.motherboard_uuid', $filters['motherboard_uuid']);
-        }
-        
-        if (!empty($filters['activity_type'])) {
-            $query->where('activities.activity_type', $filters['activity_type']);
-        }
+        // Eski metod, Activity modeli için hala kullanılabilir ama özetler tercih edilmeli
+        if (!empty($filters['start_date'])) $query->where('activities.start_time_utc', '>=', $filters['start_date']);
+        if (!empty($filters['end_date'])) $query->where('activities.start_time_utc', '<=', $filters['end_date']);
+        if (!empty($filters['username'])) $query->where('activities.username', $filters['username']);
+        if (!empty($filters['motherboard_uuid'])) $query->where('activities.motherboard_uuid', $filters['motherboard_uuid']);
+        if (!empty($filters['activity_type'])) $query->where('activities.activity_type', $filters['activity_type']);
         
         if (!empty($filters['unit_id'])) {
             $query->whereExists(function ($q) use ($filters) {
@@ -394,46 +307,56 @@ class StatisticsService
         
         return $query;
     }
+
+    protected function applySummaryFilters($query, array $filters)
+    {
+        $table = $query->getModel()->getTable();
+
+        if (!empty($filters['start_date'])) $query->where($table . '.date', '>=', $filters['start_date']);
+        if (!empty($filters['end_date'])) $query->where($table . '.date', '<=', $filters['end_date']);
+        if (!empty($filters['username'])) $query->where($table . '.username', $filters['username']);
+        if (!empty($filters['motherboard_uuid'])) $query->where($table . '.motherboard_uuid', $filters['motherboard_uuid']);
+        
+        if (!empty($filters['unit_id'])) {
+            $query->whereExists(function ($q) use ($filters, $table) {
+                $q->select(DB::raw(1))
+                  ->from('computer_users')
+                  ->whereColumn('computer_users.username', $table . '.username')
+                  ->whereColumn('computer_users.motherboard_uuid', $table . '.motherboard_uuid')
+                  ->where('computer_users.unit_id', $filters['unit_id']);
+            });
+        }
+        
+        return $query;
+    }
+
     /**
-     * Mesai saatleri analizi
+     * Mesai saatleri analizi (Özet tablo üzerinden)
      */
     public function getWorkingHourStats(array $filters): array
     {
-        $cacheKey = $this->getCacheKey('working_hours', $filters);
+        $cacheKey = $this->getCacheKey('working_hours_v2', $filters);
 
-        return Cache::remember($cacheKey, 3600, function () use ($filters) {
-            $query = $this->applyFilters(Activity::query(), $filters);
+        return Cache::remember($cacheKey, 300, function () use ($filters) {
+            $query = ActivitySummary::whereNull('category_id');
+            $query = $this->applySummaryFilters($query, $filters);
             
-            // UTC+3 (TR) varsayımı ile saat dilimi ayarı
-            // Mesai saatlerini veritabanından al
-            $settings = \App\Models\FirmSettings::instance();
-            $startTime = $settings->work_start_time; // '09:00:00'
-            $endTime = $settings->work_end_time; // '18:00:00'
-            
+            // TR Mesai: 09:00-18:00 (UTC 06:00-15:00)
+            // Özet tabloda hour kolonu UTC olarak tutuluyor
             $stats = (clone $query)->selectRaw("
-                SUM(CASE 
-                    WHEN TIME(ADDTIME(start_time_utc, '03:00:00')) >= ? AND TIME(ADDTIME(start_time_utc, '03:00:00')) < ? 
-                    THEN duration_ms ELSE 0 END) as total_working_hours_duration,
-                SUM(CASE 
-                    WHEN TIME(ADDTIME(start_time_utc, '03:00:00')) < ? OR TIME(ADDTIME(start_time_utc, '03:00:00')) >= ? 
-                    THEN duration_ms ELSE 0 END) as total_outside_hours_duration
-            ", [$startTime, $endTime, $startTime, $endTime])->first();
+                SUM(CASE WHEN hour >= 6 AND hour < 15 THEN total_duration_ms ELSE 0 END) as total_working_hours_duration,
+                SUM(CASE WHEN hour < 6 OR hour >= 15 THEN total_duration_ms ELSE 0 END) as total_outside_hours_duration
+            ")->first();
 
-            // Sadece 'Work' aktiviteleri için
-            $workQuery = (clone $query)->whereHas('categories', function($q) {
-                $q->where('type', 'work');
-            });
+            $workQuery = ActivitySummary::where('category_type', 'work');
+            $workQuery = $this->applySummaryFilters($workQuery, $filters);
 
             $workStats = $workQuery->selectRaw("
-                SUM(CASE 
-                    WHEN TIME(ADDTIME(start_time_utc, '03:00:00')) >= ? AND TIME(ADDTIME(start_time_utc, '03:00:00')) < ? 
-                    THEN duration_ms ELSE 0 END) as work_working_hours_duration,
-                SUM(CASE 
-                    WHEN TIME(ADDTIME(start_time_utc, '03:00:00')) < ? OR TIME(ADDTIME(start_time_utc, '03:00:00')) >= ? 
-                    THEN duration_ms ELSE 0 END) as work_outside_hours_duration
-            ", [$startTime, $endTime, $startTime, $endTime])->first();
+                SUM(CASE WHEN hour >= 6 AND hour < 15 THEN total_duration_ms ELSE 0 END) as work_working_hours_duration,
+                SUM(CASE WHEN hour < 6 OR hour >= 15 THEN total_duration_ms ELSE 0 END) as work_outside_hours_duration
+            ")->first();
 
-            $divisor = 1000 * 60 * 60; // Saate çevir
+            $divisor = 1000 * 60 * 60;
 
             return [
                 'working_hours' => [
@@ -448,59 +371,37 @@ class StatisticsService
         });
     }
 
-    /**
-     * Haftalık Ritim (Haftanın günlerine göre İş aktivitesi ortalaması)
-     */
     public function getWeeklyRhythm(array $filters): array
     {
-        $cacheKey = $this->getCacheKey('weekly_rhythm', $filters);
+        $cacheKey = $this->getCacheKey('weekly_rhythm_v2', $filters);
 
-        return Cache::remember($cacheKey, 3600, function () use ($filters) {
-            $query = Activity::query();
-            $query = $this->applyFilters($query, $filters);
+        return Cache::remember($cacheKey, 300, function () use ($filters) {
+            $query = ActivitySummary::where('category_type', 'work');
+            $query = $this->applySummaryFilters($query, $filters);
 
-            // Sadece İş aktiviteleri
-            $query->whereHas('categories', function($q) {
-                $q->where('type', 'work');
-            });
-
-            // DAYOFWEEK: 1=Sunday, 2=Monday, ..., 7=Saturday
-            // Biz Pazartesi (2) -> Pazar (1) sıralaması istiyoruz
-            
+            // MySQL: DAYOFWEEK() 1=Sun, 2=Mon...
             $results = $query->selectRaw("
-                DAYOFWEEK(ADDTIME(start_time_utc, '03:00:00')) as day_num,
-                SUM(duration_ms) as total_duration,
-                COUNT(DISTINCT DATE(ADDTIME(start_time_utc, '03:00:00'))) as unique_days
+                DAYOFWEEK(date) as day_num,
+                SUM(total_duration_ms) as total_duration,
+                COUNT(DISTINCT date) as unique_days
             ")
             ->groupBy('day_num')
             ->get();
 
-            $days = [
-                2 => 'Pazartesi',
-                3 => 'Salı',
-                4 => 'Çarşamba',
-                5 => 'Perşembe',
-                6 => 'Cuma',
-                7 => 'Cumartesi',
-                1 => 'Pazar'
-            ];
-
+            $days = [2 => 'Pazartesi', 3 => 'Salı', 4 => 'Çarşamba', 5 => 'Perşembe', 6 => 'Cuma', 7 => 'Cumartesi', 1 => 'Pazar'];
             $output = [];
             foreach ($days as $num => $name) {
                 $record = $results->firstWhere('day_num', $num);
-                $totalDurationHours = $record ? ($record->total_duration / (1000 * 60 * 60)) : 0;
-                $uniqueDays = $record ? $record->unique_days : 1; // Sıfıra bölme hatası olmasın
-                
-                // Ortalama: Toplam Süre / O günün kaç kere yaşandığı (Filtre aralığında kaç Pazartesi var?)
-                $avgHours = $uniqueDays > 0 ? $totalDurationHours / $uniqueDays : 0;
+                $totalHours = $record ? ($record->total_duration / (1000 * 60 * 60)) : 0;
+                $uniqueDays = $record ? $record->unique_days : 1;
+                $avgHours = $uniqueDays > 0 ? $totalHours / $uniqueDays : 0;
 
                 $output[] = [
                     'day' => $name,
                     'avg_hours' => round($avgHours, 2),
-                    'total_hours' => round($totalDurationHours, 2)
+                    'total_hours' => round($totalHours, 2)
                 ];
             }
-
             return $output;
         });
     }
@@ -510,33 +411,25 @@ class StatisticsService
      */
     public function getTopKeywords(array $filters, int $limit = 5): array
     {
-        $cacheKey = $this->getCacheKey('top_keywords', $filters + ['limit' => $limit]);
+        $cacheKey = $this->getCacheKey('top_keywords_v3', $filters + ['limit' => $limit]);
 
-        return Cache::remember($cacheKey, 3600, function () use ($filters, $limit) {
-            $query = DB::table('activity_categories')
-                ->join('activities', 'activity_categories.activity_id', '=', 'activities.id')
-                ->whereNotNull('activity_categories.matched_keyword')
-                ->where('activity_categories.matched_keyword', '!=', '');
-
-            // Apply filters manually to builder since applyFilters expects Eloquent
-            if (!empty($filters['start_date'])) $query->where('activities.start_time_utc', '>=', $filters['start_date']);
-            if (!empty($filters['end_date'])) $query->where('activities.start_time_utc', '<=', $filters['end_date']);
-            if (!empty($filters['username'])) $query->where('activities.username', $filters['username']);
-            if (!empty($filters['motherboard_uuid'])) $query->where('activities.motherboard_uuid', $filters['motherboard_uuid']);
+        return Cache::remember($cacheKey, 300, function () use ($filters, $limit) {
+            $query = KeywordSummary::query();
+            $query = $this->applySummaryFilters($query, $filters);
 
             return $query->select(
-                    'activity_categories.matched_keyword as keyword',
-                    DB::raw('COUNT(*) as usage_count'),
-                    DB::raw('SUM(activities.duration_ms) as total_duration')
+                    'keyword',
+                    DB::raw('SUM(match_count) as usage_count'),
+                    DB::raw('SUM(total_duration_ms) as total_duration')
                 )
                 ->groupBy('keyword')
-                ->orderBy('total_duration', 'desc')
+                ->orderBy('usage_count', 'desc')
                 ->limit($limit)
                 ->get()
                 ->map(function($item) {
                     return [
                         'keyword' => $item->keyword,
-                        'count' => $item->usage_count,
+                        'count' => (int)$item->usage_count,
                         'duration_hours' => round($item->total_duration / (1000 * 60 * 60), 2)
                     ];
                 })
@@ -549,14 +442,15 @@ class StatisticsService
      */
     public function getTopProcesses(array $filters, int $limit = 5): array
     {
-        $cacheKey = $this->getCacheKey('top_processes', $filters + ['limit' => $limit]);
+        $cacheKey = $this->getCacheKey('top_processes_v3', $filters + ['limit' => $limit]);
 
-        return Cache::remember($cacheKey, 3600, function () use ($filters, $limit) {
-            $query = $this->applyFilters(Activity::query(), $filters);
-            
+        return Cache::remember($cacheKey, 300, function () use ($filters, $limit) {
+            $query = ProcessSummary::query();
+            $query = $this->applySummaryFilters($query, $filters);
+
             return $query->select(
                     'process_name',
-                    DB::raw('SUM(duration_ms) as total_duration')
+                    DB::raw('SUM(total_duration_ms) as total_duration')
                 )
                 ->groupBy('process_name')
                 ->orderBy('total_duration', 'desc')

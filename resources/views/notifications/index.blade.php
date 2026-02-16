@@ -87,7 +87,11 @@
                                                 Detayları Gör
                                             </a>
                                         @endif
-                                        @if(isset($notification->data['url']))
+                                        @if(isset($notification->data['action_url']))
+                                            <a href="{{ $notification->data['action_url'] }}" class="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline">
+                                                Görüntüle / İndir
+                                            </a>
+                                        @elseif(isset($notification->data['url']))
                                             <a href="{{ route('dokuman.download', ['path' => $notification->data['url']]) }}" class="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline">
                                                 Dosyayı İndir
                                             </a>

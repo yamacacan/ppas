@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 
+use App\Http\Controllers\Web\ReportController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UnitController;
 use Laravel\Socialite\Facades\Socialite;
@@ -166,6 +167,33 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/api-clients', [\App\Http\Controllers\Web\ApiClientController::class, 'store'])->name('admin.api-clients.store');
         Route::post('/api-clients/{apiClient}/toggle', [\App\Http\Controllers\Web\ApiClientController::class, 'toggle'])->name('admin.api-clients.toggle');
         Route::delete('/api-clients/{apiClient}', [\App\Http\Controllers\Web\ApiClientController::class, 'destroy'])->name('admin.api-clients.destroy');
+    });
+
+    // Doküman İşlemleri
+    Route::prefix('dokumanlar')->name('dokuman.')->group(function () {
+        Route::get('/add', [\App\Http\Controllers\FileController::class, 'index'])->name('index');
+        Route::post('/insert', [\App\Http\Controllers\FileController::class, 'insert'])->name('insert');
+        Route::get('/get', [\App\Http\Controllers\FileController::class, 'get'])->name('get');
+        Route::get('/list', [\App\Http\Controllers\FileController::class, 'list'])->name('list');
+        Route::get('/download', [\App\Http\Controllers\FileController::class, 'download'])->name('download');
+        Route::post('/upload', [\App\Http\Controllers\FileController::class, 'upload'])->name('upload');
+        Route::get('/versions', [\App\Http\Controllers\FileController::class, 'versions'])->name('versions');
+        Route::get('/getversions', [\App\Http\Controllers\FileController::class, 'getversions'])->name('getversions');
+        Route::get('/getfilename', [\App\Http\Controllers\FileController::class, 'getfilename'])->name('getfilename');
+        Route::post('/updatefilename', [\App\Http\Controllers\FileController::class, 'updatefilename'])->name('updatefilename');
+    });
+
+    // Varlık İçe Aktarma
+    Route::get('/varlik/entity-from-file', [\App\Http\Controllers\EntityFromFileController::class, 'index'])->name('varlik.entity_from_file');
+    Route::post('/varlik/entity-from-file', [\App\Http\Controllers\EntityFromFileController::class, 'import'])->name('varlik.entity_from_file.import');
+
+    // Report Routes
+    Route::prefix('reports')->name('reports.')->group(function () {
+        Route::get('/', [ReportController::class, 'index'])->name('index');
+        Route::get('/progress', [ReportController::class, 'progress'])->name('progress');
+        Route::post('/', [ReportController::class, 'store'])->name('store');
+        Route::get('/{id}', [ReportController::class, 'show'])->name('show');
+        Route::delete('/{id}', [ReportController::class, 'destroy'])->name('destroy');
     });
 });
 

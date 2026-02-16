@@ -86,7 +86,11 @@
                                         <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                             {{ $notification->created_at->diffForHumans() }}
                                         </p>
-                                        @if(isset($notification->data['url']))
+                                        @if(isset($notification->data['action_url']))
+                                            <a href="{{ $notification->data['action_url'] }}" class="text-xs text-primary-500 hover:underline mt-1 block">
+                                                Görüntüle / İndir
+                                            </a>
+                                        @elseif(isset($notification->data['url']))
                                             <a href="{{ route('dokuman.download', ['path' => $notification->data['url']]) }}" class="text-xs text-primary-500 hover:underline mt-1 block">
                                                 Dosyayı İndir
                                             </a>

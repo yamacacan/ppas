@@ -12,7 +12,7 @@
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
     .stat-icon {
-        width: 48px;
+        width: 48px;    
         height: 48px;
         border-radius: 8px;
         display: flex;
@@ -49,7 +49,7 @@
              <div>
                 <p class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1">Bugün Toplam</p>
                 <p class="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">
-                    <span id="counter-today-total">{{ $todayStats['total'] }}</span><span class="text-sm font-medium text-gray-400 ml-1">saat</span>
+                    <span id="counter-today-total" data-value="{{ $todayStats['total'] }}">{{ $todayStats['total'] }}</span><span class="text-sm font-medium text-gray-400 ml-1">saat</span>
                 </p>
              </div>
         </div>
@@ -62,7 +62,7 @@
              <div>
                 <p class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1">İş (Verimli)</p>
                 <p class="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">
-                    <span id="counter-today-work">{{ $todayStats['work'] }}</span><span class="text-sm font-medium text-gray-400 ml-1">saat</span>
+                    <span id="counter-today-work" data-value="{{ $todayStats['work'] }}">{{ $todayStats['work'] }}</span><span class="text-sm font-medium text-gray-400 ml-1">saat</span>
                 </p>
              </div>
         </div>
@@ -75,7 +75,7 @@
              <div>
                 <p class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1">Aktivite</p>
                 <p class="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">
-                    <span id="counter-today-activities">{{ number_format($todayStats['activities']) }}</span>
+                    <span id="counter-today-activities" data-value="{{ $todayStats['activities'] }}">{{ number_format($todayStats['activities']) }}</span>
                 </p>
              </div>
         </div>
@@ -88,7 +88,7 @@
              <div>
                 <p class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1">Tagleme</p>
                 <p class="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">
-                    %<span id="counter-tagging-rate">{{ $taggingRate }}</span>
+                    %<span id="counter-tagging-rate" data-value="{{ $taggingRate }}">{{ $taggingRate }}</span>
                 </p>
              </div>
         </div>
@@ -104,7 +104,7 @@
                 <div>
                     <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Toplam Süre</p>
                     <h3 class="text-3xl font-bold text-gray-900 dark:text-white">
-                        <span id="counter-total-hours">{{ number_format($totalHours, 1) }}</span>
+                        <span id="counter-total-hours" data-value="{{ $totalHours }}">{{ number_format($totalHours, 1) }}</span>
                     </h3>
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Son 30 Gün</p>
                 </div>
@@ -122,7 +122,7 @@
                 <div>
                     <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">İş Aktiviteleri</p>
                     <h3 class="text-3xl font-bold text-gray-900 dark:text-white">
-                        <span id="counter-work-hours">{{ number_format($workHours, 1) }}</span>
+                        <span id="counter-work-hours" data-value="{{ $workHours }}">{{ number_format($workHours, 1) }}</span>
                     </h3>
                     <p class="text-xs text-green-600 dark:text-green-400 mt-1 font-semibold">saat (Son 30 Gün)</p>
                 </div>
@@ -140,7 +140,7 @@
                 <div>
                     <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Diğer Aktiviteler</p>
                     <h3 class="text-3xl font-bold text-gray-900 dark:text-white">
-                        <span id="counter-other-hours">{{ number_format($otherHours, 1) }}</span>
+                        <span id="counter-other-hours" data-value="{{ $otherHours }}">{{ number_format($otherHours, 1) }}</span>
                     </h3>
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">saat (Son 30 Gün)</p>
                 </div>
@@ -158,7 +158,7 @@
                 <div>
                     <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Tanımsız Süre</p>
                     <h3 class="text-3xl font-bold text-gray-900 dark:text-white">
-                        <span id="counter-untagged-hours">{{ number_format($untaggedHours, 1) }}</span>
+                        <span id="counter-untagged-hours" data-value="{{ $untaggedHours }}">{{ number_format($untaggedHours, 1) }}</span>
                     </h3>
                     <p class="text-xs text-red-500 mt-1">saat (Son 30 Gün)</p>
                 </div>
@@ -459,7 +459,7 @@
         const initCounter = (id, decimalPlaces = 0) => {
             const el = document.getElementById(id);
             if(el) {
-                const val = parseFloat(el.innerText.replace(',', '.').replace(/[^0-9.-]/g, '')); // Clean val
+                const val = parseFloat(el.getAttribute('data-value') || el.innerText.replace(/,/g, '')); 
                 const anim = new countUp.CountUp(id, val, { ...options, decimalPlaces });
                 if (!anim.error) anim.start();
             }

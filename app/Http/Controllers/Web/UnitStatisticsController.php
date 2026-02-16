@@ -29,15 +29,15 @@ class UnitStatisticsController extends Controller
 
             // Birim bazlı süre ve aktivite sayılarını toplu halde çek (JOIN ile)
             // Sadece tekil eşleşme (username + uuid) yapıyoruz
-            $stats = \DB::table('activities')
+            $stats = \DB::table('activity_summaries')
                 ->join('computer_users', function($join) {
-                    $join->on('activities.username', '=', 'computer_users.username')
-                         ->on('activities.motherboard_uuid', '=', 'computer_users.motherboard_uuid');
+                    $join->on('activity_summaries.username', '=', 'computer_users.username')
+                         ->on('activity_summaries.motherboard_uuid', '=', 'computer_users.motherboard_uuid');
                 })
                 ->select(
                     'computer_users.unit_id',
-                    \DB::raw('COUNT(*) as activity_count'),
-                    \DB::raw('SUM(activities.duration_ms) as total_duration')
+                    \DB::raw('SUM(activity_summaries.activity_count) as activity_count'),
+                    \DB::raw('SUM(activity_summaries.total_duration_ms) as total_duration')
                 )
                 ->whereNotNull('computer_users.unit_id')
                 ->groupBy('computer_users.unit_id')
@@ -77,14 +77,27 @@ class UnitStatisticsController extends Controller
         $topKeywords = collect($this->statisticsService->getTopKeywords($filters, 10))->map(fn($item) => (object) $item);
         $topProcesses = collect($this->statisticsService->getTopProcesses($filters, 10))->map(fn($item) => (object) $item);
 
-        $computerUsers = \App\Models\ComputerUser::where('unit_id', $unit->id)
-            ->withCount('activities')
-            ->withSum('activities as total_duration_ms', 'duration_ms')
+        $userStats = \DB::table('activity_summaries')
+            ->select(
+                'username',
+                'motherboard_uuid',
+                \DB::raw('SUM(activity_count) as activity_count'),
+                \DB::raw('SUM(total_duration_ms) as total_duration_ms')
+            )
+            ->whereIn('username', $unit->computerUsers->pluck('username'))
+            ->groupBy('username', 'motherboard_uuid')
             ->get()
-            ->map(function($user) {
-                $user->total_duration_hours = ($user->total_duration_ms ?? 0) / (1000 * 60 * 60);
-                return $user;
+            ->keyBy(function($item) {
+                return $item->username . '|' . $item->motherboard_uuid;
             });
+
+        $computerUsers = $unit->computerUsers->map(function($user) use ($userStats) {
+            $stats = $userStats->get($user->username . '|' . $user->motherboard_uuid);
+            $user->activities_count = $stats->activity_count ?? 0;
+            $user->total_duration_ms = $stats->total_duration_ms ?? 0;
+            $user->total_duration_hours = ($user->total_duration_ms ?? 0) / (1000 * 60 * 60);
+            return $user;
+        });
 
         return view('performance.units.show', compact(
             'unit', 
