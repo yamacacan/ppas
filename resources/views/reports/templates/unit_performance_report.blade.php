@@ -36,16 +36,46 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($summaries->groupBy('username') as $user => $userSummaries)
+                @foreach($summaries->groupBy('username') as $username => $userSummaries)
                 @php
+                    $firstSummary = $userSummaries->first();
+                    $displayName = ($firstSummary->computerUser->name ?? $username) . ' (' . $username . ')';
                     $workHours = $userSummaries->where('category_type', 'work')->sum('total_duration_ms') / (1000 * 60 * 60);
                     $otherHours = $userSummaries->where('category_type', 'other')->sum('total_duration_ms') / (1000 * 60 * 60);
                 @endphp
                 <tr>
-                    <td><b>{{ $user }}</b></td>
+                    <td><b>{{ $displayName }}</b></td>
                     <td>{{ round($workHours, 1) }} Saat</td>
                     <td>{{ round($otherHours, 1) }} Saat</td>
                     <td>{{ number_format($userSummaries->sum('activity_count')) }}</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Günlük Birim Performans Özeti</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Tarih</th>
+                    <th>İş Saati</th>
+                    <th>Diğer</th>
+                    <th>Tanımsız</th>
+                    <th>Toplam</th>
+                    <th>Aktivite</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($daily_summaries as $day)
+                <tr>
+                    <td>{{ $day['date']->format('d.m.Y') }}</td>
+                    <td style="color: #1e40af; font-weight: bold;">{{ round($day['work_ms'] / (1000 * 60 * 60), 2) }} Sa</td>
+                    <td>{{ round($day['other_ms'] / (1000 * 60 * 60), 2) }} Sa</td>
+                    <td>{{ round($day['untagged_ms'] / (1000 * 60 * 60), 2) }} Sa</td>
+                    <td style="font-weight: bold;">{{ round($day['total_ms'] / (1000 * 60 * 60), 2) }} Sa</td>
+                    <td>{{ number_format($day['activity_count']) }}</td>
                 </tr>
                 @endforeach
             </tbody>

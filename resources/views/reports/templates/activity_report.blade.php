@@ -127,15 +127,15 @@
             <div class="card-title">Genel Özet</div>
             <div class="summary-grid">
                 <div class="summary-item">
-                    <div class="summary-val">{{ $summaries->where('category_type', 'work')->sum('total_duration_ms') / (1000 * 60 * 60) }}</div>
+                    <div class="summary-val">{{ round($summaries->where('category_type', 'work')->sum('total_duration_ms') / (1000 * 60 * 60), 1) }}</div>
                     <div class="summary-label">İş (Saat)</div>
                 </div>
                 <div class="summary-item">
-                    <div class="summary-val">{{ $summaries->where('category_type', 'other')->sum('total_duration_ms') / (1000 * 60 * 60) }}</div>
+                    <div class="summary-val">{{ round($summaries->where('category_type', 'other')->sum('total_duration_ms') / (1000 * 60 * 60), 1) }}</div>
                     <div class="summary-label">Diğer (Saat)</div>
                 </div>
                 <div class="summary-item">
-                    <div class="summary-val">{{ $summaries->where('category_type', 'untagged')->sum('total_duration_ms') / (1000 * 60 * 60) }}</div>
+                    <div class="summary-val">{{ round($summaries->where('category_type', 'untagged')->sum('total_duration_ms') / (1000 * 60 * 60), 1) }}</div>
                     <div class="summary-label">Tanımsız (Saat)</div>
                 </div>
                  <div class="summary-item">
@@ -146,29 +146,27 @@
         </div>
 
         <div class="card">
-            <div class="card-title">Günlük Detaylar</div>
+            <div class="card-title">Günlük Özetler</div>
             <table>
                 <thead>
                     <tr>
                         <th>Tarih</th>
-                        <th>Kullanıcı</th>
-                        <th>Tür</th>
-                        <th>Süre (Saat)</th>
+                        <th>İş Saati</th>
+                        <th>Diğer</th>
+                        <th>Tanımsız</th>
+                        <th>Toplam</th>
                         <th>Aktivite</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($summaries->sortByDesc('date')->take(50) as $summary)
+                    @foreach($daily_summaries as $day)
                     <tr>
-                        <td>{{ $summary->date->format('d.m.Y') }}</td>
-                        <td>{{ $summary->username }}</td>
-                        <td>
-                            <span class="badge badge-{{ $summary->category_type }}">
-                                {{ strtoupper($summary->category_type) }}
-                            </span>
-                        </td>
-                        <td>{{ round($summary->total_duration_ms / (1000 * 60 * 60), 2) }}</td>
-                        <td>{{ number_format($summary->activity_count) }}</td>
+                        <td style="font-weight: bold;">{{ $day['date']->format('d.m.Y') }}</td>
+                        <td style="color: #166534;">{{ round($day['work_ms'] / (1000 * 60 * 60), 2) }} Sa</td>
+                        <td style="color: #475569;">{{ round($day['other_ms'] / (1000 * 60 * 60), 2) }} Sa</td>
+                        <td style="color: #991b1b;">{{ round($day['untagged_ms'] / (1000 * 60 * 60), 2) }} Sa</td>
+                        <td style="font-weight: bold; background-color: #f8fafc;">{{ round($day['total_ms'] / (1000 * 60 * 60), 2) }} Sa</td>
+                        <td>{{ number_format($day['activity_count']) }}</td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -177,7 +175,7 @@
     </div>
 
     <div class="footer">
-        © {{ date('Y') }} PPAS - Perfas Performans Analiz Sistemi. Bu rapor otomatik olarak oluşturulmuştur.
+        © {{ date('Y') }} PPAS - Performans Analiz Sistemi. Bu rapor otomatik olarak oluşturulmuştur.
     </div>
 </body>
 </html>

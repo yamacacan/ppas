@@ -25,3 +25,4 @@ Dockerfile
 .DS_Store
 default.conf
 .env.examples
+supervisor-workers.conf

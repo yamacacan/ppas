@@ -37,6 +37,11 @@ class ActivitySummary extends Model
         return $this->belongsTo(Category::class);
     }
 
+    public function computerUser()
+    {
+        return $this->belongsTo(ComputerUser::class, 'username', 'username');
+    }
+
     public function getDateStringAttribute()
     {
         return $this->date->toDateString();

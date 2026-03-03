@@ -26,7 +26,7 @@ class ReportController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'type' => 'required|in:activities,user_detail,unit_performance,app_usage',
-            'format' => 'required|in:pdf,excel',
+            'format' => 'required|in:pdf,xlsx',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date',
             'username' => 'nullable|string',
@@ -64,7 +64,8 @@ class ReportController extends Controller
             return back()->with('error', 'Bu rapor henüz hazır değil.');
         }
 
-        return Storage::disk('public')->download($report->file_path, $report->title . '.' . $report->format);
+        $ext = $report->format === 'excel' ? 'xlsx' : $report->format;
+        return Storage::disk('public')->download($report->file_path, $report->title . '.' . $ext);
     }
 
     public function destroy($id)

@@ -58,7 +58,7 @@
         <div class="summary-stats">
             <div class="stat-box">
                 <div class="stat-val">{{ round($summaries->where('category_type', 'work')->sum('total_duration_ms') / (1000 * 60 * 60), 1) }}</div>
-                <div class="stat-label">İn İş Saati</div>
+                <div class="stat-label">Toplam İş Saati</div>
             </div>
             <div class="stat-box">
                 <div class="stat-val">{{ round($summaries->where('category_type', 'other')->sum('total_duration_ms') / (1000 * 60 * 60), 1) }}</div>
@@ -72,23 +72,27 @@
     </div>
 
     <div class="card">
-        <div class="card-title">Günlük Detaylı Döküm</div>
+        <div class="card-title">Günlük Performans Özeti</div>
         <table>
             <thead>
                 <tr>
                     <th>Tarih</th>
-                    <th>Tür</th>
-                    <th>Toplam Süre</th>
-                    <th>Aktivite Sayısı</th>
+                    <th>İş Saati</th>
+                    <th>Diğer</th>
+                    <th>Tanımsız</th>
+                    <th>Toplam</th>
+                    <th>Aktivite</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($summaries->sortByDesc('date') as $summary)
+                @foreach($daily_summaries as $day)
                 <tr>
-                    <td>{{ $summary->date->format('d.m.Y') }}</td>
-                    <td><span class="badge badge-{{ $summary->category_type }}">{{ strtoupper($summary->category_type) }}</span></td>
-                    <td>{{ round($summary->total_duration_ms / (1000 * 60 * 60), 2) }} Saat</td>
-                    <td>{{ number_format($summary->activity_count) }}</td>
+                    <td>{{ $day['date']->format('d.m.Y') }}</td>
+                    <td style="color: #166534; font-weight: bold;">{{ round($day['work_ms'] / (1000 * 60 * 60), 2) }} Saat</td>
+                    <td style="color: #475569;">{{ round($day['other_ms'] / (1000 * 60 * 60), 2) }} Saat</td>
+                    <td style="color: #991b1b;">{{ round($day['untagged_ms'] / (1000 * 60 * 60), 2) }} Saat</td>
+                    <td style="font-weight: bold;">{{ round($day['total_ms'] / (1000 * 60 * 60), 2) }} Saat</td>
+                    <td>{{ number_format($day['activity_count']) }}</td>
                 </tr>
                 @endforeach
             </tbody>
@@ -96,7 +100,7 @@
     </div>
 
     <div class="footer">
-        Bu rapor PPAS Performans Takip Sistemi tarafından otomatik olarak oluşturulmuştur. Sayfa 1/1
+        Bu rapor PPAS Performans Takip Sistemi tarafından otomatik olarak oluşturulmuştur.
     </div>
 </body>
 </html>

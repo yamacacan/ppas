@@ -34,7 +34,7 @@
                             <label class="form-label text-sm font-semibold text-gray-700 dark:text-gray-300">Format</label>
                             <select name="format" class="form-select rounded-lg">
                                 <option value="pdf">PDF (Zengin Tasarım)</option>
-                                <option value="excel">Excel (Veri Listesi)</option>
+                                <option value="xlsx">Excel (Veri Listesi)</option>
                             </select>
                         </div>
 
@@ -110,7 +110,9 @@
                                         @else
                                             <i class="fas fa-file-excel text-green-500"></i>
                                         @endif
-                                        <span class="text-sm text-gray-600 dark:text-gray-400 uppercase font-bold">{{ $report->format }}</span>
+                                        <span class="text-sm text-gray-600 dark:text-gray-400 uppercase font-bold">
+                                            {{ $report->format === 'excel' ? 'XLSX' : $report->format }}
+                                        </span>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4" style="min-width: 200px;">

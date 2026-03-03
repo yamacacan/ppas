@@ -37,9 +37,10 @@ class ActivitiesExport implements FromCollection, WithHeadings, WithMapping, Sho
 
     public function map($summary): array
     {
+        $userName = $summary->computerUser->name ?? $summary->username;
         return [
             $summary->date->format('d.m.Y'),
-            $summary->username,
+            $userName . ' (' . $summary->username . ')',
             strtoupper($summary->category_type),
             $summary->total_duration_ms,
             round($summary->total_duration_ms / (1000 * 60 * 60), 2),

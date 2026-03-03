@@ -80,9 +80,24 @@ class ReportService
         if (!empty($filters['start_date'])) $query->where('date', '>=', $filters['start_date']);
         if (!empty($filters['end_date'])) $query->where('date', '<=', $filters['end_date']);
         
+        $summaries = $query->get();
+        $dailySummaries = $summaries->groupBy(function($item) {
+            return $item->date->format('Y-m-d');
+        })->map(function ($dayGroup) {
+            return [
+                'date' => $dayGroup->first()->date,
+                'work_ms' => $dayGroup->where('category_type', 'work')->sum('total_duration_ms'),
+                'other_ms' => $dayGroup->where('category_type', 'other')->sum('total_duration_ms'),
+                'untagged_ms' => $dayGroup->where('category_type', 'untagged')->sum('total_duration_ms'),
+                'total_ms' => $dayGroup->sum('total_duration_ms'),
+                'activity_count' => $dayGroup->sum('activity_count'),
+            ];
+        })->sortByDesc('date');
+
         return [
             'template' => 'reports.templates.activity_report',
-            'summaries' => $query->get(),
+            'summaries' => $summaries,
+            'daily_summaries' => $dailySummaries,
             'generated_at' => now(),
         ];
     }
@@ -95,9 +110,24 @@ class ReportService
         if (!empty($filters['start_date'])) $query->where('date', '>=', $filters['start_date']);
         if (!empty($filters['end_date'])) $query->where('date', '<=', $filters['end_date']);
 
+        $summaries = $query->get();
+        $dailySummaries = $summaries->groupBy(function($item) {
+            return $item->date->format('Y-m-d');
+        })->map(function ($dayGroup) {
+            return [
+                'date' => $dayGroup->first()->date,
+                'work_ms' => $dayGroup->where('category_type', 'work')->sum('total_duration_ms'),
+                'other_ms' => $dayGroup->where('category_type', 'other')->sum('total_duration_ms'),
+                'untagged_ms' => $dayGroup->where('category_type', 'untagged')->sum('total_duration_ms'),
+                'total_ms' => $dayGroup->sum('total_duration_ms'),
+                'activity_count' => $dayGroup->sum('activity_count'),
+            ];
+        })->sortByDesc('date');
+
         return [
             'template' => 'reports.templates.user_detail_report',
-            'summaries' => $query->get(),
+            'summaries' => $summaries,
+            'daily_summaries' => $dailySummaries,
             'user' => ComputerUser::where('username', $username)->first(),
             'generated_at' => now(),
         ];
@@ -116,9 +146,24 @@ class ReportService
         if (!empty($filters['start_date'])) $query->where('date', '>=', $filters['start_date']);
         if (!empty($filters['end_date'])) $query->where('date', '<=', $filters['end_date']);
 
+        $summaries = $query->get();
+        $dailySummaries = $summaries->groupBy(function($item) {
+            return $item->date->format('Y-m-d');
+        })->map(function ($dayGroup) {
+            return [
+                'date' => $dayGroup->first()->date,
+                'work_ms' => $dayGroup->where('category_type', 'work')->sum('total_duration_ms'),
+                'other_ms' => $dayGroup->where('category_type', 'other')->sum('total_duration_ms'),
+                'untagged_ms' => $dayGroup->where('category_type', 'untagged')->sum('total_duration_ms'),
+                'total_ms' => $dayGroup->sum('total_duration_ms'),
+                'activity_count' => $dayGroup->sum('activity_count'),
+            ];
+        })->sortByDesc('date');
+
         return [
             'template' => 'reports.templates.unit_performance_report',
-            'summaries' => $query->get(),
+            'summaries' => $summaries,
+            'daily_summaries' => $dailySummaries,
             'unit' => Unit::find($unitId),
             'generated_at' => now(),
         ];
@@ -148,6 +193,11 @@ class ReportService
         ini_set("memory_limit", "512M");
 
         $template = $data['template'] ?? 'reports.templates.activity_report';
+        
+        if (isset($data['summaries'])) {
+            $data['summaries']->load('computerUser');
+        }
+        
         $html = View::make($template, array_merge($data, ['report' => $report]))->render();
         
         $mpdf = new Mpdf([
@@ -178,12 +228,15 @@ class ReportService
 
     protected function generateExcel(GeneratedReport $report, $data, $filePath)
     {
+        if (isset($data['summaries'])) {
+            $data['summaries']->load('computerUser');
+        }
         Excel::store(new ActivitiesExport($data), $filePath, 'public');
     }
 
     protected function getFileName(GeneratedReport $report)
     {
-        $ext = $report->format === 'excel' ? 'xlsx' : $report->format;
+        $ext = in_array($report->format, ['excel', 'xlsx']) ? 'xlsx' : $report->format;
         return Str::slug($report->title) . '_' . time() . '.' . $ext;
     }
 }
