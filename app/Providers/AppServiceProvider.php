@@ -5,6 +5,9 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use App\Models\Activity;
 use App\Observers\ActivityObserver;
+use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Support\Facades\Lang;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,6 +28,20 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        ResetPassword::toMailUsing(function ($notifiable, $token) {
+            $url = url(route('password.reset', [
+                'token' => $token,
+                'email' => $notifiable->getEmailForPasswordReset(),
+            ], false));
+
+            return (new MailMessage)
+                ->subject(Lang::get('Şifre Sıfırlama İsteği'))
+                ->view('emails.auth.reset', [
+                    'url' => $url,
+                    'user' => $notifiable
+                ]);
+        });
+
         // Activity Observer'ı kaydet
         // Yeni aktivite eklendiğinde otomatik tagleme yapılacak
         Activity::observe(ActivityObserver::class);
