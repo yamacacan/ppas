@@ -10,7 +10,7 @@ DB_NAME="ppas_db"
 DB_USER="root"
 DB_PASSWORD="Ppas_Secure_Root_2026_!#"
 BACKUP_DIR="/mnt/HC_Volume_104488791/backups/ppas_mysql"
-RETENTION_DAYS=30
+RETENTION_DAYS=3
 
 # --- Tarih/saat damgası ---
 TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
